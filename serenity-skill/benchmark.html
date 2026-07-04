@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>serenity-skill - Benchmark</title><style>
+/* Inlined for standalone delivery. Source: curated-skill-delivery.css */
+* { box-sizing: border-box; }
+
+:root {
+  --accent: #b45309;
+  --accent-2: #2563eb;
+  --ink: #1f2937;
+  --muted: #5f6878;
+  --paper: #fffdf8;
+  --panel: #ffffff;
+  --line: #eadfd1;
+  --soft: #fffbeb;
+  --dark: #152033;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  color: var(--ink);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  letter-spacing: 0;
+}
+
+body.theme-instruction {
+  background: #fff7ed;
+  background-image:
+    linear-gradient(rgba(251, 191, 36, 0.17) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(251, 191, 36, 0.17) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+body.theme-benchmark,
+body.theme-index {
+  background: #f7f3ec;
+}
+
+a { color: var(--accent-2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.page { padding: 38px 20px 56px; }
+.wrap { width: min(1080px, 100%); margin: 0 auto; }
+.wide { width: min(1220px, calc(100vw - 32px)); margin: 0 auto; padding: 30px 0 56px; }
+
+.panel,
+.hero,
+.intro,
+.score {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 14px 40px rgba(64, 45, 21, 0.07);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
+  gap: 26px;
+  align-items: start;
+  padding: 32px;
+  margin-bottom: 20px;
+}
+
+.kicker {
+  margin: 0 0 16px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.kicker em { color: #0f766e; font-style: normal; }
+
+h1 {
+  margin: 0 0 16px;
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 700;
+  line-height: 1.08;
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: 24px;
+  line-height: 1.18;
+}
+
+h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+p { margin: 0; }
+.lead { max-width: 62ch; color: #374151; font-size: 16px; }
+.muted { color: var(--muted); }
+
+.contract {
+  background: var(--dark);
+  color: white;
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.contract h2 {
+  margin: 0 0 10px;
+  color: #fed7aa;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.contract-row {
+  display: grid;
+  grid-template-columns: 94px 1fr;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 12px;
+}
+
+.contract-row:first-of-type { border-top: 0; }
+.contract-row strong { color: #fbbf24; }
+.contract-row span { color: #d1d5db; }
+
+.persona-card {
+  background: var(--dark);
+  color: white;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.persona-top {
+  display: grid;
+  grid-template-columns: 82px 1fr;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.persona-avatar,
+.avatar-initials {
+  width: 82px;
+  height: 82px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+.persona-avatar {
+  object-fit: cover;
+  background: #f8fafc;
+}
+
+.avatar-initials {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff7ed;
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.persona-name {
+  margin: 0 0 4px;
+  color: #fed7aa;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.persona-line {
+  margin: 0;
+  color: #f8fafc;
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.persona-note {
+  margin: 0 0 14px;
+  color: #d1d5db;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.persona-mini {
+  display: grid;
+  gap: 8px;
+}
+
+.persona-mini div {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 10px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 12px;
+}
+
+.persona-mini strong { color: #fbbf24; }
+.persona-mini span { color: #d1d5db; }
+
+.hero-summary {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.summary-item,
+.metric,
+.evidence-card {
+  min-height: 124px;
+  padding: 17px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+}
+
+.summary-item h3,
+.evidence-card strong {
+  color: #92400e;
+  font-weight: 900;
+}
+
+.summary-item p,
+.evidence-card p,
+.metric p {
+  color: #4b5563;
+  font-size: 13px;
+}
+
+.main-card { padding: 30px; }
+.section { margin-top: 26px; padding-top: 24px; border-top: 1px solid #e7eef8; }
+.section:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 24px;
+}
+
+.block + .block { border-left: 1px solid #e7eef8; padding-left: 24px; }
+.section-kicker {
+  margin-bottom: 7px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.highlight { color: var(--accent); font-weight: 800; }
+.pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 11px;
+  font-weight: 900;
+}
+.pill.warn { background: #fef3c7; color: #92400e; }
+.pill.danger { background: #fee2e2; color: #991b1b; }
+
+.workflow-table,
+.index-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.workflow-table th,
+.workflow-table td,
+.index-table th,
+.index-table td {
+  padding: 11px 13px;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+  vertical-align: top;
+}
+
+.workflow-table thead th,
+.index-table thead th {
+  background: var(--soft);
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.example {
+  border: 1px dashed #fcd34d;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.example-head {
+  padding: 10px 14px;
+  background: var(--soft);
+  border-bottom: 1px solid #fde68a;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.example-body { padding: 15px 18px; color: #4b5563; }
+.footer { margin-top: 22px; color: #9ca3af; font-size: 11px; }
+
+.header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.intro {
+  padding: clamp(26px, 5vw, 46px);
+  background: linear-gradient(135deg, #fffaf3, #edf7ff);
+}
+
+.intro h1 {
+  max-width: 880px;
+  font-size: clamp(38px, 6vw, 64px);
+  line-height: 0.98;
+}
+
+.score {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--dark);
+  color: white;
+  text-align: center;
+}
+
+.score strong { display: block; font-size: 72px; line-height: 0.9; }
+.score span {
+  display: block;
+  margin-top: 10px;
+  color: #fed7aa;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.metric {
+  background: white;
+  border-top: 5px solid var(--accent);
+}
+
+.metric:nth-child(2) { border-top-color: #2563eb; }
+.metric:nth-child(3) { border-top-color: #0f766e; }
+.metric:nth-child(4) { border-top-color: #7c3aed; }
+.metric span {
+  display: block;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.metric b { display: block; margin-bottom: 7px; font-size: 30px; line-height: 1; }
+
+.qa-board {
+  margin-top: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 14px 40px rgba(64, 45, 21, 0.07);
+}
+
+.qa-head,
+.qa-row {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr 0.9fr 0.7fr;
+}
+
+.qa-head span {
+  padding: 13px 14px;
+  background: var(--dark);
+  color: #fed7aa;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.qa-row div {
+  min-height: 86px;
+  padding: 14px;
+  border-right: 1px solid #eadfce;
+  border-bottom: 1px solid #eadfce;
+  color: #4f5f70;
+  line-height: 1.46;
+}
+
+.qa-row div:last-child { border-right: 0; }
+.qa-row strong { display: block; margin-bottom: 6px; color: var(--ink); }
+
+.grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.bars { display: grid; gap: 13px; }
+.bar-row { display: grid; grid-template-columns: 150px 1fr 38px; align-items: center; gap: 10px; }
+.bar-row span { color: #334155; font-size: 13px; font-weight: 800; }
+.bar-row b { text-align: right; font-size: 13px; }
+.track { height: 11px; border-radius: 999px; overflow: hidden; background: #e2e8f0; }
+.track i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+
+.evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.index-hero { padding: 34px; margin-bottom: 16px; }
+.index-hero h1 { max-width: 840px; }
+.index-card { padding: 24px; }
+
+@media (max-width: 920px) {
+  .hero,
+  .hero-summary,
+  .split,
+  .header,
+  .metrics,
+  .grid,
+  .evidence-grid { grid-template-columns: 1fr; }
+  .block + .block { border-left: 0; border-top: 1px solid #e7eef8; padding-left: 0; padding-top: 16px; }
+  .main-card { padding: 22px; }
+  .qa-board { overflow-x: auto; }
+  .qa-head,
+  .qa-row { min-width: 860px; }
+  .intro h1 { font-size: 40px; }
+}
+
+</style></head>
+<body class="theme-benchmark" style="--accent:#4338ca;--accent-2:#b45309"><main class="wide"><section class="header"><div class="intro"><p class="kicker">Benchmark - Supply-chain Research Evaluation</p><h1>Tests whether the skill finds scarce layers before naming popular stocks.</h1><p class="lead">The benchmark checks theme scanning, single-company challenges, candidate comparison, evidence grading, cross-market source paths, and research-partner style.</p></div><aside class="score"><div><strong>88</strong><span>Score</span></div></aside></section><section class="metrics"><div class="metric"><span>Deep scan</span><b>20+</b><p>For broad themes, it should build a candidate universe before filtering.</p></div><div class="metric"><span>Sources</span><b>25+</b><p>When tools allow, current theme scans should inspect a wide source mix.</p></div><div class="metric"><span>Layers</span><b>8</b><p>Customers, systems, modules, chips, packaging, equipment, materials, and infrastructure.</p></div><div class="metric"><span>Boundary</span><b>Research</b><p>Outputs research priority, not buy or sell instructions.</p></div></section><section class="qa-board"><div class="qa-head"><span>Test case</span><span>Expected behavior</span><span>Evidence point</span><span>Result</span></div><div class="qa-row"><div><strong>A-share AI semiconductors</strong></div><div>Rank scarce layers before companies and split chips, EDA/IP, materials, equipment, packaging, testing, and optical links.</div><div>Layer-first behavior is required.</div><div><span class="pill">Pass</span></div></div><div class="qa-row"><div><strong>Single-company challenge</strong></div><div>Check customer validation, revenue mix, capacity, margins, alternative suppliers, and evidence gaps.</div><div>Single-company workflow is explicit.</div><div><span class="pill">Pass</span></div></div><div class="qa-row"><div><strong>Hype control</strong></div><div>Pull a social-media microcap pitch back to liquidity, dilution, valuation, company facts, and weak evidence.</div><div>The skill is designed to resist crowded stories.</div><div><span class="pill">Pass</span></div></div><div class="qa-row"><div><strong>Cross-market transfer</strong></div><div>Name HKEX, TDnet, filings, monthly revenue, IR, and exchange disclosures where relevant.</div><div>Market-specific source paths are part of the skill.</div><div><span class="pill">Pass</span></div></div><div class="qa-row"><div><strong>Incomplete current data</strong></div><div>Label the output as an initial pass and give exact verification paths.</div><div>The minimum standard requires limitation disclosure.</div><div><span class="pill warn">Watch</span></div></div></section><section class="grid"><div class="panel main-card"><h2>Evaluation Dimensions</h2><div class="bars"><div class="bar-row"><span>Research workflow</span><div class="track"><i style="width:93%"></i></div><b>93</b></div><div class="bar-row"><span>Evidence ladder</span><div class="track"><i style="width:90%"></i></div><b>90</b></div><div class="bar-row"><span>Plain language</span><div class="track"><i style="width:88%"></i></div><b>88</b></div><div class="bar-row"><span>Platform fit</span><div class="track"><i style="width:84%"></i></div><b>84</b></div><div class="bar-row"><span>Boundary clarity</span><div class="track"><i style="width:82%"></i></div><b>82</b></div></div></div><div class="panel main-card"><h2>Decision Notes</h2><div class="evidence-grid"><div class="evidence-card"><strong>Core value</strong><p>Strong method for turning market heat into value-chain layers, evidence strength, and a ranked research path.</p></div><div class="evidence-card"><strong>Usage reminder</strong><p>It ranks research priorities and evidence, not trades.</p></div><div class="evidence-card"><strong>Must-test samples</strong><p>A-share AI semiconductors, robotics components, and one single-company CPO challenge.</p></div><div class="evidence-card"><strong>Failure signal</strong><p>The answer starts with tickers, skips layer ranking, or treats KOL posts as strong evidence.</p></div></div><p class="footer">Benchmark - serenity-skill - Updated 2026-06-30</p></div></section>
+<!-- EVA_STANDARD_START -->
+<section class="panel main-card eva-standard" style="margin-top:16px">
+  <p class="kicker">Evaluation Standard Integration</p>
+  <h2>Gate, score, and operate checks</h2>
+  <table class="workflow-table">
+    <thead><tr><th>Standard area</th><th>This benchmark now checks</th><th>Reject or watch signals</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Gate</strong></td><td>The skill must create a value-chain map that a bare research prompt would usually miss: scarce layers first, then companies, then public evidence. Sources must be public or user-provided, and the answer must stay in research mode.</td><td>Starts with tickers, treats social posts as proof, uses inaccessible sources, or makes buy/sell instructions.</td></tr>
+      <tr><td><strong>Weighted score</strong></td><td>Score is weighted toward layer completeness, evidence ladder quality, named verification paths, cross-market source routing, cost of a current scan, and clear risk language.</td><td>A fluent market narrative with no layer ranking should fail even if the final companies look plausible.</td></tr>
+      <tr><td><strong>Three-run stability</strong></td><td>Run the same theme three times. The exact companies can change, but the scarce-layer thesis, evidence grades, and verification plan should remain consistent.</td><td>Different runs jump between unrelated stories or reverse the ranking without new evidence.</td></tr>
+      <tr><td><strong>Agent output</strong></td><td>Downstream agents should be able to consume the layer map, candidate table, evidence strength, missing-data notes, and next checks without reading prose only.</td><td>Output is beautiful but not reusable as structured research context.</td></tr>
+      <tr><td><strong>Regression set</strong></td><td>Keep AI semiconductors, humanoid robotics components, and a CPO single-company challenge as the baseline cases before listing the skill commercially.</td><td>Any regression that removes limitation labels or turns the page into investment advice is a blocker.</td></tr>
+    </tbody>
+  </table>
+</section>
+<!-- EVA_STANDARD_END -->
+</main></body></html>

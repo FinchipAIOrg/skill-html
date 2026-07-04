@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>better-icons - Instruction</title><style>
+/* Inlined for standalone delivery. Source: curated-skill-delivery.css */
+* { box-sizing: border-box; }
+
+:root {
+  --accent: #b45309;
+  --accent-2: #2563eb;
+  --ink: #1f2937;
+  --muted: #5f6878;
+  --paper: #fffdf8;
+  --panel: #ffffff;
+  --line: #eadfd1;
+  --soft: #fffbeb;
+  --dark: #152033;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  color: var(--ink);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  letter-spacing: 0;
+}
+
+body.theme-instruction {
+  background: #fff7ed;
+  background-image:
+    linear-gradient(rgba(251, 191, 36, 0.17) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(251, 191, 36, 0.17) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+body.theme-benchmark,
+body.theme-index {
+  background: #f7f3ec;
+}
+
+a { color: var(--accent-2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.page { padding: 38px 20px 56px; }
+.wrap { width: min(1080px, 100%); margin: 0 auto; }
+.wide { width: min(1220px, calc(100vw - 32px)); margin: 0 auto; padding: 30px 0 56px; }
+
+.panel,
+.hero,
+.intro,
+.score {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 14px 40px rgba(64, 45, 21, 0.07);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
+  gap: 26px;
+  align-items: start;
+  padding: 32px;
+  margin-bottom: 20px;
+}
+
+.kicker {
+  margin: 0 0 16px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.kicker em { color: #0f766e; font-style: normal; }
+
+h1 {
+  margin: 0 0 16px;
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 700;
+  line-height: 1.08;
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: 24px;
+  line-height: 1.18;
+}
+
+h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+p { margin: 0; }
+.lead { max-width: 62ch; color: #374151; font-size: 16px; }
+.muted { color: var(--muted); }
+
+.contract {
+  background: var(--dark);
+  color: white;
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.contract h2 {
+  margin: 0 0 10px;
+  color: #fed7aa;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.contract-row {
+  display: grid;
+  grid-template-columns: 94px 1fr;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 12px;
+}
+
+.contract-row:first-of-type { border-top: 0; }
+.contract-row strong { color: #fbbf24; }
+.contract-row span { color: #d1d5db; }
+
+.persona-card {
+  background: var(--dark);
+  color: white;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.persona-top {
+  display: grid;
+  grid-template-columns: 82px 1fr;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.persona-avatar,
+.avatar-initials {
+  width: 82px;
+  height: 82px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+.persona-avatar {
+  object-fit: cover;
+  background: #f8fafc;
+}
+
+.avatar-initials {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff7ed;
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.persona-name {
+  margin: 0 0 4px;
+  color: #fed7aa;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.persona-line {
+  margin: 0;
+  color: #f8fafc;
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.persona-note {
+  margin: 0 0 14px;
+  color: #d1d5db;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.persona-mini {
+  display: grid;
+  gap: 8px;
+}
+
+.persona-mini div {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 10px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 12px;
+}
+
+.persona-mini strong { color: #fbbf24; }
+.persona-mini span { color: #d1d5db; }
+
+.hero-summary {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.summary-item,
+.metric,
+.evidence-card {
+  min-height: 124px;
+  padding: 17px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+}
+
+.summary-item h3,
+.evidence-card strong {
+  color: #92400e;
+  font-weight: 900;
+}
+
+.summary-item p,
+.evidence-card p,
+.metric p {
+  color: #4b5563;
+  font-size: 13px;
+}
+
+.main-card { padding: 30px; }
+.section { margin-top: 26px; padding-top: 24px; border-top: 1px solid #e7eef8; }
+.section:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 24px;
+}
+
+.block + .block { border-left: 1px solid #e7eef8; padding-left: 24px; }
+.section-kicker {
+  margin-bottom: 7px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.highlight { color: var(--accent); font-weight: 800; }
+.pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 11px;
+  font-weight: 900;
+}
+.pill.warn { background: #fef3c7; color: #92400e; }
+.pill.danger { background: #fee2e2; color: #991b1b; }
+
+.workflow-table,
+.index-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.workflow-table th,
+.workflow-table td,
+.index-table th,
+.index-table td {
+  padding: 11px 13px;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+  vertical-align: top;
+}
+
+.workflow-table thead th,
+.index-table thead th {
+  background: var(--soft);
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.example {
+  border: 1px dashed #fcd34d;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.example-head {
+  padding: 10px 14px;
+  background: var(--soft);
+  border-bottom: 1px solid #fde68a;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.example-body { padding: 15px 18px; color: #4b5563; }
+.footer { margin-top: 22px; color: #9ca3af; font-size: 11px; }
+
+.header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.intro {
+  padding: clamp(26px, 5vw, 46px);
+  background: linear-gradient(135deg, #fffaf3, #edf7ff);
+}
+
+.intro h1 {
+  max-width: 880px;
+  font-size: clamp(38px, 6vw, 64px);
+  line-height: 0.98;
+}
+
+.score {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--dark);
+  color: white;
+  text-align: center;
+}
+
+.score strong { display: block; font-size: 72px; line-height: 0.9; }
+.score span {
+  display: block;
+  margin-top: 10px;
+  color: #fed7aa;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.metric {
+  background: white;
+  border-top: 5px solid var(--accent);
+}
+
+.metric:nth-child(2) { border-top-color: #2563eb; }
+.metric:nth-child(3) { border-top-color: #0f766e; }
+.metric:nth-child(4) { border-top-color: #7c3aed; }
+.metric span {
+  display: block;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.metric b { display: block; margin-bottom: 7px; font-size: 30px; line-height: 1; }
+
+.qa-board {
+  margin-top: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 14px 40px rgba(64, 45, 21, 0.07);
+}
+
+.qa-head,
+.qa-row {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr 0.9fr 0.7fr;
+}
+
+.qa-head span {
+  padding: 13px 14px;
+  background: var(--dark);
+  color: #fed7aa;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.qa-row div {
+  min-height: 86px;
+  padding: 14px;
+  border-right: 1px solid #eadfce;
+  border-bottom: 1px solid #eadfce;
+  color: #4f5f70;
+  line-height: 1.46;
+}
+
+.qa-row div:last-child { border-right: 0; }
+.qa-row strong { display: block; margin-bottom: 6px; color: var(--ink); }
+
+.grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.bars { display: grid; gap: 13px; }
+.bar-row { display: grid; grid-template-columns: 150px 1fr 38px; align-items: center; gap: 10px; }
+.bar-row span { color: #334155; font-size: 13px; font-weight: 800; }
+.bar-row b { text-align: right; font-size: 13px; }
+.track { height: 11px; border-radius: 999px; overflow: hidden; background: #e2e8f0; }
+.track i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+
+.evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.index-hero { padding: 34px; margin-bottom: 16px; }
+.index-hero h1 { max-width: 840px; }
+.index-card { padding: 24px; }
+
+@media (max-width: 920px) {
+  .hero,
+  .hero-summary,
+  .split,
+  .header,
+  .metrics,
+  .grid,
+  .evidence-grid { grid-template-columns: 1fr; }
+  .block + .block { border-left: 0; border-top: 1px solid #e7eef8; padding-left: 0; padding-top: 16px; }
+  .main-card { padding: 22px; }
+  .qa-board { overflow-x: auto; }
+  .qa-head,
+  .qa-row { min-width: 860px; }
+  .intro h1 { font-size: 40px; }
+}
+
+</style></head>
+<body class="theme-instruction" style="--accent:#0f766e;--accent-2:#7c3aed"><main class="page"><div class="wrap"><section class="hero"><div><p class="kicker">Instruction - <em>Developer Tooling</em></p><h1>Help AI assistants find, retrieve, and sync real icons.</h1><p class="lead">better-icons is an Iconify-based CLI and MCP tool that searches 200,000+ icons, returns SVG or JSX usage, and writes reusable icon components into project files.</p></div><aside class="contract"><h2>Capability Info</h2><div class="contract-row"><strong>Input</strong><span>Icon intent, icon ID, collection, target file, framework, or design style.</span></div><div class="contract-row"><strong>Tools</strong><span>Search, get, batch get, recommend, find similar, sync to project, and scan existing icons.</span></div><div class="contract-row"><strong>Output</strong><span>SVG, React/JSX, Iconify usage, direct URL, or exported project component.</span></div><div class="contract-row"><strong>Home</strong><span><a href="https://github.com/better-auth/better-icons" target="_blank" rel="noreferrer">Project home</a></span></div></aside><div class="hero-summary"><section class="summary-item"><h3>Personality</h3><p>Practical, lightweight, and low risk.</p></section><section class="summary-item"><h3>Best fit</h3><p>Frontend development, design systems, UI polish, and AI coding workflows.</p></section><section class="summary-item"><h3>Boundary</h3><p>Writing files requires a clear target path. Existing icons should be scanned before syncing duplicates.</p></section></div></section><article class="panel main-card"><section class="section"><div class="split"><div class="block"><div class="section-kicker">Role</div><h2>Icon search is asset retrieval, not illustration.</h2><p><span class="highlight">better-icons</span> better-icons uses real Iconify IDs, keeps prefix:name traceability, and turns selected icons into reusable project components instead of long pasted SVG blobs.</p></div><div class="block"><div class="section-kicker">Use Cases</div><h2>Who it is best for</h2><p>Best for developers and teams that use AI to build UI and need icon consistency without hallucinated assets.</p></div></div></section><section class="section"><div class="section-kicker">Depth</div><h2>What the skill actually does</h2><table class="workflow-table"><thead><tr><th>Capability layer</th><th>How it works</th><th>Customer value</th></tr></thead><tbody><tr><td>Search</td><td>Search 150+ collections and optionally restrict to lucide, mdi, heroicons, tabler, and similar styles.</td><td>Prevents invented icons.</td></tr><tr><td>Retrieve</td><td>Return SVG, React/JSX, Iconify usage, or URL with color and size options.</td><td>Works across frontend stacks.</td></tr><tr><td>Recommend</td><td>Suggest icons for use cases such as navigation, authentication, download, or alert.</td><td>Users can describe intent without knowing icon IDs.</td></tr><tr><td>Similar icons</td><td>Find variants across collections and styles.</td><td>Useful when the current icon does not match the design system.</td></tr><tr><td>Project sync</td><td>Write React, Vue, Svelte, Solid, or SVG exports and scan for existing icons first.</td><td>Reduces long SVG in chat and keeps code maintainable.</td></tr><tr><td>Preference learning</td><td>Remember commonly used collections and prioritize them later.</td><td>Fits the team&#x27;s visual language over time.</td></tr></tbody></table></section><section class="section"><div class="section-kicker">Workflow</div><h2>How to use it</h2><table class="workflow-table"><thead><tr><th>Step</th><th>Action</th><th>Gate</th></tr></thead><tbody><tr><td>Search icons</td><td>Search or recommend candidates, optionally restricted by collection.</td><td><span class="pill">Real ID</span></td></tr><tr><td>Get icon</td><td>Fetch SVG, JSX, or Iconify usage and verify the ID exists.</td><td><span class="pill">No hand drawing</span></td></tr><tr><td>Batch icons</td><td>Retrieve a toolbar set in one call with consistent size and color.</td><td><span class="pill">Consistent style</span></td></tr><tr><td>Sync file</td><td>Write icons into the selected project icon file and return import usage.</td><td><span class="pill">Needs path</span></td></tr><tr><td>Reuse existing</td><td>Scan project icons before creating duplicates.</td><td><span class="pill">Maintainable</span></td></tr></tbody></table></section><section class="section"><div class="section-kicker">Example</div><h2>Recommended starter</h2><div class="example"><div class="example-head">Example</div><div class="example-body">Find an outline icon set for a dashboard: home, settings, users, download, and alert. Prefer lucide, fall back to tabler, and sync them to /src/components/icons.tsx.</div></div></section><section class="section"><div class="section-kicker">Boundaries</div><h2>Required usage boundaries</h2><table class="workflow-table"><thead><tr><th>Boundary</th><th>Meaning</th></tr></thead><tbody><tr><td>Do not fake icon libraries</td><td>If an icon is not found, search differently or switch collection.</td></tr><tr><td>Do not mix styles</td><td>Prefer one collection and one stroke or filled style for a toolbar.</td></tr><tr><td>Do not write files silently</td><td>Syncing modifies project files and needs clear intent and target path.</td></tr><tr><td>Do not paste huge SVG repeatedly</td><td>Prefer synced reusable components.</td></tr></tbody></table></section></article><p class="footer">Instruction - better-icons - Updated 2026-06-30</p></div></main></body></html>

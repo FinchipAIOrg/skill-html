@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>uzi-investor-panel - Instruction</title><style>
+/* Inlined for standalone delivery. Source: curated-skill-delivery.css */
+* { box-sizing: border-box; }
+
+:root {
+  --accent: #b45309;
+  --accent-2: #2563eb;
+  --ink: #1f2937;
+  --muted: #5f6878;
+  --paper: #fffdf8;
+  --panel: #ffffff;
+  --line: #eadfd1;
+  --soft: #fffbeb;
+  --dark: #152033;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  color: var(--ink);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  letter-spacing: 0;
+}
+
+body.theme-instruction {
+  background: #fff7ed;
+  background-image:
+    linear-gradient(rgba(251, 191, 36, 0.17) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(251, 191, 36, 0.17) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+body.theme-benchmark,
+body.theme-index {
+  background: #f7f3ec;
+}
+
+a { color: var(--accent-2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.page { padding: 38px 20px 56px; }
+.wrap { width: min(1080px, 100%); margin: 0 auto; }
+.wide { width: min(1220px, calc(100vw - 32px)); margin: 0 auto; padding: 30px 0 56px; }
+
+.panel,
+.hero,
+.intro,
+.score {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 14px 40px rgba(64, 45, 21, 0.07);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
+  gap: 26px;
+  align-items: start;
+  padding: 32px;
+  margin-bottom: 20px;
+}
+
+.kicker {
+  margin: 0 0 16px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.kicker em { color: #0f766e; font-style: normal; }
+
+h1 {
+  margin: 0 0 16px;
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 700;
+  line-height: 1.08;
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: 24px;
+  line-height: 1.18;
+}
+
+h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+p { margin: 0; }
+.lead { max-width: 62ch; color: #374151; font-size: 16px; }
+.muted { color: var(--muted); }
+
+.contract {
+  background: var(--dark);
+  color: white;
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.contract h2 {
+  margin: 0 0 10px;
+  color: #fed7aa;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.contract-row {
+  display: grid;
+  grid-template-columns: 94px 1fr;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 12px;
+}
+
+.contract-row:first-of-type { border-top: 0; }
+.contract-row strong { color: #fbbf24; }
+.contract-row span { color: #d1d5db; }
+
+.persona-card {
+  background: var(--dark);
+  color: white;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.persona-top {
+  display: grid;
+  grid-template-columns: 82px 1fr;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.persona-avatar,
+.avatar-initials {
+  width: 82px;
+  height: 82px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+.persona-avatar {
+  object-fit: cover;
+  background: #f8fafc;
+}
+
+.avatar-initials {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff7ed;
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.persona-name {
+  margin: 0 0 4px;
+  color: #fed7aa;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.persona-line {
+  margin: 0;
+  color: #f8fafc;
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.persona-note {
+  margin: 0 0 14px;
+  color: #d1d5db;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.persona-mini {
+  display: grid;
+  gap: 8px;
+}
+
+.persona-mini div {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 10px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 12px;
+}
+
+.persona-mini strong { color: #fbbf24; }
+.persona-mini span { color: #d1d5db; }
+
+.hero-summary {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.summary-item,
+.metric,
+.evidence-card {
+  min-height: 124px;
+  padding: 17px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+}
+
+.summary-item h3,
+.evidence-card strong {
+  color: #92400e;
+  font-weight: 900;
+}
+
+.summary-item p,
+.evidence-card p,
+.metric p {
+  color: #4b5563;
+  font-size: 13px;
+}
+
+.main-card { padding: 30px; }
+.section { margin-top: 26px; padding-top: 24px; border-top: 1px solid #e7eef8; }
+.section:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 24px;
+}
+
+.block + .block { border-left: 1px solid #e7eef8; padding-left: 24px; }
+.section-kicker {
+  margin-bottom: 7px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.highlight { color: var(--accent); font-weight: 800; }
+.pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 11px;
+  font-weight: 900;
+}
+.pill.warn { background: #fef3c7; color: #92400e; }
+.pill.danger { background: #fee2e2; color: #991b1b; }
+
+.workflow-table,
+.index-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.workflow-table th,
+.workflow-table td,
+.index-table th,
+.index-table td {
+  padding: 11px 13px;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+  vertical-align: top;
+}
+
+.workflow-table thead th,
+.index-table thead th {
+  background: var(--soft);
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.example {
+  border: 1px dashed #fcd34d;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.example-head {
+  padding: 10px 14px;
+  background: var(--soft);
+  border-bottom: 1px solid #fde68a;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.example-body { padding: 15px 18px; color: #4b5563; }
+.footer { margin-top: 22px; color: #9ca3af; font-size: 11px; }
+
+.header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.intro {
+  padding: clamp(26px, 5vw, 46px);
+  background: linear-gradient(135deg, #fffaf3, #edf7ff);
+}
+
+.intro h1 {
+  max-width: 880px;
+  font-size: clamp(38px, 6vw, 64px);
+  line-height: 0.98;
+}
+
+.score {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--dark);
+  color: white;
+  text-align: center;
+}
+
+.score strong { display: block; font-size: 72px; line-height: 0.9; }
+.score span {
+  display: block;
+  margin-top: 10px;
+  color: #fed7aa;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.metric {
+  background: white;
+  border-top: 5px solid var(--accent);
+}
+
+.metric:nth-child(2) { border-top-color: #2563eb; }
+.metric:nth-child(3) { border-top-color: #0f766e; }
+.metric:nth-child(4) { border-top-color: #7c3aed; }
+.metric span {
+  display: block;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.metric b { display: block; margin-bottom: 7px; font-size: 30px; line-height: 1; }
+
+.qa-board {
+  margin-top: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 14px 40px rgba(64, 45, 21, 0.07);
+}
+
+.qa-head,
+.qa-row {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr 0.9fr 0.7fr;
+}
+
+.qa-head span {
+  padding: 13px 14px;
+  background: var(--dark);
+  color: #fed7aa;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.qa-row div {
+  min-height: 86px;
+  padding: 14px;
+  border-right: 1px solid #eadfce;
+  border-bottom: 1px solid #eadfce;
+  color: #4f5f70;
+  line-height: 1.46;
+}
+
+.qa-row div:last-child { border-right: 0; }
+.qa-row strong { display: block; margin-bottom: 6px; color: var(--ink); }
+
+.grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.bars { display: grid; gap: 13px; }
+.bar-row { display: grid; grid-template-columns: 150px 1fr 38px; align-items: center; gap: 10px; }
+.bar-row span { color: #334155; font-size: 13px; font-weight: 800; }
+.bar-row b { text-align: right; font-size: 13px; }
+.track { height: 11px; border-radius: 999px; overflow: hidden; background: #e2e8f0; }
+.track i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+
+.evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.index-hero { padding: 34px; margin-bottom: 16px; }
+.index-hero h1 { max-width: 840px; }
+.index-card { padding: 24px; }
+
+@media (max-width: 920px) {
+  .hero,
+  .hero-summary,
+  .split,
+  .header,
+  .metrics,
+  .grid,
+  .evidence-grid { grid-template-columns: 1fr; }
+  .block + .block { border-left: 0; border-top: 1px solid #e7eef8; padding-left: 0; padding-top: 16px; }
+  .main-card { padding: 22px; }
+  .qa-board { overflow-x: auto; }
+  .qa-head,
+  .qa-row { min-width: 860px; }
+  .intro h1 { font-size: 40px; }
+}
+
+</style></head>
+<body class="theme-instruction" style="--accent:#6d28d9;--accent-2:#0f766e"><main class="page"><div class="wrap"><section class="hero"><div><p class="kicker">Instruction - <em>Investor Panel</em></p><h1>I am the UZI investor panel. I let different investment schools debate the same stock.</h1><p class="lead">This skill reads an existing stock analysis and produces structured review signals across multiple investor styles, including vote distribution and disagreement.</p></div><aside class="persona-card"><div class="persona-top"><div class="avatar-initials">IP</div><div><p class="persona-name">Investor Panel</p><p class="persona-line">Multi-school investment committee</p></div></div><p class="persona-note">I turn &quot;what would different investors think&quot; into votes, confidence, reasons, pass conditions, failure conditions, and comments.</p><div class="persona-mini"><div><strong>Input</strong><span>Dimension scores, base data, investor role profiles, and school-specific methods.</span></div><div><strong>Output</strong><span>Panel results: direction, confidence, score, verdict, reasoning, comment, pass/fail conditions, target zone, and time horizon.</span></div><div><strong>Home</strong><span><a href="https://github.com/wbh604/UZI-Skill/tree/main/skills/investor-panel" target="_blank" rel="noreferrer">Project home</a></span></div></div></aside><div class="hero-summary"><section class="summary-item"><h3>Personality</h3><p>Structured review first, role-play second.</p></section><section class="summary-item"><h3>Best fit</h3><p>Adds disagreement and interpretability to a main stock report.</p></section><section class="summary-item"><h3>Boundary</h3><p>Requires existing analysis inputs. Comments are simulated and not real-person views.</p></section></div></section><article class="panel main-card"><section class="section"><div class="split"><div class="block"><div class="section-kicker">Role</div><h2>It returns review signals, not just entertaining comments.</h2><p><span class="highlight">uzi-investor-panel</span> Each investor must produce consistent fields so the main report can aggregate voting, confidence, bullish and bearish reasons, and failure conditions.</p></div><div class="block"><div class="section-kicker">Use Cases</div><h2>Who it is best for</h2><p>Best paired with UZI deep analysis. Standalone use should provide enough structured stock data first.</p></div></div></section><section class="section"><div class="section-kicker">Depth</div><h2>What the skill actually does</h2><table class="workflow-table"><thead><tr><th>Capability layer</th><th>How it works</th><th>Customer value</th></tr></thead><tbody><tr><td>Nine schools</td><td>Classic value, growth, macro hedge, technical trend, China value, hot-money, quant, tech leaders, and Serenity.</td><td>Users get a true multi-style review.</td></tr><tr><td>Strict fields</td><td>Every reviewer returns direction, confidence, score, verdict, reason, comment, pass and fail conditions, ideal price, and period.</td><td>The output can be aggregated and audited.</td></tr><tr><td>Confidence calibration</td><td>High confidence requires strong method fit; insufficient data lowers confidence.</td><td>Not every persona is forced to be certain.</td></tr><tr><td>Hot-money range</td><td>Hot-money reviewers check whether the stock fits their size, liquidity, theme, and stage.</td><td>Prevents celebrity-seat labels from being forced onto every stock.</td></tr><tr><td>Voice control</td><td>Comments can sound like the style while staying constrained by data.</td><td>Readable but not free-form role-play.</td></tr><tr><td>Vote aggregation</td><td>Consensus, vote distribution, and signal distribution are summarized.</td><td>The user can see where disagreement lives.</td></tr></tbody></table></section><section class="section"><div class="section-kicker">Workflow</div><h2>How to use it</h2><table class="workflow-table"><thead><tr><th>Step</th><th>Action</th><th>Gate</th></tr></thead><tbody><tr><td>Read inputs</td><td>Use dimension scores and base data before forming opinions.</td><td><span class="pill">Data first</span></td></tr><tr><td>Load school methods</td><td>Apply value, growth, macro, technical, China value, hot-money, quant, and Serenity methods.</td><td><span class="pill">Method match</span></td></tr><tr><td>Constrain roles</td><td>Major personas use profile rules; lightweight roles do not invent historical positions.</td><td><span class="pill">No loose acting</span></td></tr><tr><td>Filter hot money</td><td>If a stock is outside a trader style range, the verdict should be neutral or unsuitable.</td><td><span class="pill">Range fit</span></td></tr><tr><td>Aggregate votes</td><td>Return consensus, verdict distribution, and direction distribution.</td><td><span class="pill">Aggregatable</span></td></tr></tbody></table></section><section class="section"><div class="section-kicker">Example</div><h2>Recommended starter</h2><div class="example"><div class="example-head">Example</div><div class="example-body">Using the existing analysis for 300750.SZ, run UZI investor-panel. Show school-level disagreement, strongest bullish and bearish arguments, and field-completeness checks.</div></div></section><section class="section"><div class="section-kicker">Boundaries</div><h2>Required usage boundaries</h2><table class="workflow-table"><thead><tr><th>Boundary</th><th>Meaning</th></tr></thead><tbody><tr><td>Panel size must be clear</td><td>The page should make the current panel coverage understandable.</td></tr><tr><td>Not real-person views</td><td>All famous-investor comments are AI simulations based on public style and method.</td></tr><tr><td>Respect user-selected school</td><td>If the user chooses one school, other schools must be skipped.</td></tr><tr><td>No templated comments</td><td>Each comment needs style-specific reasoning, not the same generic valuation phrase.</td></tr></tbody></table></section></article><p class="footer">Instruction - uzi-investor-panel - Updated 2026-06-30</p></div></main></body></html>
