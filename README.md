@@ -16,6 +16,7 @@ Current folders:
 - `clawstock`
 - `quantumexecute-skill`
 - `serenity-skill`
+- `timepress-video`
 - `uzi-investor-panel`
 - `uzi-lhb-analyzer`
 - `uzi-stock-deep-analysis`
