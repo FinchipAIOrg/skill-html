@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ontology｜给 Agent 的记忆装一副骨架</title>
+<style>
+:root{
+  --cream:#F4F1E8;
+  --paper:#FFFFFF;
+  --paper-warm:#FFFDF6;
+  --ink:#111111;
+  --ink-2:#3F3F3A;
+  --ink-3:#6E6E66;
+  --blue:#2B44FF;
+  --blue-soft:#DCE2FF;
+  --coral:#FF7A66;
+  --coral-soft:#FFE3DD;
+  --red:#E5342B;
+  --red-soft:#FFDCD7;
+  --yellow:#FFD23F;
+  --line:#111111;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  --sans:"Helvetica Neue",Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --bd:2.5px solid var(--ink);
+  --sh:5px 5px 0 var(--ink);
+  --sh-sm:3px 3px 0 var(--ink);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;background:var(--cream);color:var(--ink);
+  font-family:var(--sans);font-size:16.5px;line-height:1.72;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 30px;}
+a{color:inherit;}
+
+/* ---------- display type ---------- */
+.eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+  font-weight:700;margin:0 0 14px;display:flex;align-items:center;gap:10px;
+}
+.eyebrow::before{content:"";width:26px;height:3px;background:var(--ink);display:block;}
+
+/* ---------- stickers & chips ---------- */
+.sticker{
+  display:inline-block;font-family:var(--mono);font-size:12.5px;font-weight:700;
+  padding:6px 14px;border:var(--bd);border-radius:999px;background:var(--paper);
+  box-shadow:var(--sh-sm);letter-spacing:.04em;
+}
+.sticker.blue{background:var(--blue-soft);}
+.sticker.coral{background:var(--coral-soft);}
+.sticker.red{background:var(--red-soft);color:var(--red);}
+.sticker.yellow{background:var(--yellow);}
+.sticker.black{background:var(--ink);color:#fff;}
+.sticker.r1{transform:rotate(-3deg);}
+.sticker.r2{transform:rotate(2.5deg);}
+.sticker.r3{transform:rotate(-1.5deg);}
+
+.chip{
+  display:inline-block;font-family:var(--mono);font-size:11.5px;font-weight:700;
+  padding:4px 10px;border:2px solid var(--ink);border-radius:6px;background:#fff;
+  letter-spacing:.05em;
+}
+
+/* ---------- topbar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:60;background:var(--cream);
+  border-bottom:2.5px solid var(--ink);
+}
+.topbar-in{display:flex;align-items:center;justify-content:space-between;height:66px;gap:20px;}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-mark{
+  width:34px;height:34px;background:var(--blue);border:var(--bd);border-radius:9px;
+  box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:900;font-size:17px;font-family:var(--mono);
+}
+.logo b{font-size:19px;letter-spacing:-.02em;}
+.logo span{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);letter-spacing:.08em;}
+.nav{display:flex;gap:26px;font-size:14px;font-weight:600;}
+.nav a{text-decoration:none;padding-bottom:2px;border-bottom:2px solid transparent;}
+.nav a:hover{border-color:var(--blue);color:var(--blue);}
+@media(max-width:860px){.nav{display:none;}}
+
+/* ---------- ticker ---------- */
+.ticker{
+  background:var(--ink);color:#fff;border-bottom:2.5px solid var(--ink);
+  overflow:hidden;white-space:nowrap;padding:9px 0;
+}
+.ticker-track{
+  display:inline-block;font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;
+  font-weight:700;animation:slide 34s linear infinite;
+}
+.ticker-track span{padding:0 18px;}
+.ticker-track i{color:var(--yellow);font-style:normal;}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding:64px 0 78px;overflow:hidden;}
+.hero-bgword{
+  position:absolute;left:50%;top:18px;transform:translateX(-50%);
+  font-size:clamp(120px,26vw,330px);font-weight:900;letter-spacing:-.05em;
+  color:transparent;-webkit-text-stroke:2px #E2DCCB;white-space:nowrap;
+  pointer-events:none;user-select:none;z-index:0;
+}
+.hero-grid{
+  position:relative;z-index:1;display:grid;grid-template-columns:1.02fr .98fr;
+  gap:52px;align-items:start;
+}
+@media(max-width:980px){.hero-grid{grid-template-columns:1fr;gap:40px;}}
+
+.hero h1{
+  font-size:clamp(38px,5.6vw,66px);font-weight:900;letter-spacing:-.03em;line-height:1.02;margin:0 0 18px;
+}
+.hero h1 .hl{
+  display:inline-block;background:var(--yellow);padding:0 10px;
+  border:2.5px solid var(--ink);border-radius:6px;box-shadow:var(--sh-sm);
+  transform:rotate(-1.2deg);
+}
+.hero-lead{font-size:17.5px;color:var(--ink-2);max-width:560px;margin:0 0 26px;}
+.hero-lead b{color:var(--ink);font-weight:800;}
+.sticker-row{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 22px;}
+
+.cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:6px;}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;padding:14px 26px;text-decoration:none;
+  font-weight:800;font-size:15.5px;border:var(--bd);border-radius:11px;box-shadow:var(--sh);
+  transition:.14s;
+}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink);}
+.btn.blue{background:var(--blue);color:#fff;}
+.btn.paper{background:var(--paper);color:var(--ink);}
+.btn .ar{font-family:var(--mono);font-weight:900;}
+.btn-note{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);margin:16px 0 0;}
+
+/* ---------- collage ---------- */
+.collage{position:relative;padding-top:14px;}
+.card{
+  background:var(--paper);border:var(--bd);border-radius:16px;box-shadow:var(--sh);
+  position:relative;
+}
+.card-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 15px;border-bottom:2.5px solid var(--ink);
+  font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.1em;
+  background:var(--paper-warm);border-radius:13px 13px 0 0;
+}
+.card-head .dots{display:flex;gap:5px;}
+.card-head .dots i{width:10px;height:10px;border:2px solid var(--ink);border-radius:50%;display:block;}
+.card-head .dots i:nth-child(1){background:var(--red);}
+.card-head .dots i:nth-child(2){background:var(--yellow);}
+.card-head .dots i:nth-child(3){background:var(--blue);}
+
+.term{
+  background:var(--ink);color:#E8E8E2;font-family:var(--mono);font-size:12.4px;
+  line-height:1.86;padding:16px 17px 18px;border-radius:0 0 13px 13px;
+  min-height:322px;overflow-wrap:anywhere;
+}
+.term .l{white-space:pre-wrap;overflow-wrap:anywhere;opacity:0;}
+.term .l.on{opacity:1;}
+.term .ps{color:#8FA8FF;font-weight:700;}
+.term .out{color:#8C8C86;}
+.term .ok{color:#57E39B;font-weight:700;}
+.term .cb{display:inline-block;width:7px;background:#57E39B;vertical-align:-2px;animation:bl .9s steps(1) infinite;}
+.term .cb.done{display:none;}
+@keyframes bl{50%{opacity:0}}
+
+.graph-card{margin-top:22px;transform:rotate(-1.4deg);}
+.graph-pane{padding:14px;background:
+  radial-gradient(circle at 1px 1px,#DCD7C7 1px,transparent 0) 0 0/20px 20px;
+  border-radius:0 0 13px 13px;}
+.graph-pane svg{width:100%;height:auto;display:block;max-height:250px;}
+.gn,.ge{opacity:0;transition:opacity .45s ease;}
+.gn.on,.ge.on{opacity:1;}
+.nb{fill:#fff;stroke:var(--ink);stroke-width:2.5;}
+.nb.j{fill:var(--blue-soft);}
+.nb.p{fill:var(--coral-soft);}
+.nb.t{fill:var(--yellow);}
+.nty{font:800 10px var(--mono);fill:var(--ink-2);letter-spacing:.1em;}
+.nnm{font:900 14px var(--sans);fill:var(--ink);}
+.edg{stroke:var(--ink);stroke-width:2.5;fill:none;}
+.elb{font:700 10.5px var(--mono);fill:var(--blue);}
+.elbg{fill:var(--paper);stroke:var(--ink);stroke-width:1.5;}
+
+.float-sticker{position:absolute;z-index:3;}
+.fs-1{right:-6px;top:-4px;}
+.fs-2{left:-14px;bottom:96px;}
+.arrow-1{position:absolute;right:52%;top:-30px;z-index:2;width:92px;}
+@media(max-width:980px){.arrow-1{display:none;}.fs-2{display:none;}}
+
+.statusbar{
+  margin-top:20px;border:var(--bd);background:#DFF5E6;border-radius:12px;
+  box-shadow:var(--sh-sm);padding:11px 16px;display:flex;align-items:center;
+  justify-content:space-between;gap:12px;font-family:var(--mono);font-size:13px;font-weight:700;
+  opacity:0;transform:translateY(5px);transition:.4s;
+}
+.statusbar.on{opacity:1;transform:none;}
+.statusbar button{
+  font-family:var(--sans);font-size:12px;font-weight:800;background:#fff;color:var(--ink);
+  border:2px solid var(--ink);border-radius:8px;padding:3px 11px;cursor:pointer;
+}
+.statusbar button:hover{background:var(--yellow);}
+
+/* ---------- section shell ---------- */
+section{padding:82px 0;position:relative;}
+.sec-head{margin-bottom:38px;max-width:760px;}
+.sec-head h2{
+  font-size:clamp(30px,4.2vw,50px);font-weight:900;letter-spacing:-.03em;line-height:1.04;margin:0 0 14px;
+}
+.sec-head p{font-size:17px;color:var(--ink-2);margin:0;}
+.sec-num{
+  position:absolute;right:30px;top:44px;font-family:var(--mono);font-size:clamp(60px,9vw,120px);
+  font-weight:900;color:transparent;-webkit-text-stroke:2px #E2DCCB;letter-spacing:-.05em;
+  pointer-events:none;user-select:none;
+}
+@media(max-width:700px){.sec-num{display:none;}}
+
+/* ---------- before / after ---------- */
+.ba-wrap{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start;}
+@media(max-width:900px){.ba-wrap{grid-template-columns:1fr;}}
+.ba-col{border:var(--bd);border-radius:18px;box-shadow:var(--sh);overflow:hidden;background:var(--paper);}
+.ba-col.bef{background:#FBF9F3;}
+.ba-col.aft{background:#fff;}
+.ba-title{
+  padding:14px 22px;border-bottom:2.5px solid var(--ink);
+  font-family:var(--mono);font-size:15px;font-weight:900;letter-spacing:.2em;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.ba-col.bef .ba-title{background:#EFEAE0;color:var(--ink-2);}
+.ba-col.aft .ba-title{background:var(--blue);color:#fff;}
+.ba-body{padding:22px 24px;}
+.pain-list{list-style:none;margin:0;padding:0;}
+.pain-list li{
+  display:grid;grid-template-columns:26px 1fr;gap:12px;padding:12px 0;
+  border-bottom:1.5px dashed #DDD8CB;font-size:15.2px;color:var(--ink-2);
+}
+.pain-list li:last-child{border-bottom:0;}
+.pain-list .x{
+  width:22px;height:22px;border:2px solid var(--red);border-radius:50%;color:var(--red);
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;font-family:var(--mono);
+}
+.pain-list b{color:var(--ink);font-weight:800;}
+
+.io-block{margin-bottom:16px;}
+.io-label{
+  font-family:var(--mono);font-size:11px;font-weight:900;letter-spacing:.16em;
+  color:var(--ink-3);margin-bottom:7px;display:flex;align-items:center;gap:8px;
+}
+.io-label .sq{width:9px;height:9px;background:var(--blue);border:1.5px solid var(--ink);display:block;}
+.io-label.o .sq{background:var(--coral);}
+.io-body{
+  border:2px solid var(--ink);border-radius:10px;background:var(--paper-warm);
+  padding:12px 15px;font-size:14.6px;color:var(--ink-2);
+}
+.io-body.prompt{font-family:var(--mono);font-size:12.8px;line-height:1.8;color:var(--ink);background:#F3F5FF;}
+pre.out{
+  margin:0;background:var(--ink);color:#E8E8E2;font-family:var(--mono);font-size:12.3px;
+  line-height:1.8;padding:14px 16px;border-radius:10px;overflow-wrap:anywhere;
+}
+pre.out .ok{color:#57E39B;font-weight:700;}
+.result-strip{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+.result-strip .r{
+  border:2px solid var(--ink);border-radius:9px;background:#fff;padding:7px 12px;
+  font-family:var(--mono);font-size:12px;font-weight:800;box-shadow:2px 2px 0 var(--ink);
+}
+.result-strip .r.g{background:#DFF5E6;}
+
+/* mini rows */
+.mini{margin-top:26px;display:grid;grid-template-columns:1fr;gap:0;}
+.mini-row{
+  display:grid;grid-template-columns:60px 1fr 46px 1fr;gap:16px;align-items:center;
+  border-top:2.5px solid var(--ink);padding:16px 0;
+}
+.mini-row:last-child{border-bottom:2.5px solid var(--ink);}
+@media(max-width:760px){
+  .mini-row{grid-template-columns:1fr;gap:8px;}
+  .mini-row .arw{display:none;}
+}
+.mini-no{font-family:var(--mono);font-weight:900;font-size:13px;color:var(--blue);}
+.mini-b{font-size:15px;color:var(--ink-3);}
+.mini-a{font-size:15px;color:var(--ink);font-weight:600;}
+.mini-a b{background:var(--yellow);padding:0 4px;border-radius:3px;}
+.arw{text-align:center;font-family:var(--mono);font-size:20px;color:var(--coral);font-weight:900;}
+
+/* ---------- capabilities ---------- */
+.cap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+@media(max-width:960px){.cap-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:620px){.cap-grid{grid-template-columns:1fr;}}
+.cap{
+  border:var(--bd);border-radius:18px;background:var(--paper);box-shadow:var(--sh);
+  padding:24px 24px 26px;position:relative;transition:.14s;
+}
+.cap:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink);}
+.cap:nth-child(2){transform:rotate(-.7deg);}
+.cap:nth-child(5){transform:rotate(.7deg);}
+.cap-no{
+  font-family:var(--mono);font-size:12px;font-weight:900;letter-spacing:.14em;color:var(--ink-3);
+  margin-bottom:12px;
+}
+.cap-mark{
+  width:44px;height:44px;border:2.5px solid var(--ink);border-radius:12px;margin-bottom:14px;
+  display:flex;align-items:center;justify-content:center;box-shadow:var(--sh-sm);
+}
+.cap-mark svg{display:block;}
+.cap h3{font-size:19px;font-weight:900;letter-spacing:-.01em;margin:0 0 8px;line-height:1.3;}
+.cap p{margin:0;font-size:14.6px;color:var(--ink-2);}
+.cap-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;}
+.cap-tags span{
+  font-family:var(--mono);font-size:10.5px;font-weight:700;border:2px solid var(--ink);
+  border-radius:5px;padding:2px 7px;background:var(--paper-warm);
+}
+
+/* ---------- cases ---------- */
+.case-stack{display:grid;grid-template-columns:1fr;gap:30px;}
+.case{
+  border:var(--bd);border-radius:20px;background:var(--paper);box-shadow:var(--sh);
+  overflow:hidden;
+}
+.case-top{
+  display:flex;align-items:flex-start;gap:18px;padding:22px 26px 18px;
+  border-bottom:2.5px solid var(--ink);flex-wrap:wrap;
+}
+.case-top.b1{background:var(--blue-soft);}
+.case-top.b2{background:var(--coral-soft);}
+.case-top.b3{background:var(--paper-warm);}
+.case-big{
+  font-family:var(--mono);font-size:clamp(34px,4.6vw,54px);font-weight:900;line-height:.9;
+  letter-spacing:-.04em;color:transparent;-webkit-text-stroke:2px var(--ink);
+}
+.case-meta{flex:1;min-width:240px;}
+.case-meta h3{font-size:21px;font-weight:900;letter-spacing:-.015em;margin:0 0 6px;line-height:1.28;}
+.case-meta p{margin:0;font-size:14.4px;color:var(--ink-2);}
+.case-body{padding:22px 26px 26px;}
+.case-grid{display:grid;grid-template-columns:1fr 1.25fr;gap:20px;}
+@media(max-width:800px){.case-grid{grid-template-columns:1fr;}}
+.case-why{
+  margin-top:18px;padding-top:16px;border-top:2px dashed #DDD8CB;font-size:15px;color:var(--ink-2);
+}
+.case-why b{color:var(--ink);font-weight:900;background:var(--yellow);padding:0 4px;border-radius:3px;}
+pre.code{
+  margin:0;background:var(--ink);color:#E8E8E2;font-family:var(--mono);font-size:12.3px;
+  line-height:1.82;padding:16px 18px;border-radius:12px;overflow-wrap:anywhere;
+}
+pre.code .c{color:#8C8C86;}
+pre.code .e{color:#FF8A7A;}
+.tagline{
+  display:inline-block;font-family:var(--mono);font-size:11px;font-weight:900;letter-spacing:.1em;
+  border:2px solid var(--ink);border-radius:6px;padding:3px 9px;background:#fff;margin-bottom:10px;
+}
+.tagline.real{background:#DFF5E6;}
+.tagline.plan{background:var(--yellow);}
+
+/* ---------- how it works ---------- */
+.how{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:var(--bd);border-radius:18px;
+  box-shadow:var(--sh);overflow:hidden;background:var(--paper);}
+@media(max-width:1000px){.how{grid-template-columns:1fr;}}
+.how-step{padding:24px 22px 28px;border-right:2.5px solid var(--ink);position:relative;}
+.how-step:last-child{border-right:0;}
+@media(max-width:1000px){
+  .how-step{border-right:0;border-bottom:2.5px solid var(--ink);}
+  .how-step:last-child{border-bottom:0;}
+}
+.how-no{
+  width:38px;height:38px;border:2.5px solid var(--ink);border-radius:11px;background:var(--yellow);
+  display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:900;
+  font-size:15px;box-shadow:var(--sh-sm);margin-bottom:14px;
+}
+.how-step h4{font-size:16.5px;font-weight:900;margin:0 0 7px;letter-spacing:-.01em;}
+.how-step p{margin:0;font-size:14px;color:var(--ink-2);}
+.how-step code{
+  display:block;margin-top:10px;font-family:var(--mono);font-size:11.6px;background:#F1EEE4;
+  border:1.5px solid var(--ink);border-radius:6px;padding:6px 8px;color:var(--ink);
+  word-break:break-all;line-height:1.6;
+}
+.how-out{margin-top:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.how-out .arrow{font-family:var(--mono);font-size:24px;color:var(--coral);font-weight:900;}
+
+/* ---------- audience ---------- */
+.who-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;}
+@media(max-width:900px){.who-grid{grid-template-columns:1fr;}}
+.who{
+  border:var(--bd);border-radius:18px;background:var(--paper);box-shadow:var(--sh);padding:26px 28px;
+  position:relative;
+}
+.who:nth-child(1){transform:rotate(-.6deg);}
+.who:nth-child(2){transform:rotate(.6deg);}
+.who-face{
+  width:52px;height:52px;border:2.5px solid var(--ink);border-radius:14px;margin-bottom:16px;
+  display:flex;align-items:center;justify-content:center;box-shadow:var(--sh-sm);
+}
+.who h3{font-size:20px;font-weight:900;margin:0 0 6px;letter-spacing:-.01em;}
+.who .role{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--ink-3);margin:0 0 14px;
+  letter-spacing:.1em;}
+.who p{margin:0 0 14px;font-size:15px;color:var(--ink-2);}
+.who ul{list-style:none;margin:0;padding:0;}
+.who ul li{
+  display:grid;grid-template-columns:20px 1fr;gap:10px;padding:7px 0;font-size:14.6px;color:var(--ink-2);
+  border-top:1.5px dashed #DDD8CB;
+}
+.who ul li:first-child{border-top:0;}
+.who ul .b{width:16px;height:16px;background:var(--blue);border:1.5px solid var(--ink);border-radius:4px;
+  margin-top:5px;}
+.who.scn ul .b{background:var(--coral);border-radius:50%;}
+
+/* ---------- boundary ---------- */
+.boundary{
+  border:var(--bd);border-left:10px solid var(--red);background:#FFF9F8;border-radius:16px;
+  box-shadow:var(--sh-sm);padding:24px 28px;margin-top:34px;
+}
+.boundary .t{
+  font-family:var(--mono);font-size:11.5px;font-weight:900;letter-spacing:.16em;color:var(--red);
+  margin-bottom:10px;
+}
+.boundary p{margin:0;font-size:15px;color:var(--ink-2);}
+.boundary p+p{margin-top:10px;}
+
+/* ---------- CTA ---------- */
+.cta-sec{padding-bottom:96px;}
+.cta-box{
+  border:var(--bd);border-radius:24px;background:var(--ink);color:#fff;box-shadow:7px 7px 0 var(--coral);
+  padding:56px 44px;text-align:center;position:relative;overflow:hidden;
+}
+.cta-box h2{
+  font-family:var(--mono);font-size:clamp(30px,5.4vw,62px);font-weight:900;letter-spacing:.02em;
+  margin:0 0 18px;line-height:1;
+}
+.cta-box .sub{font-size:17px;color:#C9C9C2;margin:0 auto 26px;max-width:620px;}
+.cta-link{
+  display:inline-block;background:var(--yellow);color:var(--ink);font-weight:900;font-size:16px;
+  text-decoration:none;border:var(--bd);border-radius:12px;padding:13px 26px;box-shadow:4px 4px 0 var(--coral);
+  word-break:break-all;transition:.14s;
+}
+.cta-link:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--coral);}
+.cta-io{
+  display:inline-block;text-align:left;margin-top:30px;background:#22221F;border:2px solid #4A4A45;
+  border-radius:14px;padding:20px 26px;max-width:640px;
+}
+.cta-io p{margin:0 0 10px;font-size:15px;color:#D5D5CE;}
+.cta-io p:last-child{margin:0;}
+.cta-io b{color:var(--yellow);}
+.cta-deco{position:absolute;pointer-events:none;}
+.cta-deco.d1{left:-30px;top:-30px;width:120px;height:120px;border:3px solid #3A3A35;border-radius:50%;}
+.cta-deco.d2{right:-20px;bottom:-40px;width:150px;height:150px;background:var(--blue);
+  border:3px solid #4A4A45;border-radius:24px;transform:rotate(14deg);}
+
+/* ---------- footer ---------- */
+footer{border-top:2.5px solid var(--ink);background:var(--paper-warm);padding:34px 0 44px;}
+footer p{margin:0 0 9px;font-size:13px;color:var(--ink-3);font-family:var(--mono);line-height:1.7;}
+footer a{color:var(--ink);}
+footer b{color:var(--ink-2);}
+
+/* ===== Finch 宿主兼容层：不透明页面容器 + 禁止内部滚动 ===== */
+.finch-page{margin:0;background:var(--cream);color:var(--ink); font-family:var(--sans);font-size:16.5px;line-height:1.72; -webkit-font-smoothing:antialiased;  overflow:visible}
+.finch-page img,.finch-page video{max-width:100%;height:auto}
+pre.out,pre.code{white-space:pre-wrap;overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<div class="finch-page">
+
+<!-- ================= TOPBAR ================= -->
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <div class="logo">
+      <span class="logo-mark">O</span>
+      <div><b>Ontology</b><br><span>类型化知识图谱 · v1.0.4 · MIT-0</span></div>
+    </div>
+    <nav class="nav">
+      <a href="#ba">前后对比</a>
+      <a href="#cap">核心能力</a>
+      <a href="#cases">真实案例</a>
+      <a href="#how">怎么用</a>
+      <a href="#who">适合谁</a>
+      <a href="#cta">获取</a>
+    </nav>
+  </div>
+</header>
+
+<div class="ticker">
+  <div class="ticker-track">
+    <span>16 类实体</span><i>✦</i><span>15 类关系</span><i>✦</i><span>5 类约束</span><i>✦</i><span>仅写入两个本地文件</span><i>✦</i><span>不联网</span><i>✦</i><span>路径越界已实测拦截</span><i>✦</i><span>MIT-0</span><i>✦</i>
+    <span>16 类实体</span><i>✦</i><span>15 类关系</span><i>✦</i><span>5 类约束</span><i>✦</i><span>仅写入两个本地文件</span><i>✦</i><span>不联网</span><i>✦</i><span>路径越界已实测拦截</span><i>✦</i><span>MIT-0</span><i>✦</i>
+  </div>
+</div>
+
+<!-- ================= 1. HERO ================= -->
+<section class="hero">
+  <div class="hero-bgword">ONTOLOGY</div>
+  <div class="wrap hero-grid">
+
+    <div>
+      <p class="eyebrow">一个给 AI Agent 的 Skill</p>
+      <h1>记得住文字，<br>记不住<span class="hl">关系</span>？</h1>
+      <p class="hero-lead">
+        给 Agent 的记忆装一副骨架。用 <b>create</b> 和 <b>relate</b> 把人、项目、任务存成
+        <b>16 类实体</b>与 <b>15 类关系</b>，再用一次 <b>validate</b> 检查必填、枚举、禁填、基数、无环。
+        你得到的不是又一份 Markdown，而是一张能追问、能遍历、也能被别的 Skill 直接读写的图。
+      </p>
+
+      <div class="sticker-row">
+        <span class="sticker blue r1">16 类实体</span>
+        <span class="sticker coral r2">15 类关系</span>
+        <span class="sticker yellow r3">5 类约束</span>
+        <span class="sticker black r1">MIT-0</span>
+      </div>
+
+      <div class="cta-row">
+        <a class="btn blue" href="https://clawhub.ai/oswalpalash/skills/ontology" target="_blank" rel="noopener">前往官方 Skill 页面 <span class="ar">→</span></a>
+        <a class="btn paper" href="https://github.com/FinchipAIOrg/ontology" target="_blank" rel="noopener">GitHub 仓库</a>
+      </div>
+      <p class="btn-note">一条命令接入 · 开源免费 · 需要 Python 3.10 及以上</p>
+    </div>
+
+    <div class="collage">
+      <svg class="arrow-1" viewBox="0 0 100 60" aria-hidden="true">
+        <path d="M4,52 C30,54 62,40 84,12" stroke="#E5342B" stroke-width="3" fill="none" stroke-dasharray="7 5"/>
+        <path d="M74,10 L86,10 L86,23" stroke="#E5342B" stroke-width="3" fill="none"/>
+        <text x="34" y="30" font-family="monospace" font-size="10" font-weight="700" fill="#E5342B" transform="rotate(-24 34 30)">命令流入</text>
+      </svg>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span>TERMINAL · 本次会话真实命令</span>
+        </div>
+        <div class="term" id="term">
+            <div class="l cmd on"><span class="ps">$</span> <span>ontology create --type Person  --props '{"name":"Alice"}'</span></div>
+            <div class="l out on"><span class="out">  → pers_b1124baf</span></div>
+            <div class="l cmd on"><span class="ps">$</span> <span>ontology create --type Project --props '{"name":"官网改版","status":"active"}'</span></div>
+            <div class="l out on"><span class="out">  → proj_8a0b4a79</span></div>
+            <div class="l cmd on"><span class="ps">$</span> <span>ontology create --type Task    --props '{"title":"重写首页文案","status":"open"}'</span></div>
+            <div class="l out on"><span class="out">  → task_cfe03b86</span></div>
+            <div class="l cmd on"><span class="ps">$</span> <span>ontology relate --from proj_8a0b4a79 --rel has_task --to task_cfe03b86</span></div>
+            <div class="l cmd on"><span class="ps">$</span> <span>ontology relate --from proj_8a0b4a79 --rel has_owner --to pers_b1124baf</span></div>
+            <div class="l cmd on"><span class="ps">$</span> <span>ontology relate --from task_cfe03b86 --rel assigned_to --to pers_b1124baf</span></div>
+            <div class="l cmd on"><span class="ps">$</span> <span>ontology validate</span></div>
+            <div class="l ok on"><span class="ok">  ✓ Graph is valid.</span></div>
+            <div class="l cmd on"><span class="ps">$</span> <span class="cb done">&nbsp;</span></div>
+          </div>
+      </div>
+
+      <div class="card graph-card">
+        <div class="card-head">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span>KNOWLEDGE GRAPH · 随命令生长</span>
+        </div>
+        <div class="graph-pane">
+          <svg viewBox="0 0 400 250" role="img" aria-label="知识图谱随命令生长">
+            <defs>
+              <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#111"></path>
+              </marker>
+            </defs>
+            <g class="ge on" id="e1"><path class="edg" d="M112,84 C104,112 102,138 104,166" marker-end="url(#ah)"></path>
+              <rect class="elbg" x="8" y="112" width="84" height="18" rx="5"></rect>
+              <text class="elb" x="16" y="125">has_owner</text></g>
+            <g class="ge on" id="e2"><path class="edg" d="M196,62 C232,78 258,116 274,158" marker-end="url(#ah)"></path>
+              <rect class="elbg" x="216" y="52" width="76" height="18" rx="5"></rect>
+              <text class="elb" x="224" y="65">has_task</text></g>
+            <g class="ge on" id="e3"><path class="edg" d="M226,196 C200,222 168,218 182,198" marker-end="url(#ah)"></path>
+              <rect class="elbg" x="176" y="216" width="88" height="18" rx="5"></rect>
+              <text class="elb" x="184" y="229">assigned_to</text></g>
+
+            <g class="gn on" id="n1">
+              <rect class="nb j" x="52" y="26" width="144" height="58" rx="12"></rect>
+              <text class="nty" x="68" y="48">PROJECT</text>
+              <text class="nnm" x="68" y="69">官网改版</text>
+            </g>
+            <g class="gn on" id="n2">
+              <rect class="nb p" x="34" y="166" width="140" height="58" rx="12"></rect>
+              <text class="nty" x="50" y="188">PERSON</text>
+              <text class="nnm" x="50" y="209">Alice</text>
+            </g>
+            <g class="gn on" id="n3">
+              <rect class="nb t" x="226" y="166" width="146" height="58" rx="12"></rect>
+              <text class="nty" x="242" y="188">TASK</text>
+              <text class="nnm" x="242" y="209">重写首页文案</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="float-sticker fs-1"><span class="sticker red r2">路径越界已拦截</span></div>
+      <div class="float-sticker fs-2"><span class="sticker coral r1">0 violations</span></div>
+
+      <div class="statusbar on" id="status">
+        <span>✓ Graph is valid. &nbsp; 3 entities · 3 relations · 0 violations</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= 2. BEFORE / AFTER ================= -->
+<section id="ba">
+  <div class="sec-num">02</div>
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Before / After</p>
+      <h2>从在文字里翻关系，<br>到沿一条命名关系直接取回答案</h2>
+      <p>右栏的 Prompt 与 Output 均为本次会话实际运行所得，逐字引用，未做修饰。</p>
+    </div>
+
+    <div class="ba-wrap">
+      <div class="ba-col bef">
+        <div class="ba-title"><span>BEFORE</span><span>用 Skill 之前</span></div>
+        <div class="ba-body">
+          <ul class="pain-list">
+            <li><span class="x">✕</span><span><b>记忆是一段段文本，关系靠脑补。</b>写着"Alice 负责官网改版"，但"负责"是负责人、执行人还是被顺带提到，机器读不出来。</span></li>
+            <li><span class="x">✕</span><span><b>状态字段想怎么写怎么写。</b>同一个状态写成"进行中""doing""in progress"三种样子，等下游技能读到才出问题。</span></li>
+            <li><span class="x">✕</span><span><b>每个技能各存各的文件。</b>邮件技能写下的承诺，任务技能根本读不到，只能手写转换代码，或者你自己当搬运工。</span></li>
+            <li><span class="x">✕</span><span><b>问一句关系，翻一遍历史。</b>想确认"这个项目谁负责"，只能翻聊天记录，靠关键词碰运气。</span></li>
+            <li><span class="x">✕</span><span><b>上下文一关，关系就没了。</b>下次开会前还得重新讲一遍谁负责什么、什么卡着什么。</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ba-col aft">
+        <div class="ba-title"><span>AFTER</span><span>Skill 实际运行后</span></div>
+        <div class="ba-body">
+          <div class="io-block">
+            <div class="io-label"><span class="sq"></span>PROMPT · 你输入的命令</div>
+            <div class="io-body prompt">ontology create --type Person  --props '{"name":"Alice"}'
+ontology create --type Project --props '{"name":"官网改版","status":"active"}'
+ontology create --type Task    --props '{"title":"重写首页文案","status":"open"}'
+ontology relate --from proj_8a0b4a79 --rel has_task    --to task_cfe03b86
+ontology relate --from proj_8a0b4a79 --rel has_owner   --to pers_b1124baf
+ontology relate --from task_cfe03b86 --rel assigned_to --to pers_b1124baf
+ontology validate</div>
+          </div>
+
+          <div class="io-block">
+            <div class="io-label o"><span class="sq"></span>OUTPUT · 真实返回</div>
+            <pre class="out"><span class="ok">✓ Graph is valid.</span>
+
+3 个实体落盘：
+  pers_b1124baf  Person   Alice
+  proj_8a0b4a79  Project  官网改版
+  task_cfe03b86  Task     重写首页文案
+
+3 条关系建立：
+  proj_8a0b4a79 --has_task--&gt;    task_cfe03b86
+  proj_8a0b4a79 --has_owner--&gt;   pers_b1124baf
+  task_cfe03b86 --assigned_to--&gt; pers_b1124baf</pre>
+          </div>
+
+          <div class="io-block" style="margin-bottom:0">
+            <div class="io-label o"><span class="sq"></span>RESULT</div>
+            <div class="result-strip">
+              <span class="r g">0 violations</span>
+              <span class="r">3 entities</span>
+              <span class="r">3 relations</span>
+              <span class="r">2 个本地文件</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mini">
+      <div class="mini-row">
+        <span class="mini-no">01</span>
+        <span class="mini-b">在几十条记忆里翻"谁负责这个项目"</span>
+        <span class="arw">→</span>
+        <span class="mini-a"><b>related --rel has_owner</b> 一步返回负责人实体</span>
+      </div>
+      <div class="mini-row">
+        <span class="mini-no">02</span>
+        <span class="mini-b">用到才发现数据缺字段、枚举写错</span>
+        <span class="arw">→</span>
+        <span class="mini-a"><b>validate</b> 一次列出全部违规，指出 id 与字段名</span>
+      </div>
+      <div class="mini-row">
+        <span class="mini-no">03</span>
+        <span class="mini-b">为每对技能组合单独写格式转换</span>
+        <span class="arw">→</span>
+        <span class="mini-a">共享同一份图，各技能<b>按声明的类型读写</b></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3. 核心能力 ================= -->
+<section id="cap" style="background:var(--paper-warm);border-top:2.5px solid var(--ink);border-bottom:2.5px solid var(--ink)">
+  <div class="sec-num">03</div>
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Core Capabilities</p>
+      <h2>六件事，它替你做扎实</h2>
+      <p>实体类型与关系类型数量来自技能自带的 schema 参考文档，逐条清点。</p>
+    </div>
+
+    <div class="cap-grid">
+      <div class="cap">
+        <div class="cap-no">01</div>
+        <div class="cap-mark" style="background:var(--blue-soft)">
+          <svg width="24" height="24" viewBox="0 0 24 24"><rect x="2" y="2" width="9" height="9" fill="#2B44FF" stroke="#111" stroke-width="2"/><rect x="13" y="13" width="9" height="9" fill="#FF7A66" stroke="#111" stroke-width="2"/><rect x="13" y="2" width="9" height="9" fill="#FFD23F" stroke="#111" stroke-width="2"/></svg>
+        </div>
+        <h3>带类型的实体</h3>
+        <p>Person、Project、Task、Event、Document、Credential 等 16 类，每类都有明确的必填字段与属性类型，不是随便塞进去的一段话。</p>
+        <div class="cap-tags"><span>16 类</span><span>必填字段</span><span>ref 引用</span></div>
+      </div>
+
+      <div class="cap">
+        <div class="cap-no">02</div>
+        <div class="cap-mark" style="background:var(--coral-soft)">
+          <svg width="24" height="24" viewBox="0 0 24 24"><circle cx="5" cy="12" r="3.2" fill="#FF7A66" stroke="#111" stroke-width="2"/><circle cx="19" cy="12" r="3.2" fill="#2B44FF" stroke="#111" stroke-width="2"/><path d="M8 12 H16" stroke="#111" stroke-width="2.4"/></svg>
+        </div>
+        <h3>命名关系</h3>
+        <p>15 类关系各自声明从什么类型连到什么类型。has_owner、has_task、blocks 不是字符串标签，是可遍历、可校验的边。</p>
+        <div class="cap-tags"><span>15 类</span><span>正向遍历</span><span>反向遍历</span></div>
+      </div>
+
+      <div class="cap">
+        <div class="cap-no">03</div>
+        <div class="cap-mark" style="background:var(--yellow)">
+          <svg width="24" height="24" viewBox="0 0 24 24"><path d="M12 2 L22 20 H2 Z" fill="#FFD23F" stroke="#111" stroke-width="2"/><path d="M12 9 v5" stroke="#111" stroke-width="2.4"/><circle cx="12" cy="17" r="1.2" fill="#111"/></svg>
+        </div>
+        <h3>五类约束</h3>
+        <p>必填、枚举、禁填、基数、无环。秘钥类实体强制只存 secret_ref，明文 password 会被点名拦下。</p>
+        <div class="cap-tags"><span>必填</span><span>枚举</span><span>禁填</span><span>基数</span><span>无环</span></div>
+      </div>
+
+      <div class="cap">
+        <div class="cap-no">04</div>
+        <div class="cap-mark" style="background:#DFF5E6">
+          <svg width="24" height="24" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="#111" stroke-width="2.4"/><path d="M16.5 16.5 L22 22" stroke="#111" stroke-width="2.8"/></svg>
+        </div>
+        <h3>一次体检列全</h3>
+        <p>validate 报出实体 id、字段名和具体原因，而不是笼统一句"数据有问题"。实测中五类违规在同一次调用里被分别点名。</p>
+        <div class="cap-tags"><span>validate</span><span>定位到 id</span></div>
+      </div>
+
+      <div class="cap">
+        <div class="cap-no">05</div>
+        <div class="cap-mark" style="background:var(--blue-soft)">
+          <svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="5" r="3" fill="#2B44FF" stroke="#111" stroke-width="2"/><circle cx="5" cy="19" r="3" fill="#FF7A66" stroke="#111" stroke-width="2"/><circle cx="19" cy="19" r="3" fill="#FFD23F" stroke="#111" stroke-width="2"/><path d="M12 8 L5 16 M12 8 L19 16 M8 19 H16" stroke="#111" stroke-width="2"/></svg>
+        </div>
+        <h3>跨技能共享</h3>
+        <p>每个技能声明读哪些类型、写哪些类型，共享同一份图谱。新增技能不必改动已有技能，也不会改坏已有数据格式。</p>
+        <div class="cap-tags"><span>reads</span><span>writes</span><span>无需胶水代码</span></div>
+      </div>
+
+      <div class="cap">
+        <div class="cap-no">06</div>
+        <div class="cap-mark" style="background:var(--paper-warm)">
+          <svg width="24" height="24" viewBox="0 0 24 24"><path d="M4 3 h11 l5 5 v13 H4 Z" fill="#fff" stroke="#111" stroke-width="2"/><path d="M15 3 v5 h5" fill="none" stroke="#111" stroke-width="2"/><path d="M7 13 h10 M7 17 h7" stroke="#111" stroke-width="2"/></svg>
+        </div>
+        <h3>两个纯文本文件</h3>
+        <p>只落进工作区的 graph.jsonl 与 schema.yaml。JSONL 一行一次操作，可 diff、可回滚、可进版本库。脚本不联网，不读身份与凭据文件。</p>
+        <div class="cap-tags"><span>graph.jsonl</span><span>schema.yaml</span><span>可 diff</span></div>
+      </div>
+    </div>
+
+    <div class="boundary">
+      <div class="t">需要说清楚的边界</div>
+      <p>create 和 relate 写入时不拦截，违规数据会先落盘，由 validate 统一检查。这一点在实测中已确认：缺必填字段和错误枚举值都成功写入，随后才被 validate 报出。想要写入即校验，需要在外面再包一层。</p>
+      <p>另外，文档里提到的任务状态流转校验与孤立任务告警，在当前代码中尚未实现。无环约束需要在 schema 中显式声明才会生效。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4. 真实案例 ================= -->
+<section id="cases">
+  <div class="sec-num">04</div>
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Real Cases</p>
+      <h2>三个真实输出</h2>
+      <p>前两个案例的命令、输入与返回来自本次会话实际运行；第三个依据技能文档，尚未实测，已明确标注。</p>
+    </div>
+
+    <div class="case-stack">
+
+      <!-- case 1 -->
+      <div class="case">
+        <div class="case-top b1">
+          <span class="case-big">01</span>
+          <div class="case-meta">
+            <span class="tagline real">本次会话实测</span>
+            <h3>三个实体三条关系，一次建起来</h3>
+            <p>3 条 create 加 3 条 relate，人、项目、任务之间就有了可遍历的连接。</p>
+          </div>
+        </div>
+        <div class="case-body">
+          <div class="case-grid">
+            <div>
+              <div class="io-label"><span class="sq"></span>INPUT</div>
+              <div class="io-body prompt">create --type Person  --props '{"name":"Alice"}'
+create --type Project --props '{"name":"官网改版","status":"active"}'
+create --type Task    --props '{"title":"重写首页文案","status":"open"}'
+relate proj → has_task    → task
+relate proj → has_owner   → person
+relate task → assigned_to → person</div>
+            </div>
+            <div>
+              <div class="io-label o"><span class="sq"></span>OUTPUT</div>
+              <pre class="code">$ ontology validate
+<span class="ok">Graph is valid.</span>
+
+$ ontology related --id proj_8a0b4a79 --rel has_task
+<span class="c">[</span>
+  <span class="c">{</span>
+    "relation": "has_task",
+    "entity": <span class="c">{</span>
+      "id": "task_cfe03b86",
+      "type": "Task",
+      "title": "重写首页文案",
+      "status": "open"
+    <span class="c">}</span>
+  <span class="c">}</span>
+<span class="c">]</span></pre>
+            </div>
+          </div>
+          <div class="case-why"><b>为什么重要：</b>问"这个项目的负责人是谁"，走一条关系就有答案，不必再翻历史记录。遍历可以正向也可以反向。</div>
+        </div>
+      </div>
+
+      <!-- case 2 -->
+      <div class="case">
+        <div class="case-top b2">
+          <span class="case-big">02</span>
+          <div class="case-meta">
+            <span class="tagline real">本次会话实测</span>
+            <h3>五类违规，一次 validate 全部抓出来</h3>
+            <p>故意写入脏数据：缺字段、错枚举、明文密码、任务成环、基数超限。</p>
+          </div>
+        </div>
+        <div class="case-body">
+          <div class="case-grid">
+            <div>
+              <div class="io-label"><span class="sq"></span>INPUT · 故意写入的脏数据</div>
+              <div class="io-body prompt">create Task       # 故意不写 status
+create Task       # status 写成 "随便填的"
+create Credential # 带明文 password
+relate A blocks B, B blocks A   # 造环
+relate 两个 Project 复用同一个 Task</div>
+            </div>
+            <div>
+              <div class="io-label o"><span class="sq"></span>OUTPUT · 真实返回（逐字）</div>
+              <pre class="code">$ ontology validate
+Validation errors:
+  <span class="e">- task_e380e66d: missing required property 'status'</span>
+  <span class="e">- task_92b1e18c: 'status' must be one of
+    ['open','in_progress','blocked','done'],
+    got '随便填的'</span>
+  <span class="e">- cred_7d3a06ab: contains forbidden property 'password'</span>
+  <span class="e">- blocks: cyclic dependency detected</span>
+  <span class="e">- has_task: to entity task_cfe03b86
+    violates cardinality one_to_many</span></pre>
+            </div>
+          </div>
+          <div class="case-why"><b>为什么重要：</b>五类约束在同一次调用里各自报出了位置和原因，而不是笼统一句失败。秘钥类实体的明文 password 被点名拦下，成环依赖也被识别。</div>
+        </div>
+      </div>
+
+      <!-- case 3 -->
+      <div class="case">
+        <div class="case-top b3">
+          <span class="case-big">03</span>
+          <div class="case-meta">
+            <span class="tagline plan">文档支持 · 未实测</span>
+            <h3>跨技能共享同一份状态</h3>
+            <p>邮件技能写下的承诺，任务技能按类型直接查询接手。</p>
+          </div>
+        </div>
+        <div class="case-body">
+          <div class="case-grid">
+            <div>
+              <div class="io-label"><span class="sq"></span>INPUT</div>
+              <div class="io-body prompt"># 邮件技能写入
+commitment = create("Commitment", {
+  "source_message": msg_id,
+  "description": "周五前发报告",
+  "due": "2026-01-31"
+})</div>
+            </div>
+            <div>
+              <div class="io-label o"><span class="sq"></span>OUTPUT</div>
+              <div class="io-body prompt"># 任务技能接手
+tasks = query("Commitment",
+              {"status": "pending"})
+for c in tasks:
+    create("Task", {
+      "title": c.description,
+      "due": c.due
+    })</div>
+            </div>
+          </div>
+          <div class="case-why"><b>为什么重要：</b>两个技能不需要互相认识，也不必为这个组合单独写转换代码，只要各自声明读写的实体类型。此案例来自技能文档，尚未在本次会话实测。</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5. HOW IT WORKS ================= -->
+<section id="how" style="background:var(--paper-warm);border-top:2.5px solid var(--ink);border-bottom:2.5px solid var(--ink)">
+  <div class="sec-num">05</div>
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">How It Works</p>
+      <h2>五步，从零到一张能校验的图</h2>
+      <p>你提供实体和关系，Skill 按类型写进工作区，每行一次操作，追加而不是覆盖。</p>
+    </div>
+
+    <div class="how">
+      <div class="how-step">
+        <div class="how-no">1</div>
+        <h4>定规则</h4>
+        <p>用 schema-append 写入必填字段、枚举取值、禁填字段、关系基数和是否要求无环。</p>
+        <code>schema-append --data '{...}'</code>
+      </div>
+      <div class="how-step">
+        <div class="how-no">2</div>
+        <h4>建实体</h4>
+        <p>指定类型和属性，返回带 id 与创建时间的实体。</p>
+        <code>create --type Person --props '{"name":"Alice"}'</code>
+      </div>
+      <div class="how-step">
+        <div class="how-no">3</div>
+        <h4>连关系</h4>
+        <p>关系类型来自 15 类预定义关系，各自限定了从什么类型连到什么类型。</p>
+        <code>relate --from proj_xxx --rel has_owner --to pers_xxx</code>
+      </div>
+      <div class="how-step">
+        <div class="how-no">4</div>
+        <h4>取答案</h4>
+        <p>query 按类型条件筛，get 按 id 取，related 沿某类关系遍历。</p>
+        <code>related --id proj_xxx --rel has_task</code>
+      </div>
+      <div class="how-step">
+        <div class="how-no">5</div>
+        <h4>做体检</h4>
+        <p>一次列出全部违规，指出实体 id、字段名和具体原因。</p>
+        <code>validate</code>
+      </div>
+    </div>
+
+    <div class="how-out">
+      <span class="chip">graph.jsonl</span>
+      <span class="arrow">→</span>
+      <span class="chip">schema.yaml</span>
+      <span class="arrow">→</span>
+      <span class="chip" style="background:var(--yellow)">可 diff · 可回滚 · 可进版本库</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 6. 目标用户与场景 ================= -->
+<section id="who">
+  <div class="sec-num">06</div>
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Who &amp; When</p>
+      <h2>谁该用它，用在什么场景</h2>
+    </div>
+
+    <div class="who-grid">
+      <div class="who">
+        <div class="who-face" style="background:var(--blue-soft)">
+          <svg width="26" height="26" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="2" fill="#fff" stroke="#111" stroke-width="2"/><path d="M8 21 h8" stroke="#111" stroke-width="2"/><path d="M6 9 h6 M6 13 h4" stroke="#2B44FF" stroke-width="2"/></svg>
+        </div>
+        <h3>搭多 Agent 系统的开发者</h3>
+        <p class="role">PRIMARY USER</p>
+        <p>你要让几个技能接力完成一条流程：抓公告的技能产出的东西，分析技能要能直接用；分析技能写下的结论，报告技能要能取到。现在这些衔接全靠手工拼。</p>
+        <ul>
+          <li><span class="b"></span><span>抓公告 → 建实体 → 触发分析 → 生成报告</span></li>
+          <li><span class="b"></span><span>多个技能通过图谱交换状态，不靠传参</span></li>
+          <li><span class="b"></span><span>新增技能不必改动已有技能</span></li>
+        </ul>
+      </div>
+
+      <div class="who scn">
+        <div class="who-face" style="background:var(--coral-soft)">
+          <svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="#fff" stroke="#111" stroke-width="2"/><path d="M4 21 c0-4.5 3.6-7 8-7 s8 2.5 8 7" fill="#fff" stroke="#111" stroke-width="2"/></svg>
+        </div>
+        <h3>受够了反复重讲的进阶用户</h3>
+        <p class="role">SECONDARY USER</p>
+        <p>你的 Agent 记得住零散事实，却答不出"谁在负责这件事"。每次新开会话，关系和上下文都要重讲一遍，讲过的内容散落在几十条记忆里，越积越难找。</p>
+        <ul>
+          <li><span class="b"></span><span>长期人物与项目档案，跨会话保持</span></li>
+          <li><span class="b"></span><span>多步任务规划，依赖可查无环</span></li>
+          <li><span class="b"></span><span>邮件承诺追踪，链条可追溯</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mini" style="margin-top:34px">
+      <div class="mini-row">
+        <span class="mini-no">场景</span>
+        <span class="mini-b">长期人物 / 项目档案</span>
+        <span class="arw">→</span>
+        <span class="mini-a">人、组织、项目互联互通，"这个项目谁负责"一跳就到</span>
+      </div>
+      <div class="mini-row">
+        <span class="mini-no">场景</span>
+        <span class="mini-b">多步任务规划</span>
+        <span class="arw">→</span>
+        <span class="mini-a">计划建模成一串图操作，每步可校验，依赖能查无环</span>
+      </div>
+      <div class="mini-row">
+        <span class="mini-no">场景</span>
+        <span class="mini-b">跨技能协作</span>
+        <span class="arw">→</span>
+        <span class="mini-a">技能间通过图共享状态，不靠传参</span>
+      </div>
+      <div class="mini-row">
+        <span class="mini-no">场景</span>
+        <span class="mini-b">联系人 / 日程管理</span>
+        <span class="arw">→</span>
+        <span class="mini-a">Event、Location、attendee 关系天然适合</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 7. CTA ================= -->
+<section id="cta" class="cta-sec">
+  <div class="wrap">
+    <div class="cta-box">
+      <div class="cta-deco d1"></div>
+      <div class="cta-deco d2"></div>
+      <h2>ONTOLOGY</h2>
+      <p class="sub">给 Agent 的记忆装一副骨架。记住关系，不只是记住文字。</p>
+      <a class="cta-link" href="https://clawhub.ai/oswalpalash/skills/ontology" target="_blank" rel="noopener">clawhub.ai/oswalpalash/skills/ontology</a>
+      <div class="cta-io">
+        <p><b>你要提供的：</b>想让 Agent 记住的实体，以及它们之间的对应关系。可选再补一份规则，指定哪些字段必填、状态只能取哪些值。</p>
+        <p><b>你会得到的：</b>一张持久化、可校验、能被别的 Skill 直接读写的知识图谱，外加一份随时可体检的规则文件。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><b>官方 Skill 页面：</b><a href="https://clawhub.ai/oswalpalash/skills/ontology" target="_blank" rel="noopener">clawhub.ai/oswalpalash/skills/ontology</a>　·　发布者 oswalpalash　·　版本 1.0.4　·　许可 MIT-0</p>
+    <p><b>证据说明：</b>16 类实体、15 类关系来自技能自带 schema 参考文档逐条清点；标注"本次会话实测"的命令与返回来自本页制作过程中的真实运行，逐字引用。案例卡片为真实输出的排版呈现，非软件界面截图。</p>
+  </div>
+</footer>
+
+
+
+</div>
+</body>
+</html>
