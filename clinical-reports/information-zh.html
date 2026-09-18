@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Clinical Reports｜本地、可追溯、审查优先的临床报告结构</title><meta name="description" content="Clinical Reports 组织已经验证且被授权的 synthetic、de-identified 或 aggregate facts，并让缺失、冲突与未完成复核保持可见。它不是 AI doctor，也不替任何专业人员下结论。"><style>
+:root{--ink:#06111f;--navy:#081a2c;--blue:#0c4e86;--cyan:#42d6eb;--teal:#33c9aa;--slate:#6f8294;--paper:#f5f8fb;--white:#fff;--line:#cddae5;--amber:#e5a93d;--red:#d55f55;--shadow:0 22px 60px rgba(4,22,38,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB",Arial,sans-serif;line-height:1.55}a{color:inherit}img{display:block;max-width:100%}code,pre,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace}.wrap{width:min(1180px,calc(100% - 40px));margin:auto}.nav{display:flex;align-items:center;justify-content:space-between;padding:24px 0;color:#d9e7f2}.brand{display:flex;gap:12px;align-items:center;font-weight:800;letter-spacing:.02em}.brandmark{width:34px;height:34px;border-radius:11px;border:1px solid #55d9e0;display:grid;place-items:center;color:#64e5df;background:#0d2a40}.navlinks{display:flex;gap:22px;font-size:13px;color:#9fb5c8}.hero{background:radial-gradient(circle at 80% 15%,rgba(30,121,165,.34),transparent 29%),linear-gradient(140deg,#06111f,#0a2035 70%,#071421);min-height:780px;overflow:hidden}.hero-grid{display:grid;grid-template-columns:.93fr 1.07fr;gap:56px;align-items:center;padding:76px 0 96px}.eyebrow{display:inline-flex;align-items:center;gap:10px;color:#62e1e7;font-size:12px;letter-spacing:.15em;text-transform:uppercase;font-weight:800}.eyebrow:before{content:"";width:34px;height:1px;background:#62e1e7}.hero h1{margin:20px 0 18px;color:white;font-size:clamp(58px,7vw,96px);line-height:.92;letter-spacing:-.065em}.hero .lead{color:#c4d7e5;font-size:19px;max-width:640px}.hero .sub{color:#88a2b7;max-width:610px}.badges{display:flex;gap:9px;flex-wrap:wrap;margin-top:28px}.badge{border:1px solid #31506a;color:#b9cfdd;padding:8px 11px;border-radius:8px;font:700 11px var(--mono);letter-spacing:.05em;background:#0b1c2b}.hero-visual{position:relative;border:1px solid #2f5069;border-radius:26px;background:linear-gradient(145deg,rgba(15,42,62,.86),rgba(5,17,28,.93));padding:28px;box-shadow:0 40px 100px rgba(0,0,0,.36)}.visual-head{display:flex;align-items:center;justify-content:space-between;color:#d5e7f2;margin-bottom:24px}.live{display:flex;align-items:center;gap:8px;font-size:12px;color:#7ce8d4}.live:before{content:"";width:8px;height:8px;border-radius:50%;background:#46dfb9;box-shadow:0 0 14px #46dfb9}.pipeline{display:grid;grid-template-columns:1fr 28px 1fr;gap:10px;align-items:center}.node{min-height:112px;border:1px solid #31516a;border-radius:15px;background:#081827;padding:16px}.node b{display:block;color:#f1f7fb;font-size:13px}.node span{display:block;color:#7995a9;font:12px/1.45 var(--mono);margin-top:10px}.arrow{color:#45d6e2;text-align:center}.reviewbar{margin-top:14px;border:1px solid #7d6631;border-radius:14px;background:#211c12;color:#f0c56e;padding:14px 16px;font:700 12px var(--mono)}
+.before-after{margin-top:-48px;position:relative;z-index:3;padding-bottom:98px}.ba-shell{display:grid;grid-template-columns:.86fr 1.14fr;border-radius:26px;overflow:hidden;box-shadow:var(--shadow);border:1px solid #c9d7e1;background:white}.before{padding:38px;background:#0a1d30;color:white}.after{padding:38px;background:white}.tag{font:800 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#5bdce1}.before ul{padding:0;margin:28px 0 0;list-style:none}.before li{padding:13px 0;border-bottom:1px solid #223c52;color:#b8ccdc}.after-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:20px 0}.step{border:1px solid var(--line);border-radius:11px;padding:12px 8px;text-align:center;font:700 11px var(--mono);background:#f7fbfd}.step.alert{border-color:#ddb86c;background:#fff9ee;color:#8e6719}.result-strip{display:flex;gap:10px;flex-wrap:wrap}.result-chip{padding:8px 10px;border-radius:8px;background:#e9f7f5;color:#167463;font:800 11px var(--mono)}.result-chip.block{background:#fff0ed;color:#9f4038}.section{padding:104px 0}.section.dark{background:#071421;color:white}.section-head{display:grid;grid-template-columns:.75fr 1.25fr;gap:40px;margin-bottom:48px}.section h2{margin:0;font-size:clamp(38px,5vw,66px);line-height:1;letter-spacing:-.045em}.section-intro{color:#64788b;font-size:17px;max-width:720px}.dark .section-intro{color:#9bb1c2}.cap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.cap{background:white;border:1px solid var(--line);border-radius:18px;padding:24px;min-height:220px;box-shadow:0 10px 28px rgba(5,24,40,.05)}.cap .num{color:#1588a1;font:800 12px var(--mono)}.cap h3{font-size:20px;margin:38px 0 10px}.cap p{color:#65798b;margin:0}.route{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:stretch}.route-step{position:relative;border:1px solid #2d4c64;border-radius:15px;background:#0a1d2e;padding:19px 13px;color:#e8f2f8;min-height:142px}.route-step small{display:block;color:#58dce2;font:800 11px var(--mono);margin-bottom:16px}.route-step p{color:#9bb1c2;font-size:13px;margin:0}.route-step.warn{border-color:#745f32;background:#211c12}.principle{margin-top:28px;padding:18px 20px;border-left:3px solid #e8ad42;background:#171b1e;color:#e6c578}.cases{background:#edf3f7}.case{background:white;border:1px solid var(--line);border-radius:26px;overflow:hidden;margin-bottom:32px;box-shadow:0 18px 42px rgba(4,27,46,.07)}.case-head{padding:30px 32px;display:grid;grid-template-columns:90px 1fr auto;gap:20px;align-items:start;border-bottom:1px solid var(--line)}.case-no{font:800 42px var(--mono);color:#c8d8e3}.case h3{font-size:28px;margin:0 0 8px}.case-desc{color:#697c8c;margin:0}.data-class{border:1px solid #9ccfd0;color:#17766e;background:#edfbf9;padding:8px 11px;border-radius:8px;font:800 11px var(--mono)}.case-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}.case-grid>div{padding:28px 32px;border-bottom:1px solid var(--line)}.case-grid>div:nth-child(odd){border-right:1px solid var(--line)}.label{font:800 11px var(--mono);letter-spacing:.13em;text-transform:uppercase;color:#187f96;margin-bottom:12px}.promptbox{font-size:14px;color:#304657}.codebox{margin:0;background:#071521;color:#c4d9e7;border-radius:14px;padding:18px;white-space:pre-wrap;overflow:auto;font-size:11.5px;line-height:1.55;max-height:330px}.case-output{padding:30px 32px}.case-output img{border:1px solid #203b51;border-radius:18px;background:#06111f}.outcome{margin-top:18px;border-left:3px solid var(--amber);background:#fff8e9;padding:14px 16px;color:#715318}.safety-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.safety-card{border:1px solid #2d4c64;border-radius:18px;background:#0a1d2e;padding:24px}.safety-card h3{margin:0 0 16px;color:#f0f6fa}.safety-card dl{display:grid;grid-template-columns:150px 1fr;gap:10px;margin:0;font-size:13px}.safety-card dt{color:#6edfe1}.safety-card dd{margin:0;color:#b4c7d4}.warning-card{border-color:#725e33;background:#211c12}.not-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}.not{border:1px solid #63403d;background:#241619;color:#f09a91;border-radius:10px;padding:11px;font:700 11px var(--mono)}.cta{padding:100px 0;background:white}.cta-shell{background:linear-gradient(135deg,#071421,#0b2c43);border-radius:28px;padding:64px;color:white;display:grid;grid-template-columns:1.2fr .8fr;gap:30px;align-items:end}.cta h2{font-size:52px;margin:0 0 14px}.cta p{color:#b8cdda;max-width:680px}.cta-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}.btn{display:inline-block;text-decoration:none;padding:13px 16px;border-radius:10px;background:#4cdae0;color:#06202c;font-weight:800}.btn.secondary{background:transparent;border:1px solid #45647b;color:#d8e7f0}.footer{padding:30px 0 50px;color:#718395;font-size:12px}.footer-grid{display:flex;justify-content:space-between;gap:20px}.micro{font:12px var(--mono)}
+@media(max-width:980px){.hero-grid,.section-head,.cta-shell{grid-template-columns:1fr}.hero{min-height:auto}.ba-shell{grid-template-columns:1fr}.cap-grid{grid-template-columns:1fr 1fr}.route{grid-template-columns:repeat(2,1fr)}.case-head{grid-template-columns:60px 1fr}.data-class{grid-column:2}.safety-grid{grid-template-columns:1fr}.cta-actions{justify-content:flex-start}.not-list{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){.wrap{width:min(100% - 24px,1180px)}.navlinks{display:none}.hero-grid{padding:50px 0 88px;gap:36px}.hero h1{font-size:54px}.pipeline{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}.before-after{margin-top:-26px}.before,.after{padding:26px}.after-flow{grid-template-columns:1fr}.section{padding:72px 0}.cap-grid,.case-grid{grid-template-columns:1fr}.case-grid>div:nth-child(odd){border-right:0}.case-head{padding:24px;grid-template-columns:1fr}.data-class{grid-column:auto;width:max-content}.case-grid>div,.case-output{padding:22px}.route{grid-template-columns:1fr}.not-list{grid-template-columns:1fr}.cta-shell{padding:34px 24px}.cta h2{font-size:38px}.safety-card dl{grid-template-columns:1fr}.footer-grid{flex-direction:column}}
+@media print{.hero{min-height:auto}.before-after{margin-top:0}.section{break-inside:avoid}.case{break-before:page}.nav{display:none}}
+</style></head>
+<body>
+<header class="hero"><div class="wrap"><nav class="nav"><div class="brand"><span class="brandmark">CR</span>Clinical Reports</div><div class="navlinks"><a href="#capabilities">能力</a><a href="#cases">真实案例</a><a href="#safety">安全边界</a></div></nav>
+<div class="hero-grid"><div><div class="eyebrow">临床研究文档基础设施</div><h1>Clinical<br>Reports</h1><p class="lead">已验证事实 → 结构化草稿 → 确定性检查 → 合格人员复核</p><p class="sub">Clinical Reports 组织已经验证且被授权的 synthetic、de-identified 或 aggregate facts，并让缺失、冲突与未完成复核保持可见。它不是 AI doctor，也不替任何专业人员下结论。</p><div class="badges"><span class="badge">SAFETY-BOUNDED</span><span class="badge">FAIL-CLOSED</span><span class="badge">LOCAL</span><span class="badge">PROVENANCE-AWARE</span><span class="badge">DETERMINISTIC</span></div></div>
+<div class="hero-visual"><div class="visual-head"><b>真实 Case 02 信号链</b><span class="live">LOCAL RUN</span></div><div class="pipeline"><div class="node"><b>SOURCE FACTS</b><span>fact-case02-12<br>verified / aggregate</span></div><div class="arrow">→</div><div class="node"><b>PROVENANCE</b><span>TRACEABILITY_COMPLETE_<br>REVIEW_REQUIRED</span></div><div class="node"><b>REPORT STRUCTURE</b><span>ICH E3 coverage<br>DRAFT / non-submission</span></div><div class="arrow">→</div><div class="node"><b>VALIDATION</b><span>BLOCKED → STRUCTURE_COMPLETE_<br>REVIEW_REQUIRED</span></div></div><div class="reviewbar">REVIEW REQUIRED · medical · statistical · safety · privacy/legal · quality · regulatory</div></div></div></div></header>
+
+<section class="before-after" id="before-after"><div class="wrap"><div class="ba-shell"><div class="before"><div class="tag">BEFORE</div><h2>传统准备流程</h2><ul><li>事实散落在不同来源</li><li>无来源支持的内容可能混入</li><li>报告类型不同，结构也不同</li><li>来源链很难追踪</li><li>缺失字段容易被忽略</li><li>复核交接责任不清</li></ul></div><div class="after"><div class="tag">AFTER · REAL CASE 02</div><h2>Clinical Reports 之后</h2><div class="after-flow"><div class="step">PROMPT</div><div class="step">VERIFIED FACTS</div><div class="step">PROVENANCE IDs</div><div class="step">ICH E3 SCAFFOLD</div><div class="step alert">REVIEW REQUIRED</div></div><div class="result-strip"><span class="result-chip block">Before: BLOCKED</span><span class="result-chip">+ fact-case02-12</span><span class="result-chip">After: STRUCTURE_COMPLETE_REVIEW_REQUIRED</span></div><p>输入缺失时保持 missing / BLOCKED；只有已验证 fact 被显式链接后，结构状态才改变。成功结果仍不授权临床使用、签名、申报或提交。</p></div></div></div></section>
+
+<section class="section" id="capabilities"><div class="wrap"><div class="section-head"><h2>当前真实能力</h2><p class="section-intro">以下只来自当前仓库 SKILL.md、scripts、assets 与 references，并严格区分结构辅助、确定性检查与必须由专业人员承担的判断。</p></div><div class="cap-grid"><article class="cap"><div class="num">01</div><h3>报告类型路由</h3><p>CARE 2013、CONSORT 2025、SPIRIT 2025、ICH E3/E3 Q&amp;A，以及 aggregate safety 等路径被明确区分。</p></article><article class="cap"><div class="num">02</div><h3>15 个 fail-closed 模板</h3><p>生成器只复制固定 JSON/CSV asset；不插值、不自动补临床事实、不默认覆盖已有文件。</p></article><article class="cap"><div class="num">03</div><h3>确定性结构检查</h3><p>CARE、ICH E3、CONSORT 2025 与 SPIRIT 2025 的键、状态和 source-fact 引用检查。</p></article><article class="cap"><div class="num">04</div><h3>来源与一致性</h3><p>检查 local locators、SHA-256 元数据、claim links、日期、单位、n/N 百分比和 totals；不选择“正确来源”。</p></article><article class="cap"><div class="num">05</div><h3>聚合 AE 表格</h3><p>仅接受聚合 rows 与 sidecar metadata；拒绝 patient/subject/case identifiers、narratives 与 onset dates。</p></article><article class="cap"><div class="num">06</div><h3>有边界的辅助检查</h3><p>术语只做 schema/syntax 或本地词典 exact match；去标识化脚本只检查流程记录。Radiology / pathology / lab 是 field-map scaffold。</p></article></div></div></section>
+
+<section class="section dark" id="workflow"><div class="wrap"><div class="section-head"><h2>安全工作流</h2><p class="section-intro">unsupported content remains missing。脚本不打开患者叙述、不调用外部模型、不做临床或监管决策。</p></div><div class="route"><div class="route-step"><small>01 · ALLOWED DATA</small><p>Synthetic / de-identified / aggregate facts；目的、授权、minimum necessary 明确。</p></div><div class="route-step"><small>02 · INPUT GATE</small><p>不满足边界就停止；真实 PHI 不进入示例、日志或外部服务。</p></div><div class="route-step"><small>03 · PROVENANCE</small><p>local locator + field path + value hash + verifier role/date。</p></div><div class="route-step"><small>04 · ROUTING</small><p>按 artifact 选择 CARE / CONSORT / SPIRIT / ICH E3 / aggregate route。</p></div><div class="route-step"><small>05 · FAIL-CLOSED</small><p>模板以 BLOCKED / missing / null 起步，不自动补齐。</p></div><div class="route-step"><small>06 · VALIDATION</small><p>结构、引用、schema、arithmetic 与 process documentation。</p></div><div class="route-step warn"><small>07 · HUMAN REVIEW</small><p>合格临床、统计、安全、隐私/法律、QA、监管或作者复核。</p></div></div><div class="principle">A successful validation result does NOT replace qualified review.</div></div></section>
+
+<section class="section cases" id="cases"><div class="wrap"><div class="section-head"><h2>六次运行，三个工作流</h2><p class="section-intro">中文 3 次 + 英文 3 次分别执行并保存。底层确定性脚本在 schema 相同时可能输出相同状态；每个语言版本的 prompt、input、commands、artifacts 与 logs 均独立落盘。</p></div>
+        <article class="case" id="case-01">
+          <header class="case-head"><div class="case-no">01</div><div><h3>CARE Case Report Structure</h3><p class="case-desc">只用已验证的 synthetic source-fact ID 覆盖 CARE 结构；没有来源支持的项目继续保持 missing。</p></div><span class="data-class">synthetic</span></header>
+          <div class="case-grid">
+            <div><div class="label">Prompt｜真实运行</div><div class="promptbox">基于以下完全虚构且不含任何真实患者信息的 source-fact manifest，生成 CARE case report 的结构化草稿并运行本地确定性验证。仅填入有 verified source-fact ID 支持的项目；其余保持 missing/null。不要推断诊断、治疗、剂量、严重性、因果关系、知情同意或任何缺失临床事实。保留 DRAFT 和 qualified review required 边界。</div></div>
+            <div><div class="label">Input｜实际输入</div><pre class="codebox">{
+  &quot;allowed_data_class&quot;: &quot;synthetic&quot;,
+  &quot;verified_items&quot;: [
+    &quot;care_items.title&quot;,
+    &quot;care_items.key_words&quot;,
+    &quot;care_items.abstract&quot;,
+    &quot;care_items.introduction&quot;,
+    &quot;care_items.clinical_findings&quot;,
+    &quot;care_items.timeline&quot;,
+    &quot;care_items.discussion&quot;
+  ],
+  &quot;unsupported_items_remain_missing&quot;: [
+    &quot;patient_information&quot;,
+    &quot;diagnostic_assessment&quot;,
+    &quot;therapeutic_intervention&quot;,
+    &quot;follow_up_and_outcomes&quot;,
+    &quot;patient_perspective&quot;,
+    &quot;informed_consent&quot;
+  ],
+  &quot;contains_phi&quot;: false,
+  &quot;draft_warning&quot;: &quot;DRAFT — NOT FOR CLINICAL USE, SIGNATURE, FILING, OR SUBMISSION. Populate only from verified authorized source records. Qualified review and sign-off are required.&quot;
+}</pre></div>
+            <div><div class="label">Running process｜实际命令</div><pre class="codebox">python3 /workspace/scratch/5f7e5f75d1ec/clinical-reports/scripts/generate_report_template.py --type case-report --output generated-template.json
+python3 /workspace/scratch/5f7e5f75d1ec/clinical-reports/scripts/provenance_validator.py provenance-manifest.json -o provenance-validation.json
+python3 /workspace/scratch/5f7e5f75d1ec/clinical-reports/scripts/check_deidentification.py deidentification-process.json -o deidentification-validation.json
+python3 /workspace/scratch/5f7e5f75d1ec/clinical-reports/scripts/validate_case_report.py populated-case-report.json -o care-validation.json</pre></div>
+            <div><div class="label">Output / Result｜实际产物</div><pre class="codebox">{
+  &quot;draft_status&quot;: &quot;BLOCKED_INCOMPLETE_DRAFT_NOT_FOR_CLINICAL_USE_OR_SUBMISSION&quot;,
+  &quot;verified_present&quot;: [
+    &quot;abstract&quot;,
+    &quot;clinical_findings&quot;,
+    &quot;discussion&quot;,
+    &quot;introduction&quot;,
+    &quot;key_words&quot;,
+    &quot;timeline&quot;,
+    &quot;title&quot;
+  ],
+  &quot;unsupported_or_blocking&quot;: [
+    &quot;care_items.patient_information is missing&quot;,
+    &quot;care_items.diagnostic_assessment is missing&quot;,
+    &quot;care_items.therapeutic_intervention is missing&quot;,
+    &quot;care_items.follow_up_and_outcomes is missing&quot;,
+    &quot;care_items.patient_perspective is missing&quot;,
+    &quot;care_items.informed_consent is missing&quot;,
+    &quot;privacy.deidentification_process_record must be a string&quot;,
+    &quot;privacy.publication_consent_record must be a string&quot;,
+    &quot;privacy.reidentification_risk_reviewed must be true&quot;
+  ]
+}</pre></div>
+            <div><div class="label">Actual validation result｜真实验证</div><pre class="codebox">{
+  &quot;care&quot;: &quot;BLOCKED&quot;,
+  &quot;provenance&quot;: &quot;TRACEABILITY_COMPLETE_REVIEW_REQUIRED&quot;,
+  &quot;deidentification_process&quot;: &quot;PROCESS_DOCUMENTED_REVIEW_REQUIRED&quot;,
+  &quot;review_required&quot;: true,
+  &quot;authorizes_clinical_use_or_submission&quot;: false
+}</pre></div>
+            <div><div class="label">Review status｜复核状态</div><p class="promptbox">CARE 验证保持 BLOCKED：6 个 CARE 项仍 missing，另有 privacy / publication gates 未完成；这正是 fail-closed 行为。</p><div class="result-strip"><span class="result-chip">REVIEW_REQUIRED = true</span><span class="result-chip block">SUBMISSION = false</span></div></div>
+          </div>
+          <div class="case-output"><div class="label">Necessary screenshot｜由实际日志与结果离线渲染</div><img src="assets/zh-case-01.png" alt="CARE Case Report Structure actual run evidence screenshot"><div class="outcome">CARE 验证保持 BLOCKED：6 个 CARE 项仍 missing，另有 privacy / publication gates 未完成；这正是 fail-closed 行为。</div></div>
+        </article>
+        <article class="case" id="case-02">
+          <header class="case-head"><div class="case-no">02</div><div><h3>ICH E3 CSR Structure</h3><p class="case-desc">聚合试验元数据的结构覆盖检查：missing → 仅链接既有 verified fact → validation state 改变。</p></div><span class="data-class">aggregate</span></header>
+          <div class="case-grid">
+            <div><div class="label">Prompt｜真实运行</div><div class="promptbox">使用以下完全虚构、仅含聚合试验元数据与已验证结构事实的 manifest，按 ICH E3 + E3 Q&amp;A 生成 CSR 结构覆盖草稿并运行确定性验证。先保留 safety_evaluation 为 missing 并记录失败；随后只使用输入中已经存在且已验证的 fact-case02-12 补齐该结构引用并重新验证。不得生成疗效、安全性结论、个体数据或提交判断。</div></div>
+            <div><div class="label">Input｜实际输入</div><pre class="codebox">{
+  &quot;allowed_data_class&quot;: &quot;aggregate&quot;,
+  &quot;route&quot;: &quot;ICH E3 Step 4 1995-11-30 with Q&amp;A R1 2012-07-06&quot;,
+  &quot;before&quot;: &quot;safety_evaluation remains missing&quot;,
+  &quot;after&quot;: &quot;only pre-existing verified fact-case02-12 is linked&quot;,
+  &quot;contains_participant_level_data&quot;: false,
+  &quot;draft_warning&quot;: &quot;DRAFT — NOT FOR CLINICAL USE, SIGNATURE, FILING, OR SUBMISSION. Populate only from verified authorized source records. Qualified review and sign-off are required.&quot;
+}</pre></div>
+            <div><div class="label">Running process｜实际命令</div><pre class="codebox">python3 /workspace/scratch/5f7e5f75d1ec/clinical-reports/scripts/generate_report_template.py --type csr --output generated-template.json
+python3 /workspace/scratch/5f7e5f75d1ec/clinical-reports/scripts/provenance_validator.py provenance-manifest.json -o provenance-validation.json
+python3 /workspace/scratch/5f7e5f75d1ec/clinical-reports/scripts/validate_trial_report.py csr-before.json -o validation-before.json
+python3 /workspace/scratch/5f7e5f75d1ec/clinical-reports/scripts/validate_trial_report.py csr-after.json -o validation-after.json</pre></div>
+            <div><div class="label">Output / Result｜实际产物</div><pre class="codebox">{
+  &quot;before&quot;: {
+    &quot;safety_evaluation&quot;: &quot;missing&quot;
+  },
+  &quot;verified_change&quot;: &quot;fact-case02-12 -&gt; sections.safety_evaluation&quot;,
+  &quot;after&quot;: {
+    &quot;safety_evaluation&quot;: &quot;verified_present&quot;
+  },
+  &quot;draft_status&quot;: &quot;BLOCKED_INCOMPLETE_DRAFT_NOT_FOR_FILING_OR_SUBMISSION&quot;
+}</pre></div>
+            <div><div class="label">Actual validation result｜真实验证</div><pre class="codebox">{
+  &quot;before&quot;: {
+    &quot;status&quot;: &quot;BLOCKED&quot;,
+    &quot;errors&quot;: [
+      &quot;sections.safety_evaluation is missing&quot;
+    ]
+  },
+  &quot;after&quot;: {
+    &quot;status&quot;: &quot;STRUCTURE_COMPLETE_REVIEW_REQUIRED&quot;,
+    &quot;errors&quot;: [],
+    &quot;warnings&quot;: [
+      &quot;review.medical_review remains required&quot;,
+      &quot;review.statistical_review remains required&quot;,
+      &quot;review.safety_review remains required&quot;,
+      &quot;review.privacy_legal_review remains required&quot;,
+      &quot;review.quality_review remains required&quot;,
+      &quot;review.regulatory_review remains required&quot;
+    ]
+  },
+  &quot;review_required&quot;: true,
+  &quot;authorizes_clinical_use_or_submission&quot;: false
+}</pre></div>
+            <div><div class="label">Review status｜复核状态</div><p class="promptbox">补充的是输入中预先定义并验证的 fact-case02-12，而非推断值。最终只是 STRUCTURE_COMPLETE_REVIEW_REQUIRED，不是提交就绪。</p><div class="result-strip"><span class="result-chip">REVIEW_REQUIRED = true</span><span class="result-chip block">SUBMISSION = false</span></div></div>
+          </div>
+          <div class="case-output"><div class="label">Necessary screenshot｜由实际日志与结果离线渲染</div><img src="assets/zh-case-02.png" alt="ICH E3 CSR Structure actual run evidence screenshot"><div class="outcome">补充的是输入中预先定义并验证的 fact-case02-12，而非推断值。最终只是 STRUCTURE_COMPLETE_REVIEW_REQUIRED，不是提交就绪。</div></div>
+        </article>
+        <article class="case" id="case-03">
+          <header class="case-head"><div class="case-no">03</div><div><h3>Aggregate Adverse Event Table</h3><p class="case-desc">把 synthetic aggregate counts 格式化成 review-only Markdown，并检查比例、来源、术语语法与数据处理流程。</p></div><span class="data-class">aggregate</span></header>
+          <div class="case-grid">
+            <div><div class="label">Prompt｜真实运行</div><div class="promptbox">使用以下完全虚构的 aggregate CSV 与 sidecar metadata，运行本地 adverse-event formatter、provenance、terminology syntax、de-identification process 和 consistency checks。只展示聚合 subjects/events/denominators；不要作个例 reportability、严重性、因果性、预期性、治疗或组间推断。</div></div>
+            <div><div class="label">Input｜实际输入</div><pre class="codebox">analysis_set,treatment_group,meddra_version,system_organ_class,preferred_term,subjects_affected,event_count,denominator
+Synthetic Safety Set,Control,29.0,Synthetic SOC A,Synthetic event alpha,4,5,40
+Synthetic Safety Set,Intervention,29.0,Synthetic SOC A,Synthetic event alpha,5,7,42
+Synthetic Safety Set,Control,29.0,Synthetic SOC A,Synthetic event beta,2,2,40
+Synthetic Safety Set,Intervention,29.0,Synthetic SOC A,Synthetic event beta,3,3,42
+Synthetic Safety Set,Control,29.0,Synthetic SOC B,Synthetic event gamma,1,1,40
+
+{
+  &quot;allowed_data_class&quot;: &quot;aggregate&quot;,
+  &quot;row_count&quot;: 5,
+  &quot;contains_identifiers&quot;: false,
+  &quot;contains_narratives&quot;: false,
+  &quot;individual_case_decision&quot;: &quot;prohibited&quot;,
+  &quot;draft_warning&quot;: &quot;DRAFT — NOT FOR CLINICAL USE, SIGNATURE, FILING, OR SUBMISSION. Populate only from verified authorized source records. Qualified review and sign-off are required.&quot;
+}</pre></div>
+            <div><div class="label">Running process｜实际命令</div><pre class="codebox">python3 /workspace/scratch/5f7e5f75d1ec/clinical-reports/scripts/generate_report_template.py --type safety-aggregate --output generated-template.json
+python3 /workspace/scratch/5f7e5f75d1ec/clinical-reports/scripts/provenance_validator.py provenance-manifest.json -o provenance-validation.json
+python3 /workspace/scratch/5f7e5f75d1ec/clinical-reports/scripts/format_adverse_events.py aggregate-ae.csv --metadata aggregate-metadata.json --expected-meddra-version 29.0 --output aggregate-ae-table.md
+python3 /workspace/scratch/5f7e5f75d1ec/clinical-reports/scripts/terminology_validator.py terminology-manifest.json -o terminology-validation.json
+python3 /workspace/scratch/5f7e5f75d1ec/clinical-reports/scripts/check_deidentification.py deidentification-process.json -o deidentification-validation.json
+python3 /workspace/scratch/5f7e5f75d1ec/clinical-reports/scripts/consistency_checker.py consistency-manifest.json -o consistency-validation.json</pre></div>
+            <div><div class="label">Output / Result｜实际产物</div><pre class="codebox"># Draft aggregate adverse-event table
+
+&gt; DRAFT — aggregate display only. Not an ICSR, reportability decision, clinical interpretation, filing, or submission. Qualified safety and statistical review is required.
+
+- Analysis set: Synthetic Safety Set
+- MedDRA version(s), as supplied and not terminology-validated: 29.0
+- MedDRA language, as supplied: English
+- Counting rule, as supplied: Subjects counted once per supplied preferred term; events shown separately
+- Threshold rule, as supplied: All supplied aggregate rows displayed; missing cells remain em dash
+- Missing group/term cells are shown as an em dash and are not assumed to be zero.
+- Subjects and events are distinct; event counts may exceed subject counts.
+
+| System organ class | Preferred term | Control: subjects n/N (%) | Control: events | Intervention: subjects n/N (%) | Intervention: events |
+| --- | --- | --- | --- | --- | --- |
+| Synthetic SOC A | Synthetic event alpha | 4/40 (10.0%) | 5 | 5/42 (11.9%) | 7 |
+| Synthetic SOC A | Synthetic event beta | 2/40 (5.0%) | 2 | 3/42 (7.1%) | 3 |
+| Synthetic SOC B | Synthetic event gamma | 1/40 (2.5%) | 1 | — | — |
+
+Denominators by treatment group: Control N=40; Intervention N=42.
+
+No MedDRA semantic validation, deduplication, inference, causal assessment, or between-group testing was performed.</pre></div>
+            <div><div class="label">Actual validation result｜真实验证</div><pre class="codebox">{
+  &quot;formatter_exit_code&quot;: 0,
+  &quot;provenance&quot;: &quot;TRACEABILITY_COMPLETE_REVIEW_REQUIRED&quot;,
+  &quot;consistency&quot;: &quot;CONSISTENT_WITHIN_DECLARED_TOLERANCES_REVIEW_REQUIRED&quot;,
+  &quot;terminology&quot;: &quot;SCHEMA_VALID_SYNTAX_ONLY_REVIEW_REQUIRED&quot;,
+  &quot;deidentification_process&quot;: &quot;PROCESS_DOCUMENTED_REVIEW_REQUIRED&quot;,
+  &quot;review_required&quot;: true
+}</pre></div>
+            <div><div class="label">Review status｜复核状态</div><p class="promptbox">表格只呈现 subjects / events / denominators；缺失组合显示 em dash。未做 MedDRA 语义验证、个例判断、因果判断或组间推断。</p><div class="result-strip"><span class="result-chip">REVIEW_REQUIRED = true</span><span class="result-chip block">SUBMISSION = false</span></div></div>
+          </div>
+          <div class="case-output"><div class="label">Necessary screenshot｜由实际日志与结果离线渲染</div><img src="assets/zh-case-03.png" alt="Aggregate Adverse Event Table actual run evidence screenshot"><div class="outcome">表格只呈现 subjects / events / denominators；缺失组合显示 em dash。未做 MedDRA 语义验证、个例判断、因果判断或组间推断。</div></div>
+        </article></div></section>
+
+<section class="section dark" id="safety"><div class="wrap"><div class="section-head"><h2>安全、隐私与可靠性</h2><p class="section-intro">这不是 compliance 或 clinical validity 宣称，而是当前 repo 能证明的运行边界。</p></div><div class="safety-grid"><article class="safety-card"><h3>运行事实</h3><dl><dt>Python</dt><dd>3.11+; 本次实测 3.12.14</dd><dt>Dependencies</dt><dd>脚本仅 Python standard library；仓库无 requirements.txt</dd><dt>Network</dt><dd>bundled tools 无网络访问</dd><dt>Credentials</dt><dd>不需要</dd><dt>External models</dt><dd>禁止调用</dd><dt>Processing</dt><dd>bounded local files; size/depth/row limits</dd></dl></article><article class="safety-card warning-card"><h3>复核与限制事实</h3><dl><dt>PHI</dt><dd>真实 PHI 禁止进入示例、测试、prompt、log 或外部服务</dd><dt>Provenance</dt><dd>每个 populated field / claim 必须映射 verified source-fact ID</dd><dt>Validation</dt><dd>只检查结构、引用、schema 与内部一致性</dd><dt>Review owner</dt><dd>按 artifact 由合格专业人员承担</dd><dt>Regulatory</dt><dd>不证明 legal / regulatory / ethical / journal / institutional compliance</dd><dt>Release</dt><dd>不能授权签名、临床使用、filing 或 submission</dd></dl></article></div><div class="not-list"><div class="not">NO DIAGNOSIS</div><div class="not">NO TREATMENT / DOSE</div><div class="not">NO TRIAGE</div><div class="not">NO IMAGE / RAW LAB INTERPRETATION</div><div class="not">NO SERIOUSNESS / CAUSALITY / EXPECTEDNESS INFERENCE</div><div class="not">NO ICSR REPORTABILITY DECISION</div></div></div></section>
+
+<section class="cta"><div class="wrap"><div class="cta-shell"><div><div class="tag">CLINICAL RESEARCH · MEDICAL WRITING · TRIAL REPORTING · SAFETY · QA</div><h2>先结构化，再验证，最后由人复核。</h2><p>适用于 clinical researchers、medical writers、trial reporting teams、aggregate safety reporting teams、regulatory documentation 与 QA/review workflows。把已经验证的事实组织成可审查结构，而不是生成新的医学结论。</p></div><div class="cta-actions"><a class="btn" href="https://finchip.ai/skills/clinical-reports-finchip">FinChip</a><a class="btn secondary" href="https://github.com/FinchipAIOrg/clinical-reports">GitHub source</a></div></div></div></section>
+<footer class="footer"><div class="wrap footer-grid"><div>Clinical Reports · repository commit <span class="micro">2f6333ca445b7025454e5c19128b999c07a6455f</span></div><div>Source ledger checked by repository: 2026-07-23 · 页面生成：2026-09-16</div></div></footer>
+</body></html>

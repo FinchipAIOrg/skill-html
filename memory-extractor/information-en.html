@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>Memory Extractor — FinChip Information</title><style>
+@font-face{font-family:Noto;src:url('assets/fonts/NotoSansSC-Regular.ttf')}@font-face{font-family:Noto;src:url('assets/fonts/NotoSansSC-SemiBold.ttf');font-weight:600}@font-face{font-family:Noto;src:url('assets/fonts/NotoSansSC-ExtraBold.ttf');font-weight:800}
+:root{--bg:#05070b;--panel:#0a0e15;--panel2:#0e1420;--line:#202a3a;--text:#f4f7fb;--muted:#94a3b8;--blue:#4b8cff;--cyan:#40d9f2;--violet:#9b7cff;--amber:#f5b942;--red:#ff6b6b;--green:#48e0a4;--max:1240px}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Noto,Arial,sans-serif;line-height:1.65;overflow-x:hidden}body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(75,140,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(75,140,255,.035) 1px,transparent 1px);background-size:64px 64px;mask-image:linear-gradient(to bottom,black,transparent 65%)}a{color:inherit}code,.mono,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.topbar{height:58px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(24px,calc((100vw - var(--max))/2));position:relative;z-index:2;background:rgba(5,7,11,.86);backdrop-filter:blur(14px)}.brand{font-weight:800;letter-spacing:-.03em}.brand:before{content:"ME";font-size:11px;letter-spacing:.08em;border:1px solid var(--blue);color:var(--cyan);padding:4px 6px;margin-right:10px}.topmeta{display:flex;gap:8px;align-items:center}.topmeta span{font-size:10px;letter-spacing:.12em;color:var(--muted)}.lang-link{border:1px solid var(--line);padding:5px 9px;text-decoration:none}.hero{min-height:720px;max-width:var(--max);margin:auto;padding:96px 24px 72px;display:grid;grid-template-columns:1.05fr .95fr;gap:72px;align-items:center;position:relative}.hero:after{content:"";position:absolute;width:460px;height:460px;right:-120px;top:80px;background:radial-gradient(circle,rgba(75,140,255,.16),transparent 68%);filter:blur(18px);pointer-events:none}.eyebrow,.label{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);font-weight:700}.hero h1{font-size:clamp(58px,7.5vw,112px);line-height:.88;letter-spacing:-.075em;margin:18px 0 32px;max-width:720px}.hero h1 span{display:block;color:transparent;-webkit-text-stroke:1px var(--blue)}.hero-copy{font-size:21px;max-width:600px;color:#c7d2e1;margin:0 0 30px}.hero-notes{display:flex;gap:10px;flex-wrap:wrap}.hero-notes span,.chip{display:inline-block;font-size:10px;letter-spacing:.08em;border:1px solid var(--line);padding:5px 8px;color:#b9c7d9;background:#0c121c}.pipeline{position:relative;z-index:1;border:1px solid #2a3850;background:linear-gradient(145deg,rgba(15,23,36,.92),rgba(8,12,18,.96));padding:18px;box-shadow:0 35px 90px rgba(0,0,0,.45),0 0 50px rgba(75,140,255,.09)}.pipeline-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:13px;font:11px ui-monospace,monospace;color:var(--muted)}.pipe-step{position:relative;padding:18px 18px 18px 40px;border-bottom:1px dashed #263349}.pipe-step:before{content:"";position:absolute;left:17px;top:26px;width:7px;height:7px;background:var(--cyan);border-radius:50%;box-shadow:0 0 14px var(--cyan)}.pipe-step:after{content:"";position:absolute;left:20px;top:34px;bottom:-10px;width:1px;background:linear-gradient(var(--cyan),transparent)}.pipe-step:last-child{border:0}.pipe-step:last-child:after{display:none}.pipe-step small{display:block;color:var(--blue);font:10px ui-monospace,monospace;letter-spacing:.1em}.pipe-step b{font-size:16px}.pipe-step p{margin:5px 0 0;color:var(--muted);font-size:13px}.node{margin:8px 0 0;border-left:2px solid var(--violet);padding:9px 12px;background:#0c111a}.node strong{font-size:14px}.node footer{display:flex;gap:8px;margin-top:8px}.section{max-width:var(--max);margin:auto;padding:96px 24px}.section-head{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:end;margin-bottom:48px}.section-head h2{font-size:clamp(40px,5vw,72px);line-height:1;letter-spacing:-.055em;margin:10px 0}.section-head p{color:var(--muted);font-size:17px;margin:0}.before-after{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(180deg,#080b11,#05070b)}.ba-grid{display:grid;grid-template-columns:1fr 90px 1.25fr;gap:20px;align-items:stretch}.ba-panel{border:1px solid var(--line);background:rgba(12,17,26,.72);padding:24px}.ba-panel header{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:18px}.ba-panel header b{font-size:12px;letter-spacing:.14em}.ba-panel header span{color:var(--muted);font-size:11px}.ba-panel blockquote{margin:0 0 10px;padding:12px 14px;border-left:2px solid #35445b;background:#0a0e15;color:#b5c0cf;font-size:13px}.ba-warnings{display:grid;gap:9px;margin-top:18px}.ba-warnings div{border:1px solid #3b2f24;color:#e6c890;padding:10px;font-size:12px}.ba-arrow{display:flex;align-items:center;justify-content:center;color:var(--cyan);font-size:36px}.lifecycle{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.life-card{border:1px solid var(--line);padding:16px;background:#0a0f18;min-height:158px}.life-card em{font-style:normal;font:10px ui-monospace,monospace;color:var(--blue)}.life-card b{display:block;font-size:28px;margin:9px 0}.life-card p{font-size:12px;color:var(--muted);margin:0}.life-card .mini{display:flex;gap:5px;flex-wrap:wrap;margin-top:12px}.cap-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.cap{border:1px solid var(--line);background:linear-gradient(145deg,#0a0f18,#080b11);padding:24px;min-height:230px;position:relative;overflow:hidden}.cap:nth-child(1),.cap:nth-child(4){grid-column:span 7}.cap:nth-child(2),.cap:nth-child(3){grid-column:span 5}.cap:nth-child(5){grid-column:span 12}.cap:before{content:attr(data-n);position:absolute;right:16px;top:4px;font-size:68px;font-weight:800;color:#101a29}.cap h3{font-size:24px;margin:38px 0 10px;position:relative}.cap p{color:var(--muted);margin:0;position:relative}.flow{display:grid;grid-template-columns:repeat(7,1fr);align-items:center;gap:10px}.flow-node{border:1px solid var(--line);padding:19px 13px;min-height:112px;background:#0a0f18}.flow-node b{display:block;font-size:14px}.flow-node small{color:var(--muted)}.flow-arrow{text-align:center;color:var(--blue);font-size:23px}.cases{max-width:var(--max);margin:auto;padding:96px 24px}.case{padding:90px 0;border-top:1px solid var(--line)}.case-heading{display:grid;grid-template-columns:150px 1fr;gap:24px;margin-bottom:40px}.case-number{font-size:96px;font-weight:800;line-height:.9;color:transparent;-webkit-text-stroke:1px #34445d;letter-spacing:-.08em}.case-heading h3{font-size:clamp(36px,5vw,68px);line-height:1;margin:8px 0 16px;letter-spacing:-.045em}.case-heading p{color:var(--muted);font-size:17px;max-width:760px;margin:0}.case-meta-grid{display:grid;grid-template-columns:1fr 1.4fr 1fr;border:1px solid var(--line);margin-bottom:20px}.case-meta-grid>div{padding:18px;border-right:1px solid var(--line)}.case-meta-grid>div:last-child{border:0}.case-meta-grid p{margin:8px 0 0;font-size:13px;color:#c3cedd}.case-meta-grid code{display:block;margin-top:10px;font-size:11px;color:var(--cyan);overflow-wrap:anywhere}.op-strip,.action-scoreboard{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}.op-strip div,.action-scoreboard div{border:1px solid var(--line);padding:17px;background:#0a0f18}.op-strip b,.action-scoreboard b{font-size:31px;margin-right:12px}.op-strip span,.action-scoreboard div{font-size:11px;letter-spacing:.1em}.action-scoreboard .keep{border-color:#285647}.action-scoreboard .compress{border-color:#665125}.action-scoreboard .delete{border-color:#682f37}.filter-row{display:flex;gap:7px;margin:26px 0 10px}.filter-row button{border:1px solid var(--line);background:#080c12;color:var(--muted);font:10px ui-monospace,monospace;padding:8px 12px;cursor:pointer}.filter-row button.active{border-color:var(--blue);color:white;background:#14213a}.table-wrap{overflow-x:auto;border:1px solid var(--line)}table{border-collapse:collapse;width:100%;min-width:980px;background:#080c12}th{text-align:left;font:10px ui-monospace,monospace;letter-spacing:.12em;color:var(--muted);padding:12px;border-bottom:1px solid var(--line);background:#0b1019}td{padding:13px 12px;border-bottom:1px solid #192230;vertical-align:top;font-size:12px}td strong,.memory-text{display:block;font-size:13px}td small{display:block;color:var(--muted);margin-top:5px;max-width:460px}td q{color:#c8d4e4}.score{color:var(--cyan)}.chip{white-space:nowrap}.chip.add,.chip.keep{color:var(--green);border-color:#245b49}.chip.update{color:var(--blue);border-color:#284d85}.chip.merge{color:var(--violet);border-color:#4c3d80}.chip.skip{color:#9aa8b9}.chip.compress{color:var(--amber);border-color:#665125}.chip.delete{color:var(--red);border-color:#682f37}.chip.guard{color:var(--amber);border-color:#665125}.run-shot{margin:28px 0 0;border:1px solid #263246;background:#070a10;padding:10px}.run-shot img{display:block;width:100%;height:auto}.run-shot figcaption{font-size:11px;color:var(--muted);padding:10px 4px 3px}.result-note{display:grid;grid-template-columns:170px 1fr;border:1px solid var(--line);border-top:0;padding:18px}.result-note span{font-size:10px;letter-spacing:.15em;color:var(--cyan)}.result-note p{margin:0;color:#c9d4e2}.raw-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.raw{border:1px solid var(--line);background:#080c12}.raw summary{padding:14px 16px;cursor:pointer;font-size:12px;display:flex;justify-content:space-between}.raw pre{white-space:pre-wrap;word-break:break-word;max-height:470px;overflow:auto;padding:16px;margin:0;border-top:1px solid var(--line);color:#aee9f7;font-size:10px;line-height:1.6}.asset-link{display:block;border-top:1px solid var(--line);padding:10px 16px;color:var(--blue);font:10px ui-monospace,monospace;overflow-wrap:anywhere}.metric-ribbon{display:grid;grid-template-columns:1fr 45px 1fr 1fr 1fr;border:1px solid var(--line);margin:20px 0}.metric-ribbon div{padding:16px;border-right:1px solid var(--line)}.metric-ribbon b{display:block;font-size:29px}.metric-ribbon span{font-size:9px;letter-spacing:.12em;color:var(--muted)}.metric-ribbon i{display:flex;align-items:center;justify-content:center;color:var(--cyan);font-style:normal}.cluster-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.cluster-card{border:1px solid var(--line);background:#090d14;padding:17px;min-height:240px}.cluster-card.preserved{border-color:#4b3c24}.cluster-top{display:flex;justify-content:space-between;color:var(--muted);font-size:10px}.cluster-card ul{list-style:none;padding:0;margin:15px 0}.cluster-card li{font-size:11px;color:#a9b6c7;border-left:1px solid #34445c;padding:5px 8px}.cluster-card code{color:var(--blue)}.cluster-arrow{color:var(--cyan);margin:4px 0}.cluster-card strong{display:block;font-size:14px}.cluster-card>small{display:block;color:var(--muted);margin-top:10px}.technical{background:#080b11;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.tech-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.tech-card{border:1px solid var(--line);padding:22px;background:#0a0e15}.tech-card h3{margin:0 0 14px;font-size:18px}.formula{font:13px ui-monospace,monospace;color:var(--cyan);border-left:2px solid var(--blue);padding:10px;background:#07101b}.tech-card ul{margin:14px 0 0;padding-left:18px;color:var(--muted);font-size:13px}.boundary{display:grid;grid-template-columns:.8fr 1.2fr;gap:50px}.boundary h2{font-size:52px;line-height:1;letter-spacing:-.05em;margin:10px 0}.boundary-list{display:grid;gap:8px}.boundary-list div{display:grid;grid-template-columns:24px 1fr;gap:12px;border-bottom:1px solid var(--line);padding:12px 0;color:#c5d0de}.boundary-list div:before{content:"×";color:var(--red)}.audience{display:flex;gap:8px;flex-wrap:wrap;margin-top:25px}.audience span{border:1px solid var(--line);padding:8px 11px;font-size:11px;color:#b9c6d7}.cta{max-width:var(--max);margin:0 auto 80px;padding:70px;position:relative;border:1px solid #2b3b55;background:linear-gradient(135deg,#0b1423,#0b0e16);overflow:hidden}.cta:after{content:"";position:absolute;width:350px;height:350px;right:-100px;top:-150px;border:1px solid var(--blue);border-radius:50%;box-shadow:0 0 80px rgba(75,140,255,.18)}.cta h2{font-size:clamp(42px,6vw,78px);line-height:1;letter-spacing:-.055em;max-width:900px;margin:10px 0 20px;position:relative;z-index:1}.cta p{color:var(--muted);max-width:720px;position:relative;z-index:1}.cta-links{display:flex;gap:10px;position:relative;z-index:1}.cta-links a{padding:11px 15px;border:1px solid var(--blue);text-decoration:none;font-size:12px}.cta-links a:last-child{border-color:var(--line)}footer.site-footer{max-width:var(--max);margin:auto;padding:25px 24px 50px;border-top:1px solid var(--line);display:flex;justify-content:space-between;color:var(--muted);font-size:11px}.source-note{border:1px solid #4b3c24;background:#130f09;padding:14px 17px;color:#d6bb86;margin-top:12px;font-size:12px}[hidden]{display:none!important}@media(max-width:900px){.hero{grid-template-columns:1fr;gap:45px;padding-top:70px}.hero h1{font-size:72px}.section-head,.boundary{grid-template-columns:1fr}.ba-grid{grid-template-columns:1fr}.ba-arrow{transform:rotate(90deg);height:60px}.cap:nth-child(n){grid-column:span 12}.flow{grid-template-columns:1fr}.flow-arrow{transform:rotate(90deg)}.case-heading{grid-template-columns:95px 1fr}.case-number{font-size:68px}.case-meta-grid{grid-template-columns:1fr}.case-meta-grid>div{border-right:0;border-bottom:1px solid var(--line)}.raw-grid,.tech-grid{grid-template-columns:1fr}.cluster-grid{grid-template-columns:1fr 1fr}.metric-ribbon{grid-template-columns:1fr 35px 1fr}.metric-ribbon div:nth-last-child(-n+2){display:none}.lifecycle{grid-template-columns:1fr}.cta{margin:0 18px 60px;padding:45px 26px}}@media(max-width:560px){.topbar{padding:0 16px}.topmeta>span{display:none}.hero{min-height:0;padding:58px 16px}.hero h1{font-size:54px}.hero-copy{font-size:17px}.section,.cases{padding-left:16px;padding-right:16px}.section{padding-top:70px;padding-bottom:70px}.section-head h2{font-size:44px}.ba-panel{padding:17px}.case{padding:68px 0}.case-heading{grid-template-columns:1fr}.case-number{font-size:52px}.case-heading h3{font-size:42px}.op-strip,.action-scoreboard{grid-template-columns:1fr 1fr}.cluster-grid{grid-template-columns:1fr}.result-note{grid-template-columns:1fr;gap:8px}.raw-grid{grid-template-columns:1fr}.cta h2{font-size:44px}.cta-links{flex-direction:column}.site-footer{flex-direction:column;gap:7px}.pipeline{padding:12px}.pipe-step{padding-right:5px}.boundary h2{font-size:44px}}
+html,body{max-width:100%;overflow-x:clip}.hero{overflow:hidden}.table-wrap{max-width:100%}.case{min-width:0}
+</style></head>
+<body>
+<header class="topbar"><div class="brand">MEMORY EXTRACTOR</div><div class="topmeta"><span>PYTHON ≥ 3.9</span><span>RUNTIME 0.2.0</span><a class="lang-link" href="memory-extractor_info_zh.html">中文</a></div></header>
+<main>
+  <section class="hero">
+    <div><div class="eyebrow">DETERMINISTIC LONG-TERM MEMORY UTILITY / RUNTIME v0.2.0</div><h1>Keep only<span>what deserves to last.</span></h1><p class="hero-copy">Extract traceable long-term memories from conversation, consolidate repetition, then apply an explicit policy to keep, compress, or delete. Local, deterministic, and dependency-free.</p><div class="hero-notes"><span>EXTRACT</span><span>CONSOLIDATE</span><span>FORGET</span><span>LOCAL</span><span>NO API KEY</span></div></div>
+    <div class="pipeline">
+      <div class="pipeline-head"><span>ACTUAL RUN / EN-EXTRACT</span><span>OK · 0.2.0</span></div>
+      <div class="pipe-step"><small>REAL INPUT / CONVERSATION</small><b>“I&#x27;m a backend engineer on the payments team at Northwind, based in Berlin (CET).”</b></div>
+      <div class="pipe-step"><small>EXTRACT</small><b>identity · salience 0.833 · ADD</b><p>new durable identity (best existing similarity 0.19 &lt; 0.55)</p></div>
+      <div class="pipe-step"><small>EVIDENCE QUOTE</small><b>message #2 · user</b></div>
+      <div class="pipe-step"><small>DURABLE MEMORY</small><div class="node"><strong>I&#x27;m a backend engineer on the payments team at Northwind, based in Berlin (CET).</strong><footer><span class="chip ">identity</span><span class="chip add">ADD</span></footer></div></div>
+      <div class="pipe-step"><small>CONSOLIDATE → FORGET POLICY</small><b>canonical store · KEEP / COMPRESS / DELETE</b></div>
+    </div>
+  </section>
+  <section class="before-after section" id="before-after">
+    <div class="section-head"><div><div class="eyebrow">BEFORE / AFTER</div><h2>Turn context dumping into an auditable memory lifecycle</h2></div><p>This is not a concept mockup: every count, score, cluster, operation, and decision comes from the three real runs on this page.</p></div>
+    <div class="ba-grid">
+      <div class="ba-panel"><header><b>BEFORE</b><span>UNMANAGED RAW STATE</span></header><blockquote>I am a backend engineer on the Nebula Payments team, and my timezone is UTC+8.</blockquote><blockquote>One moment, I am in a meeting right now.</blockquote><blockquote>Can you check the CI configuration?</blockquote><div class="ba-warnings"><div>Durable facts mixed with transient state</div><div>Near duplicates continue to accumulate</div><div>Stale todos and TTL items lack a removal policy</div></div></div>
+      <div class="ba-arrow">→</div>
+      <div class="ba-panel"><header><b>AFTER</b><span>ACTUAL PIPELINE RESULT</span></header><div class="lifecycle">
+        <div class="life-card"><em>01 / EXTRACT</em><b>14 spans</b><p>5 ADD · 1 UPDATE · 1 MERGE · 7 SKIP</p><div class="mini"><span class="chip ">evidence</span><span class="chip ">type</span><span class="chip ">salience</span></div></div>
+        <div class="life-card"><em>02 / CONSOLIDATE</em><b>8 → 5</b><p>256 chars saved · ratio 0.549</p><div class="mini"><span class="chip guard">100 req/s</span><span class="chip guard">250 req/s</span></div></div>
+        <div class="life-card"><em>03 / FORGET</em><b>3 / 2 / 3</b><p>KEEP / COMPRESS / DELETE · 195 bytes</p><div class="mini"><span class="chip delete">0.842 TTL DELETE</span></div></div>
+      </div></div>
+    </div>
+  </section>
+  <section class="section"><div class="section-head"><div><div class="eyebrow">CORE CAPABILITIES</div><h2>Explicit data operations, not memory magic</h2></div><p>Every step emits structured JSON. Every decision can be traced to input, thresholds, and evidence.</p></div><div class="cap-grid"><article class="cap" data-n="01"><h3>Evidence-backed extraction</h3><p>Every candidate returns its source quote, message index, type, salience breakdown, and ADD / UPDATE / MERGE / SKIP operation.</p></article><article class="cap" data-n="02"><h3>Explicit memory operations</h3><p>The existing store participates in similarity checks: duplicates are skipped, related items update or merge, and only durable new information is added.</p></article><article class="cap" data-n="03"><h3>Loss-aware consolidation</h3><p>Same-type near duplicates cluster while differences in numbers, versions, identifiers, acronyms, and proper nouns block unsafe merges.</p></article><article class="cap" data-n="04"><h3>Documented forget policy</h3><p>KEEP / COMPRESS / DELETE follows value, recency, frequency, sticky floors, TTL, and stale-todo rules with reasons on every item.</p></article><article class="cap" data-n="05"><h3>Local and reproducible</h3><p>Python standard library only; no network, API key, or runtime file writes. The same input and now reproduce byte-identical output.</p></article></div></section>
+  <section class="section"><div class="section-head"><div><div class="eyebrow">HOW IT WORKS</div><h2>One inspectable memory lifecycle</h2></div><p>No external model call. Input, rules, and now determine the output.</p></div><div class="flow"><div class="flow-node"><b>Conversation / Text</b><small>sentence spans</small></div><div class="flow-arrow">→</div><div class="flow-node"><b>EXTRACT</b><small>type + salience</small></div><div class="flow-arrow">→</div><div class="flow-node"><b>Evidence</b><small>quote + index</small></div><div class="flow-arrow">→</div><div class="flow-node"><b>Dedupe</b><small>explicit operation</small></div><div class="flow-arrow">→</div><div class="flow-node"><b>Memory Store</b><small>canonical items</small></div><div class="flow-arrow">→</div><div class="flow-node"><b>Time + Usage</b><small>value / recency / frequency</small></div><div class="flow-arrow">→</div><div class="flow-node"><b>Policy</b><small>KEEP / COMPRESS / DELETE</small></div></div></section>
+  <section class="cases"><div class="section-head"><div><div class="eyebrow">THREE REAL RUNS</div><h2>Full coverage of extract, consolidate, and forget</h2></div><p>Each case was executed directly with Python 3.12.14. Input, command, stdout, JSON output, and screenshot are preserved with the page.</p></div>
+    
+    <article class="case" id="case-extract">
+      
+      <div class="case-heading">
+        <div class="case-number">01</div>
+        <div>
+          <div class="eyebrow">MODE / EXTRACT</div>
+          <h3>Extract durable memory from mixed conversation</h3>
+          <p>An agent conversation mixes identity, preferences, a decision, a constraint, a todo, greetings, a question, transient state, and an existing store.</p>
+        </div>
+      </div>
+      <div class="case-meta-grid">
+        <div><span class="label">Scenario</span><p>An agent conversation mixes identity, preferences, a decision, a constraint, a todo, greetings, a question, transient state, and an existing store.</p></div>
+        <div><span class="label">Prompt</span><p>Extract only durable long-term memories from this agent conversation. It mixes identity, preferences, a decision, a constraint, a todo, greetings, transient state, a question, and an existing store. Return the actual type, salience, evidence, and ADD / UPDATE / MERGE / SKIP operation.</p></div>
+        <div><span class="label">Actual command</span><code>python3 memory_extractor.py deliverable/assets/runs/en/extract/input.json</code></div>
+      </div>
+      <div class="op-strip" aria-label="actual operation counts">
+        <div><b>5</b><span>ADD</span></div><div><b>1</b><span>UPDATE</span></div><div><b>1</b><span>MERGE</span></div><div><b>7</b><span>SKIP</span></div>
+      </div>
+      <div class="filter-row" data-filter-group>
+        <button class="active" data-filter="all">ALL</button>
+        <button data-filter="add">ADD</button><button data-filter="update">UPDATE</button>
+        <button data-filter="merge">MERGE</button><button data-filter="skip">SKIP</button>
+      </div>
+      <div class="table-wrap">
+        <table class="candidate-table"><thead><tr><th>OP</th><th>TYPE</th><th>SALIENCE</th><th>MEMORY / REASON</th><th>EVIDENCE</th></tr></thead>
+        <tbody><tr data-op="skip">
+              <td><span class="chip skip">SKIP</span></td>
+              <td>fact</td>
+              <td class="mono score">0.000</td>
+              <td><strong>Hey!</strong><small>ephemeral: greeting / acknowledgement</small></td>
+              <td><q>Hey!</q><small>message #0</small></td>
+            </tr><tr data-op="skip">
+              <td><span class="chip skip">SKIP</span></td>
+              <td>fact</td>
+              <td class="mono score">0.000</td>
+              <td><strong>Good morning.</strong><small>ephemeral: greeting / acknowledgement</small></td>
+              <td><q>Good morning.</q><small>message #0</small></td>
+            </tr><tr data-op="skip">
+              <td><span class="chip skip">SKIP</span></td>
+              <td>fact</td>
+              <td class="mono score">0.000</td>
+              <td><strong>Morning.</strong><small>ephemeral: too short to be a durable memory</small></td>
+              <td><q>Morning.</q><small>message #1</small></td>
+            </tr><tr data-op="skip">
+              <td><span class="chip skip">SKIP</span></td>
+              <td>fact</td>
+              <td class="mono score">0.000</td>
+              <td><strong>What are we working on today?</strong><small>ephemeral: a question, not an assertion to remember</small></td>
+              <td><q>What are we working on today?</q><small>message #1</small></td>
+            </tr><tr data-op="add">
+              <td><span class="chip add">ADD</span></td>
+              <td>identity</td>
+              <td class="mono score">0.833</td>
+              <td><strong>I&#x27;m a backend engineer on the payments team at Northwind, based in Berlin (CET).</strong><small>new durable identity (best existing similarity 0.19 &lt; 0.55)</small></td>
+              <td><q>I&#x27;m a backend engineer on the payments team at Northwind, based in Berlin (CET).</q><small>message #2</small></td>
+            </tr><tr data-op="update">
+              <td><span class="chip update">UPDATE</span></td>
+              <td>preference</td>
+              <td class="mono score">0.767</td>
+              <td><strong>I prefer TypeScript over plain JavaScript for any new service.</strong><small>refines m_pref (similarity 0.81 in [0.72, 0.9), same type)</small></td>
+              <td><q>I prefer TypeScript over plain JavaScript for any new service.</q><small>message #3</small></td>
+            </tr><tr data-op="merge">
+              <td><span class="chip merge">MERGE</span></td>
+              <td>preference</td>
+              <td class="mono score">0.893</td>
+              <td><strong>I always run Prettier with a 100-character line width before committing.</strong><small>related to m_format (similarity 0.67 in [0.55, 0.72), same type)</small></td>
+              <td><q>I always run Prettier with a 100-character line width before committing.</q><small>message #4</small></td>
+            </tr><tr data-op="add">
+              <td><span class="chip add">ADD</span></td>
+              <td>decision</td>
+              <td class="mono score">0.860</td>
+              <td><strong>We decided to standardize on PostgreSQL 16 for all new services instead of MySQL.</strong><small>new durable decision (best existing similarity 0.28 &lt; 0.55)</small></td>
+              <td><q>We decided to standardize on PostgreSQL 16 for all new services instead of MySQL.</q><small>message #5</small></td>
+            </tr><tr data-op="add">
+              <td><span class="chip add">ADD</span></td>
+              <td>constraint</td>
+              <td class="mono score">0.775</td>
+              <td><strong>Secrets must never be committed to the repo; everything goes through Vault.</strong><small>new durable constraint (best existing similarity 0.22 &lt; 0.55)</small></td>
+              <td><q>Secrets must never be committed to the repo; everything goes through Vault.</q><small>message #6</small></td>
+            </tr><tr data-op="skip">
+              <td><span class="chip skip">SKIP</span></td>
+              <td>fact</td>
+              <td class="mono score">0.000</td>
+              <td><strong>brb, grabbing coffee</strong><small>ephemeral: transient state, not durable</small></td>
+              <td><q>brb, grabbing coffee</q><small>message #7</small></td>
+            </tr><tr data-op="skip">
+              <td><span class="chip skip">SKIP</span></td>
+              <td>fact</td>
+              <td class="mono score">0.000</td>
+              <td><strong>Can you check the CI config for me?</strong><small>ephemeral: a question, not an assertion to remember</small></td>
+              <td><q>Can you check the CI config for me?</q><small>message #8</small></td>
+            </tr><tr data-op="add">
+              <td><span class="chip add">ADD</span></td>
+              <td>todo</td>
+              <td class="mono score">0.665</td>
+              <td><strong>Next week I need to update the deployment runbook before the September 30 release.</strong><small>new durable todo (best existing similarity 0.22 &lt; 0.55)</small></td>
+              <td><q>Next week I need to update the deployment runbook before the September 30 release.</q><small>message #9</small></td>
+            </tr><tr data-op="add">
+              <td><span class="chip add">ADD</span></td>
+              <td>fact</td>
+              <td class="mono score">0.522</td>
+              <td><strong>Today I had noodles for lunch.</strong><small>new durable fact (best existing similarity 0.21 &lt; 0.55)</small></td>
+              <td><q>Today I had noodles for lunch.</q><small>message #10</small></td>
+            </tr><tr data-op="skip">
+              <td><span class="chip skip">SKIP</span></td>
+              <td>fact</td>
+              <td class="mono score">0.660</td>
+              <td><strong>The team runs CI on GitHub Actions.</strong><small>duplicate of m_ci (similarity 1.00 &gt;= 0.9)</small></td>
+              <td><q>The team runs CI on GitHub Actions.</q><small>message #11</small></td>
+            </tr></tbody></table>
+      </div>
+      <figure class="run-shot"><img src="assets/runs/en/extract/screenshot.png" alt="English extract real runtime result screenshot"><figcaption>Real runtime visualization generated from the saved output.json; expand the original stdout below.</figcaption></figure>
+      <div class="result-note"><span>OUTPUT / WHAT CHANGED</span><p>All 14 spans remain traceable: 5 ADD, 1 UPDATE, 1 MERGE, and 7 SKIP. Greetings, questions, transient state, and a duplicate do not silently enter the store.</p></div>
+      <div class="raw-grid">
+        
+      <details class="raw">
+        <summary>Actual JSON Input <span>+</span></summary>
+        <pre>{
+  &quot;mode&quot;: &quot;extract&quot;,
+  &quot;now&quot;: &quot;2026-09-17T12:00:00Z&quot;,
+  &quot;existing_memories&quot;: [
+    {&quot;id&quot;: &quot;m_pref&quot;, &quot;text&quot;: &quot;I prefer TypeScript over JavaScript for new services.&quot;, &quot;type&quot;: &quot;preference&quot;},
+    {&quot;id&quot;: &quot;m_format&quot;, &quot;text&quot;: &quot;I always run Prettier before committing.&quot;, &quot;type&quot;: &quot;preference&quot;},
+    {&quot;id&quot;: &quot;m_ci&quot;, &quot;text&quot;: &quot;The team runs CI on GitHub Actions.&quot;, &quot;type&quot;: &quot;fact&quot;}
+  ],
+  &quot;messages&quot;: [
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hey! Good morning.&quot;},
+    {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;Morning. What are we working on today?&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;I&#x27;m a backend engineer on the payments team at Northwind, based in Berlin (CET).&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;I prefer TypeScript over plain JavaScript for any new service.&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;I always run Prettier with a 100-character line width before committing.&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;We decided to standardize on PostgreSQL 16 for all new services instead of MySQL.&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Secrets must never be committed to the repo; everything goes through Vault.&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;brb, grabbing coffee&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Can you check the CI config for me?&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Next week I need to update the deployment runbook before the September 30 release.&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Today I had noodles for lunch.&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;The team runs CI on GitHub Actions.&quot;}
+  ]
+}</pre>
+        <a class="asset-link" href="assets/runs/en/extract/input.json">assets/runs/en/extract/input.json</a>
+      </details>
+        
+      <details class="raw">
+        <summary>ACTUAL OUTPUT <span>+</span></summary>
+        <pre>{&quot;ok&quot;: true, &quot;skill&quot;: &quot;memory-extractor&quot;, &quot;version&quot;: &quot;0.2.0&quot;, &quot;mode&quot;: &quot;extract&quot;, &quot;data&quot;: {&quot;candidates&quot;: [{&quot;id&quot;: &quot;m_7f550a9f4c&quot;, &quot;text&quot;: &quot;Hey!&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;salience&quot;: 0.0, &quot;salience_breakdown&quot;: {}, &quot;evidence&quot;: {&quot;message_index&quot;: 0, &quot;role&quot;: &quot;user&quot;, &quot;quote&quot;: &quot;Hey!&quot;}, &quot;operation&quot;: &quot;SKIP&quot;, &quot;reason&quot;: &quot;ephemeral: greeting / acknowledgement&quot;}, {&quot;id&quot;: &quot;m_a8cbec7254&quot;, &quot;text&quot;: &quot;Good morning.&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;salience&quot;: 0.0, &quot;salience_breakdown&quot;: {}, &quot;evidence&quot;: {&quot;message_index&quot;: 0, &quot;role&quot;: &quot;user&quot;, &quot;quote&quot;: &quot;Good morning.&quot;}, &quot;operation&quot;: &quot;SKIP&quot;, &quot;reason&quot;: &quot;ephemeral: greeting / acknowledgement&quot;}, {&quot;id&quot;: &quot;m_45a21e4b5b&quot;, &quot;text&quot;: &quot;Morning.&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;salience&quot;: 0.0, &quot;salience_breakdown&quot;: {}, &quot;evidence&quot;: {&quot;message_index&quot;: 1, &quot;role&quot;: &quot;assistant&quot;, &quot;quote&quot;: &quot;Morning.&quot;}, &quot;operation&quot;: &quot;SKIP&quot;, &quot;reason&quot;: &quot;ephemeral: too short to be a durable memory&quot;}, {&quot;id&quot;: &quot;m_105b2a20be&quot;, &quot;text&quot;: &quot;What are we working on today?&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;salience&quot;: 0.0, &quot;salience_breakdown&quot;: {}, &quot;evidence&quot;: {&quot;message_index&quot;: 1, &quot;role&quot;: &quot;assistant&quot;, &quot;quote&quot;: &quot;What are we working on today?&quot;}, &quot;operation&quot;: &quot;SKIP&quot;, &quot;reason&quot;: &quot;ephemeral: a question, not an assertion to remember&quot;}, {&quot;id&quot;: &quot;m_03cc41f4b5&quot;, &quot;text&quot;: &quot;I&#x27;m a backend engineer on the payments team at Northwind, based in Berlin (CET).&quot;, &quot;type&quot;: &quot;identity&quot;, &quot;salience&quot;: 0.833, &quot;salience_breakdown&quot;: {&quot;specificity&quot;: 0.75, &quot;durability&quot;: 0.95, &quot;reuse_likelihood&quot;: 0.65, &quot;actor_relevance&quot;: 1.0}, &quot;evidence&quot;: {&quot;message_index&quot;: 2, &quot;role&quot;: &quot;user&quot;, &quot;quote&quot;: &quot;I&#x27;m a backend engineer on the payments team at Northwind, based in Berlin (CET).&quot;}, &quot;operation&quot;: &quot;ADD&quot;, &quot;reason&quot;: &quot;new durable identity (best existing similarity 0.19 &lt; 0.55)&quot;, &quot;created_at&quot;: &quot;2026-09-17T12:00:00Z&quot;}, {&quot;id&quot;: &quot;m_42342b5fa0&quot;, &quot;text&quot;: &quot;I prefer TypeScript over plain JavaScript for any new service.&quot;, &quot;type&quot;: &quot;preference&quot;, &quot;salience&quot;: 0.767, &quot;salience_breakdown&quot;: {&quot;specificity&quot;: 0.5, &quot;durability&quot;: 0.8, &quot;reuse_likelihood&quot;: 0.85, &quot;actor_relevance&quot;: 1.0}, &quot;evidence&quot;: {&quot;message_index&quot;: 3, &quot;role&quot;: &quot;user&quot;, &quot;quote&quot;: &quot;I prefer TypeScript over plain JavaScript for any new service.&quot;}, &quot;operation&quot;: &quot;UPDATE&quot;, &quot;reason&quot;: &quot;refines m_pref (similarity 0.81 in [0.72, 0.9), same type)&quot;, &quot;created_at&quot;: &quot;2026-09-17T12:00:00Z&quot;, &quot;target_id&quot;: &quot;m_pref&quot;}, {&quot;id&quot;: &quot;m_cf5134190c&quot;, &quot;text&quot;: &quot;I always run Prettier with a 100-character line width before committing.&quot;, &quot;type&quot;: &quot;preference&quot;, &quot;salience&quot;: 0.893, &quot;salience_breakdown&quot;: {&quot;specificity&quot;: 1.0, &quot;durability&quot;: 0.8, &quot;reuse_likelihood&quot;: 0.85, &quot;actor_relevance&quot;: 1.0}, &quot;evidence&quot;: {&quot;message_index&quot;: 4, &quot;role&quot;: &quot;user&quot;, &quot;quote&quot;: &quot;I always run Prettier with a 100-character line width before committing.&quot;}, &quot;operation&quot;: &quot;MERGE&quot;, &quot;reason&quot;: &quot;related to m_format (similarity 0.67 in [0.55, 0.72), same type)&quot;, &quot;created_at&quot;: &quot;2026-09-17T12:00:00Z&quot;, &quot;target_id&quot;: &quot;m_format&quot;}, {&quot;id&quot;: &quot;m_88688c832c&quot;, &quot;text&quot;: &quot;We decided to standardize on PostgreSQL 16 for all new services instead of MySQL.&quot;, &quot;type&quot;: &quot;decision&quot;, &quot;salience&quot;: 0.86, &quot;salience_breakdown&quot;: {&quot;specificity&quot;: 1.0, &quot;durability&quot;: 0.85, &quot;reuse_likelihood&quot;: 0.65, &quot;actor_relevance&quot;: 1.0}, &quot;evidence&quot;: {&quot;message_index&quot;: 5, &quot;role&quot;: &quot;user&quot;, &quot;quote&quot;: &quot;We decided to standardize on PostgreSQL 16 for all new services instead of MySQL.&quot;}, &quot;operation&quot;: &quot;ADD&quot;, &quot;reason&quot;: &quot;new durable decision (best existing similarity 0.28 &lt; 0.55)&quot;, &quot;created_at&quot;: &quot;2026-09-17T12:00:00Z&quot;}, {&quot;id&quot;: &quot;m_4069c33088&quot;, &quot;text&quot;: &quot;Secrets must never be committed to the repo; everything goes through Vault.&quot;, &quot;type&quot;: &quot;constraint&quot;, &quot;salience&quot;: 0.775, &quot;salience_breakdown&quot;: {&quot;specificity&quot;: 0.75, &quot;durability&quot;: 0.9, &quot;reuse_likelihood&quot;: 0.85, &quot;actor_relevance&quot;: 0.4}, &quot;evidence&quot;: {&quot;message_index&quot;: 6, &quot;role&quot;: &quot;user&quot;, &quot;quote&quot;: &quot;Secrets must never be committed to the repo; everything goes through Vault.&quot;}, &quot;operation&quot;: &quot;ADD&quot;, &quot;reason&quot;: &quot;new durable constraint (best existing similarity 0.22 &lt; 0.55)&quot;, &quot;created_at&quot;: &quot;2026-09-17T12:00:00Z&quot;}, {&quot;id&quot;: &quot;m_56a5a6015d&quot;, &quot;text&quot;: &quot;brb, grabbing coffee&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;salience&quot;: 0.0, &quot;salience_breakdown&quot;: {}, &quot;evidence&quot;: {&quot;message_index&quot;: 7, &quot;role&quot;: &quot;user&quot;, &quot;quote&quot;: &quot;brb, grabbing coffee&quot;}, &quot;operation&quot;: &quot;SKIP&quot;, &quot;reason&quot;: &quot;ephemeral: transient state, not durable&quot;}, {&quot;id&quot;: &quot;m_7b106ff834&quot;, &quot;text&quot;: &quot;Can you check the CI config for me?&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;salience&quot;: 0.0, &quot;salience_breakdown&quot;: {}, &quot;evidence&quot;: {&quot;message_index&quot;: 8, &quot;role&quot;: &quot;user&quot;, &quot;quote&quot;: &quot;Can you check the CI config for me?&quot;}, &quot;operation&quot;: &quot;SKIP&quot;, &quot;reason&quot;: &quot;ephemeral: a question, not an assertion to remember&quot;}, {&quot;id&quot;: &quot;m_8fb8ab0cad&quot;, &quot;text&quot;: &quot;Next week I need to update the deployment runbook before the September 30 release.&quot;, &quot;type&quot;: &quot;todo&quot;, &quot;salience&quot;: 0.665, &quot;salience_breakdown&quot;: {&quot;specificity&quot;: 1.0, &quot;durability&quot;: 0.4, &quot;reuse_likelihood&quot;: 0.5, &quot;actor_relevance&quot;: 1.0}, &quot;evidence&quot;: {&quot;message_index&quot;: 9, &quot;role&quot;: &quot;user&quot;, &quot;quote&quot;: &quot;Next week I need to update the deployment runbook before the September 30 release.&quot;}, &quot;operation&quot;: &quot;ADD&quot;, &quot;reason&quot;: &quot;new durable todo (best existing similarity 0.22 &lt; 0.55)&quot;, &quot;created_at&quot;: &quot;2026-09-17T12:00:00Z&quot;}, {&quot;id&quot;: &quot;m_1cf11e9ab1&quot;, &quot;text&quot;: &quot;Today I had noodles for lunch.&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;salience&quot;: 0.522, &quot;salience_breakdown&quot;: {&quot;specificity&quot;: 0.5, &quot;durability&quot;: 0.35, &quot;reuse_likelihood&quot;: 0.5, &quot;actor_relevance&quot;: 1.0}, &quot;evidence&quot;: {&quot;message_index&quot;: 10, &quot;role&quot;: &quot;user&quot;, &quot;quote&quot;: &quot;Today I had noodles for lunch.&quot;}, &quot;operation&quot;: &quot;ADD&quot;, &quot;reason&quot;: &quot;new durable fact (best existing similarity 0.21 &lt; 0.55)&quot;, &quot;created_at&quot;: &quot;2026-09-17T12:00:00Z&quot;}, {&quot;id&quot;: &quot;m_b3bf59cd4d&quot;, &quot;text&quot;: &quot;The team runs CI on GitHub Actions.&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;salience&quot;: 0.66, &quot;salience_breakdown&quot;: {&quot;specificity&quot;: 0.5, &quot;durability&quot;: 0.6, &quot;reuse_likelihood&quot;: 0.7, &quot;actor_relevance&quot;: 1.0}, &quot;evidence&quot;: {&quot;message_index&quot;: 11, &quot;role&quot;: &quot;user&quot;, &quot;quote&quot;: &quot;The team runs CI on GitHub Actions.&quot;}, &quot;operation&quot;: &quot;SKIP&quot;, &quot;reason&quot;: &quot;duplicate of m_ci (similarity 1.00 &gt;= 0.9)&quot;, &quot;created_at&quot;: &quot;2026-09-17T12:00:00Z&quot;, &quot;target_id&quot;: &quot;m_ci&quot;}], &quot;summary&quot;: {&quot;candidates&quot;: 14, &quot;added&quot;: 5, &quot;updated&quot;: 1, &quot;merged&quot;: 1, &quot;skipped&quot;: 7}, &quot;now&quot;: &quot;2026-09-17T12:00:00Z&quot;, &quot;existing_count&quot;: 3}}</pre>
+        <a class="asset-link" href="assets/runs/en/extract/stdout.txt">assets/runs/en/extract/stdout.txt</a>
+      </details>
+      </div>
+    </article>
+    
+    <article class="case" id="case-consolidate">
+      
+      <div class="case-heading">
+        <div class="case-number">02</div>
+        <div>
+          <div class="eyebrow">MODE / CONSOLIDATE</div>
+          <h3>Compress repetition without erasing hard facts</h3>
+          <p>Eight noisy memories include near duplicates and two API rate-limit facts that differ only by number.</p>
+        </div>
+      </div>
+      <div class="case-meta-grid">
+        <div><span class="label">Scenario</span><p>Eight noisy memories include near duplicates and two API rate-limit facts that differ only by number.</p></div>
+        <div><span class="label">Prompt</span><p>Consolidate this English memory store. Merge same-type near duplicates and remove filler while preserving every number, version, identifier, acronym, and proper noun. Return the actual clusters, canonical memories, and compression summary.</p></div>
+        <div><span class="label">Actual command</span><code>python3 memory_extractor.py deliverable/assets/runs/en/consolidate/input.json</code></div>
+      </div>
+      <div class="metric-ribbon"><div><b>8</b><span>MEMORIES IN</span></div><i>→</i><div><b>5</b><span>CANONICAL OUT</span></div><div><b>0.549</b><span>CHAR RATIO</span></div><div><b>256</b><span>CHARS SAVED</span></div></div>
+      <div class="cluster-grid"><div class="cluster-card ">
+              <div class="cluster-top"><span class="chip merge">2 → 1</span><span>preference</span></div>
+              <ul><li><code>en_p1</code> Honestly, the user basically prefers TypeScript over JavaScript for new services.</li><li><code>en_p2</code> The user prefers TypeScript over JavaScript for new services.</li></ul><div class="cluster-arrow">↓</div>
+              <strong>The user prefers TypeScript over JavaScript for new services.</strong>
+              <small>142 → 61 chars</small>
+            </div><div class="cluster-card ">
+              <div class="cluster-top"><span class="chip merge">2 → 1</span><span>decision</span></div>
+              <ul><li><code>en_d1</code> The team decided to standardize on PostgreSQL 16 for all new services.</li><li><code>en_d2</code> To be honest, the team decided to standardize on PostgreSQL 16 for all new services.</li></ul><div class="cluster-arrow">↓</div>
+              <strong>The team decided to standardize on PostgreSQL 16 for all new services.</strong>
+              <small>154 → 70 chars</small>
+            </div><div class="cluster-card ">
+              <div class="cluster-top"><span class="chip merge">2 → 1</span><span>constraint</span></div>
+              <ul><li><code>en_c1</code> Secrets must never be committed to the repository; everything goes through Vault.</li><li><code>en_c2</code> Actually, secrets must never be committed to the repository; everything goes through Vault.</li></ul><div class="cluster-arrow">↓</div>
+              <strong>Secrets must never be committed to the repository; everything goes through Vault.</strong>
+              <small>172 → 81 chars</small>
+            </div><div class="cluster-card preserved">
+              <div class="cluster-top"><span class="chip guard">HARD FACT PRESERVED</span><span>fact</span></div>
+              <ul><li><code>en_f1</code> The staging API rate limit is 100 req/s per token.</li></ul><div class="cluster-arrow">↓</div>
+              <strong>The staging API rate limit is 100 req/s per token.</strong>
+              <small>50 → 50 chars</small>
+            </div><div class="cluster-card preserved">
+              <div class="cluster-top"><span class="chip guard">HARD FACT PRESERVED</span><span>fact</span></div>
+              <ul><li><code>en_f2</code> The staging API rate limit is 250 req/s per token.</li></ul><div class="cluster-arrow">↓</div>
+              <strong>The staging API rate limit is 250 req/s per token.</strong>
+              <small>50 → 50 chars</small>
+            </div></div>
+      <figure class="run-shot"><img src="assets/runs/en/consolidate/screenshot.png" alt="English consolidate real runtime result screenshot"><figcaption>Real runtime visualization generated from the saved output.json; expand the original stdout below.</figcaption></figure>
+      <div class="result-note"><span>OUTPUT / WHAT CHANGED</span><p>8 inputs become 5 canonical memories, saving 256 characters; 100 req/s and 250 req/s remain two separate facts.</p></div>
+      <div class="raw-grid">
+        
+      <details class="raw">
+        <summary>Actual JSON Input <span>+</span></summary>
+        <pre>{
+  &quot;mode&quot;: &quot;consolidate&quot;,
+  &quot;memories&quot;: [
+    {&quot;id&quot;: &quot;en_p1&quot;, &quot;type&quot;: &quot;preference&quot;, &quot;text&quot;: &quot;Honestly, the user basically prefers TypeScript over JavaScript for new services.&quot;, &quot;salience&quot;: 0.82},
+    {&quot;id&quot;: &quot;en_p2&quot;, &quot;type&quot;: &quot;preference&quot;, &quot;text&quot;: &quot;The user prefers TypeScript over JavaScript for new services.&quot;, &quot;salience&quot;: 0.79},
+    {&quot;id&quot;: &quot;en_d1&quot;, &quot;type&quot;: &quot;decision&quot;, &quot;text&quot;: &quot;The team decided to standardize on PostgreSQL 16 for all new services.&quot;, &quot;salience&quot;: 0.88},
+    {&quot;id&quot;: &quot;en_d2&quot;, &quot;type&quot;: &quot;decision&quot;, &quot;text&quot;: &quot;To be honest, the team decided to standardize on PostgreSQL 16 for all new services.&quot;, &quot;salience&quot;: 0.84},
+    {&quot;id&quot;: &quot;en_c1&quot;, &quot;type&quot;: &quot;constraint&quot;, &quot;text&quot;: &quot;Secrets must never be committed to the repository; everything goes through Vault.&quot;, &quot;salience&quot;: 0.93},
+    {&quot;id&quot;: &quot;en_c2&quot;, &quot;type&quot;: &quot;constraint&quot;, &quot;text&quot;: &quot;Actually, secrets must never be committed to the repository; everything goes through Vault.&quot;, &quot;salience&quot;: 0.89},
+    {&quot;id&quot;: &quot;en_f1&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;text&quot;: &quot;The staging API rate limit is 100 req/s per token.&quot;, &quot;salience&quot;: 0.68},
+    {&quot;id&quot;: &quot;en_f2&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;text&quot;: &quot;The staging API rate limit is 250 req/s per token.&quot;, &quot;salience&quot;: 0.68}
+  ]
+}</pre>
+        <a class="asset-link" href="assets/runs/en/consolidate/input.json">assets/runs/en/consolidate/input.json</a>
+      </details>
+        
+      <details class="raw">
+        <summary>ACTUAL OUTPUT <span>+</span></summary>
+        <pre>{&quot;ok&quot;: true, &quot;skill&quot;: &quot;memory-extractor&quot;, &quot;version&quot;: &quot;0.2.0&quot;, &quot;mode&quot;: &quot;consolidate&quot;, &quot;data&quot;: {&quot;clusters&quot;: [{&quot;canonical&quot;: &quot;The user prefers TypeScript over JavaScript for new services.&quot;, &quot;type&quot;: &quot;preference&quot;, &quot;member_ids&quot;: [&quot;en_p1&quot;, &quot;en_p2&quot;], &quot;compressed_from_chars&quot;: 142, &quot;to_chars&quot;: 61}, {&quot;canonical&quot;: &quot;The team decided to standardize on PostgreSQL 16 for all new services.&quot;, &quot;type&quot;: &quot;decision&quot;, &quot;member_ids&quot;: [&quot;en_d1&quot;, &quot;en_d2&quot;], &quot;compressed_from_chars&quot;: 154, &quot;to_chars&quot;: 70}, {&quot;canonical&quot;: &quot;Secrets must never be committed to the repository; everything goes through Vault.&quot;, &quot;type&quot;: &quot;constraint&quot;, &quot;member_ids&quot;: [&quot;en_c1&quot;, &quot;en_c2&quot;], &quot;compressed_from_chars&quot;: 172, &quot;to_chars&quot;: 81}, {&quot;canonical&quot;: &quot;The staging API rate limit is 100 req/s per token.&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;member_ids&quot;: [&quot;en_f1&quot;], &quot;compressed_from_chars&quot;: 50, &quot;to_chars&quot;: 50}, {&quot;canonical&quot;: &quot;The staging API rate limit is 250 req/s per token.&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;member_ids&quot;: [&quot;en_f2&quot;], &quot;compressed_from_chars&quot;: 50, &quot;to_chars&quot;: 50}], &quot;memories_out&quot;: [{&quot;id&quot;: &quot;en_p1&quot;, &quot;text&quot;: &quot;The user prefers TypeScript over JavaScript for new services.&quot;, &quot;type&quot;: &quot;preference&quot;, &quot;source_ids&quot;: [&quot;en_p1&quot;, &quot;en_p2&quot;], &quot;salience&quot;: 0.82}, {&quot;id&quot;: &quot;en_d1&quot;, &quot;text&quot;: &quot;The team decided to standardize on PostgreSQL 16 for all new services.&quot;, &quot;type&quot;: &quot;decision&quot;, &quot;source_ids&quot;: [&quot;en_d1&quot;, &quot;en_d2&quot;], &quot;salience&quot;: 0.88}, {&quot;id&quot;: &quot;en_c1&quot;, &quot;text&quot;: &quot;Secrets must never be committed to the repository; everything goes through Vault.&quot;, &quot;type&quot;: &quot;constraint&quot;, &quot;source_ids&quot;: [&quot;en_c1&quot;, &quot;en_c2&quot;], &quot;salience&quot;: 0.93}, {&quot;id&quot;: &quot;en_f1&quot;, &quot;text&quot;: &quot;The staging API rate limit is 100 req/s per token.&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;source_ids&quot;: [&quot;en_f1&quot;], &quot;salience&quot;: 0.68}, {&quot;id&quot;: &quot;en_f2&quot;, &quot;text&quot;: &quot;The staging API rate limit is 250 req/s per token.&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;source_ids&quot;: [&quot;en_f2&quot;], &quot;salience&quot;: 0.68}], &quot;by_type&quot;: [{&quot;type&quot;: &quot;fact&quot;, &quot;memory_ids&quot;: [&quot;en_f1&quot;, &quot;en_f2&quot;]}, {&quot;type&quot;: &quot;preference&quot;, &quot;memory_ids&quot;: [&quot;en_p1&quot;]}, {&quot;type&quot;: &quot;decision&quot;, &quot;memory_ids&quot;: [&quot;en_d1&quot;]}, {&quot;type&quot;: &quot;constraint&quot;, &quot;memory_ids&quot;: [&quot;en_c1&quot;]}], &quot;summary&quot;: {&quot;in&quot;: 8, &quot;out&quot;: 5, &quot;chars_in&quot;: 568, &quot;chars_out&quot;: 312, &quot;chars_saved&quot;: 256, &quot;compression_ratio&quot;: 0.549}}}</pre>
+        <a class="asset-link" href="assets/runs/en/consolidate/stdout.txt">assets/runs/en/consolidate/stdout.txt</a>
+      </details>
+      </div>
+    </article>
+    
+    <article class="case" id="case-forget">
+      
+      <div class="case-heading">
+        <div class="case-number">03</div>
+        <div>
+          <div class="eyebrow">MODE / FORGET</div>
+          <h3>Make every memory earn its place</h3>
+          <p>One store mixes a reused preference, sticky constraint, recent decision, old facts, stale todo, and expired TTL item.</p>
+        </div>
+      </div>
+      <div class="case-meta-grid">
+        <div><span class="label">Scenario</span><p>One store mixes a reused preference, sticky constraint, recent decision, old facts, stale todo, and expired TTL item.</p></div>
+        <div><span class="label">Prompt</span><p>Apply the documented forget policy at the supplied now. The store includes a frequently reused preference, a sticky constraint, a recent decision, an old preference, an ordinary fact, a stale todo, a TTL-expired temporary fact, and a low-value old fact. Return actual actions, scores, reasons, compressed text, and reclaimed bytes.</p></div>
+        <div><span class="label">Actual command</span><code>python3 memory_extractor.py deliverable/assets/runs/en/forget/input.json</code></div>
+      </div>
+      <div class="action-scoreboard"><div class="keep"><b>3</b>KEEP</div><div class="compress"><b>2</b>COMPRESS</div><div class="delete"><b>3</b>DELETE</div><div><b>195</b>BYTES RECLAIMED</div></div>
+      <div class="table-wrap"><table class="forget-table"><thead><tr><th>ACTION / ID</th><th>TYPE</th><th>SCORE</th><th>MEMORY / REASONS</th><th>USES / LAST USED</th><th>TTL</th></tr></thead><tbody><tr>
+              <td><span class="chip keep">KEEP</span><small>en_keep_pref</small></td>
+              <td>preference</td><td class="mono score">0.841</td>
+              <td><span class="memory-text">The user prefers every code review to start with test results.</span><small>value=0.800 (salience)<br>recency=0.857 (8d since last_used_at, half-life 45d)<br>frequency=0.870 (20 use(s))<br>score 0.841 &gt;= 0.55 -&gt; KEEP</small></td>
+              <td>20×<small>2026-09-10</small></td>
+              <td>—</td>
+            </tr><tr>
+              <td><span class="chip keep">KEEP</span><small>en_keep_constraint</small></td>
+              <td>constraint</td><td class="mono score">0.600</td>
+              <td><span class="memory-text">Secrets must never be committed to the repository; everything goes through Vault.</span><small>value=0.900 (salience)<br>recency=0.068 (616d since last_used_at, half-life 45d)<br>frequency=0.000 (0 use(s))<br>type floor: &#x27;constraint&#x27; is sticky, score raised to 0.60<br>score 0.600 &gt;= 0.55 -&gt; KEEP</small></td>
+              <td>0×<small>2025-01-10</small></td>
+              <td>—</td>
+            </tr><tr>
+              <td><span class="chip keep">KEEP</span><small>en_keep_decision</small></td>
+              <td>decision</td><td class="mono score">0.744</td>
+              <td><span class="memory-text">The team decided to standardize on PostgreSQL 16 for all new services.</span><small>value=0.780 (salience)<br>recency=0.857 (8d since last_used_at, half-life 45d)<br>frequency=0.571 (4 use(s))<br>score 0.744 &gt;= 0.55 -&gt; KEEP</small></td>
+              <td>4×<small>2026-09-10</small></td>
+              <td>—</td>
+            </tr><tr>
+              <td><span class="chip compress">COMPRESS</span><small>en_compress_pref</small></td>
+              <td>preference</td><td class="mono score">0.300</td>
+              <td><span class="memory-text">To be honest, the user actually prefers to prepare project updates on Friday afternoons.</span><small>value=0.400 (salience)<br>recency=0.148 (260d since last_used_at, half-life 45d)<br>frequency=0.250 (1 use(s))<br>type floor: &#x27;preference&#x27; is sticky, score raised to 0.30<br>score 0.300 in [0.3, 0.55) -&gt; COMPRESS</small></td>
+              <td>1×<small>2026-01-01</small></td>
+              <td>—</td>
+            </tr><tr>
+              <td><span class="chip compress">COMPRESS</span><small>en_compress_fact</small></td>
+              <td>fact</td><td class="mono score">0.305</td>
+              <td><span class="memory-text">Actually, the staging logs are kept for 30 days.</span><small>value=0.600 (salience)<br>recency=0.272 (120d since last_used_at, half-life 45d)<br>frequency=0.000 (0 use(s))<br>score 0.305 in [0.3, 0.55) -&gt; COMPRESS</small></td>
+              <td>0×<small>2026-05-20</small></td>
+              <td>—</td>
+            </tr><tr>
+              <td><span class="chip delete">DELETE</span><small>en_delete_todo</small></td>
+              <td>todo</td><td class="mono score">0.337</td>
+              <td><span class="memory-text">The old deployment runbook needs to be updated.</span><small>value=0.700 (salience)<br>recency=0.264 (126d since last_used_at, half-life 45d)<br>frequency=0.000 (0 use(s))<br>stale todo: 126d &gt; 30d without use -&gt; DELETE</small></td>
+              <td>0×<small>2026-05-15</small></td>
+              <td>—</td>
+            </tr><tr>
+              <td><span class="chip delete">DELETE</span><small>en_delete_ttl</small></td>
+              <td>fact</td><td class="mono score">0.842</td>
+              <td><span class="memory-text">The demo environment password is temporarily posted in the team channel.</span><small>value=0.800 (salience)<br>recency=0.947 (2d since last_used_at, half-life 45d)<br>frequency=0.769 (10 use(s))<br>explicit ttl_days=30 exceeded (age 48d) -&gt; DELETE, overrides type floor</small></td>
+              <td>10×<small>2026-09-15</small></td>
+              <td>30</td>
+            </tr><tr>
+              <td><span class="chip delete">DELETE</span><small>en_delete_fact</small></td>
+              <td>fact</td><td class="mono score">0.059</td>
+              <td><span class="memory-text">The old break room once had a blue printer.</span><small>value=0.100 (salience)<br>recency=0.067 (624d since last_used_at, half-life 45d)<br>frequency=0.000 (0 use(s))<br>score 0.059 &lt; 0.3 -&gt; DELETE</small></td>
+              <td>0×<small>2025-01-01</small></td>
+              <td>—</td>
+            </tr></tbody></table></div>
+      <figure class="run-shot"><img src="assets/runs/en/forget/screenshot.png" alt="English forget real runtime result screenshot"><figcaption>Real runtime visualization generated from the saved output.json; expand the original stdout below.</figcaption></figure>
+      <div class="result-note"><span>OUTPUT / WHAT CHANGED</span><p>The policy returns 3 KEEP / 2 COMPRESS / 3 DELETE. An expired TTL deletes a 0.842-scored item; estimated reclaimed bytes: 195.</p></div>
+      <div class="raw-grid">
+        
+      <details class="raw">
+        <summary>Actual JSON Input <span>+</span></summary>
+        <pre>{
+  &quot;mode&quot;: &quot;forget&quot;,
+  &quot;now&quot;: &quot;2026-09-17T12:00:00Z&quot;,
+  &quot;memories&quot;: [
+    {&quot;id&quot;: &quot;en_keep_pref&quot;, &quot;type&quot;: &quot;preference&quot;, &quot;text&quot;: &quot;The user prefers every code review to start with test results.&quot;, &quot;salience&quot;: 0.8, &quot;created_at&quot;: &quot;2025-11-01&quot;, &quot;last_used_at&quot;: &quot;2026-09-10&quot;, &quot;use_count&quot;: 20},
+    {&quot;id&quot;: &quot;en_keep_constraint&quot;, &quot;type&quot;: &quot;constraint&quot;, &quot;text&quot;: &quot;Secrets must never be committed to the repository; everything goes through Vault.&quot;, &quot;salience&quot;: 0.9, &quot;created_at&quot;: &quot;2025-01-01&quot;, &quot;last_used_at&quot;: &quot;2025-01-10&quot;, &quot;use_count&quot;: 0},
+    {&quot;id&quot;: &quot;en_keep_decision&quot;, &quot;type&quot;: &quot;decision&quot;, &quot;text&quot;: &quot;The team decided to standardize on PostgreSQL 16 for all new services.&quot;, &quot;salience&quot;: 0.78, &quot;created_at&quot;: &quot;2026-08-20&quot;, &quot;last_used_at&quot;: &quot;2026-09-10&quot;, &quot;use_count&quot;: 4},
+    {&quot;id&quot;: &quot;en_compress_pref&quot;, &quot;type&quot;: &quot;preference&quot;, &quot;text&quot;: &quot;To be honest, the user actually prefers to prepare project updates on Friday afternoons.&quot;, &quot;salience&quot;: 0.4, &quot;created_at&quot;: &quot;2025-06-01&quot;, &quot;last_used_at&quot;: &quot;2026-01-01&quot;, &quot;use_count&quot;: 1},
+    {&quot;id&quot;: &quot;en_compress_fact&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;text&quot;: &quot;Actually, the staging logs are kept for 30 days.&quot;, &quot;salience&quot;: 0.6, &quot;created_at&quot;: &quot;2026-04-01&quot;, &quot;last_used_at&quot;: &quot;2026-05-20&quot;, &quot;use_count&quot;: 0},
+    {&quot;id&quot;: &quot;en_delete_todo&quot;, &quot;type&quot;: &quot;todo&quot;, &quot;text&quot;: &quot;The old deployment runbook needs to be updated.&quot;, &quot;salience&quot;: 0.7, &quot;created_at&quot;: &quot;2026-05-01&quot;, &quot;last_used_at&quot;: &quot;2026-05-15&quot;, &quot;use_count&quot;: 0},
+    {&quot;id&quot;: &quot;en_delete_ttl&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;text&quot;: &quot;The demo environment password is temporarily posted in the team channel.&quot;, &quot;salience&quot;: 0.8, &quot;created_at&quot;: &quot;2026-08-01&quot;, &quot;last_used_at&quot;: &quot;2026-09-15&quot;, &quot;use_count&quot;: 10, &quot;ttl_days&quot;: 30},
+    {&quot;id&quot;: &quot;en_delete_fact&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;text&quot;: &quot;The old break room once had a blue printer.&quot;, &quot;salience&quot;: 0.1, &quot;created_at&quot;: &quot;2024-12-01&quot;, &quot;last_used_at&quot;: &quot;2025-01-01&quot;, &quot;use_count&quot;: 0}
+  ]
+}</pre>
+        <a class="asset-link" href="assets/runs/en/forget/input.json">assets/runs/en/forget/input.json</a>
+      </details>
+        
+      <details class="raw">
+        <summary>ACTUAL OUTPUT <span>+</span></summary>
+        <pre>{&quot;ok&quot;: true, &quot;skill&quot;: &quot;memory-extractor&quot;, &quot;version&quot;: &quot;0.2.0&quot;, &quot;mode&quot;: &quot;forget&quot;, &quot;data&quot;: {&quot;memories&quot;: [{&quot;id&quot;: &quot;en_keep_pref&quot;, &quot;type&quot;: &quot;preference&quot;, &quot;action&quot;: &quot;KEEP&quot;, &quot;score&quot;: 0.841, &quot;reasons&quot;: [&quot;value=0.800 (salience)&quot;, &quot;recency=0.857 (8d since last_used_at, half-life 45d)&quot;, &quot;frequency=0.870 (20 use(s))&quot;, &quot;score 0.841 &gt;= 0.55 -&gt; KEEP&quot;]}, {&quot;id&quot;: &quot;en_keep_constraint&quot;, &quot;type&quot;: &quot;constraint&quot;, &quot;action&quot;: &quot;KEEP&quot;, &quot;score&quot;: 0.6, &quot;reasons&quot;: [&quot;value=0.900 (salience)&quot;, &quot;recency=0.068 (616d since last_used_at, half-life 45d)&quot;, &quot;frequency=0.000 (0 use(s))&quot;, &quot;type floor: &#x27;constraint&#x27; is sticky, score raised to 0.60&quot;, &quot;score 0.600 &gt;= 0.55 -&gt; KEEP&quot;]}, {&quot;id&quot;: &quot;en_keep_decision&quot;, &quot;type&quot;: &quot;decision&quot;, &quot;action&quot;: &quot;KEEP&quot;, &quot;score&quot;: 0.744, &quot;reasons&quot;: [&quot;value=0.780 (salience)&quot;, &quot;recency=0.857 (8d since last_used_at, half-life 45d)&quot;, &quot;frequency=0.571 (4 use(s))&quot;, &quot;score 0.744 &gt;= 0.55 -&gt; KEEP&quot;]}, {&quot;id&quot;: &quot;en_compress_pref&quot;, &quot;type&quot;: &quot;preference&quot;, &quot;action&quot;: &quot;COMPRESS&quot;, &quot;score&quot;: 0.3, &quot;reasons&quot;: [&quot;value=0.400 (salience)&quot;, &quot;recency=0.148 (260d since last_used_at, half-life 45d)&quot;, &quot;frequency=0.250 (1 use(s))&quot;, &quot;type floor: &#x27;preference&#x27; is sticky, score raised to 0.30&quot;, &quot;score 0.300 in [0.3, 0.55) -&gt; COMPRESS&quot;], &quot;compressed_text&quot;: &quot;The user prefers to prepare project updates on Friday afternoons.&quot;}, {&quot;id&quot;: &quot;en_compress_fact&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;action&quot;: &quot;COMPRESS&quot;, &quot;score&quot;: 0.305, &quot;reasons&quot;: [&quot;value=0.600 (salience)&quot;, &quot;recency=0.272 (120d since last_used_at, half-life 45d)&quot;, &quot;frequency=0.000 (0 use(s))&quot;, &quot;score 0.305 in [0.3, 0.55) -&gt; COMPRESS&quot;], &quot;compressed_text&quot;: &quot;The staging logs are kept for 30 days.&quot;}, {&quot;id&quot;: &quot;en_delete_todo&quot;, &quot;type&quot;: &quot;todo&quot;, &quot;action&quot;: &quot;DELETE&quot;, &quot;score&quot;: 0.337, &quot;reasons&quot;: [&quot;value=0.700 (salience)&quot;, &quot;recency=0.264 (126d since last_used_at, half-life 45d)&quot;, &quot;frequency=0.000 (0 use(s))&quot;, &quot;stale todo: 126d &gt; 30d without use -&gt; DELETE&quot;]}, {&quot;id&quot;: &quot;en_delete_ttl&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;action&quot;: &quot;DELETE&quot;, &quot;score&quot;: 0.842, &quot;reasons&quot;: [&quot;value=0.800 (salience)&quot;, &quot;recency=0.947 (2d since last_used_at, half-life 45d)&quot;, &quot;frequency=0.769 (10 use(s))&quot;, &quot;explicit ttl_days=30 exceeded (age 48d) -&gt; DELETE, overrides type floor&quot;]}, {&quot;id&quot;: &quot;en_delete_fact&quot;, &quot;type&quot;: &quot;fact&quot;, &quot;action&quot;: &quot;DELETE&quot;, &quot;score&quot;: 0.059, &quot;reasons&quot;: [&quot;value=0.100 (salience)&quot;, &quot;recency=0.067 (624d since last_used_at, half-life 45d)&quot;, &quot;frequency=0.000 (0 use(s))&quot;, &quot;score 0.059 &lt; 0.3 -&gt; DELETE&quot;]}], &quot;summary&quot;: {&quot;total&quot;: 8, &quot;keep&quot;: 3, &quot;compress&quot;: 2, &quot;delete&quot;: 3, &quot;bytes_reclaimed_estimate&quot;: 195}, &quot;now&quot;: &quot;2026-09-17T12:00:00Z&quot;}}</pre>
+        <a class="asset-link" href="assets/runs/en/forget/stdout.txt">assets/runs/en/forget/stdout.txt</a>
+      </details>
+      </div>
+    </article>
+  </section>
+  <section class="technical"><div class="section"><div class="section-head"><div><div class="eyebrow">RELIABILITY / TECHNICAL DETAIL</div><h2>Open formulas, thresholds, and boundaries</h2></div><p>The rules are the feature: the same input and the same now can be recomputed without a remote service.</p></div><div class="tech-grid">
+      <article class="tech-card"><h3>Runtime contract</h3><ul><li>Runtime / manifest: 0.2.0</li><li>Python ≥ 3.9; verified on 3.12.14</li><li>Standard library only; requirements.txt has no packages</li><li>Modes: extract · consolidate · forget</li><li>Types: fact · preference · decision · constraint · identity · todo</li><li>Fixed default now: 2026-01-01T00:00:00Z</li></ul></article>
+      <article class="tech-card"><h3>Salience</h3><div class="formula">0.25 specificity + 0.35 durability + 0.25 reuse + 0.15 actor</div><ul><li>Durability bases: identity .95 · constraint .90 · decision .85 · preference .80 · fact .60 · todo .40</li><li>Below .35 → SKIP</li><li>Candidate includes component breakdown and evidence quote</li></ul></article>
+      <article class="tech-card"><h3>Similarity & operations</h3><div class="formula">0.60 SequenceMatcher + 0.40 Jaccard</div><ul><li>Duplicate ≥ .90 → SKIP</li><li>Same type [.72, .90) → UPDATE</li><li>Same type [.55, .72) → MERGE</li><li>Chinese lexical overlap uses Han bigrams</li></ul></article>
+      <article class="tech-card"><h3>Consolidation</h3><div class="formula">same type · greedy single-link · threshold ≥ .62</div><ul><li>Canonical text is the richest source, cleaned subtractively</li><li>Hard-fact guard covers number, version, identifier, acronym, CamelCase, proper noun</li><li>Source IDs and character counts remain in output</li></ul></article>
+      <article class="tech-card"><h3>Forget score</h3><div class="formula">0.35 value + 0.35 recency + 0.30 frequency</div><ul><li>recency = 45 / (45 + age_days)</li><li>frequency = use_count / (use_count + 3)</li><li>KEEP ≥ .55 · COMPRESS [.30, .55) · DELETE &lt; .30</li><li>Sticky floors: identity 0.60 · constraint 0.60 · decision 0.40 · preference 0.30</li><li>Unused todo &gt; 30d → DELETE; expired TTL overrides floors</li></ul></article>
+      <article class="tech-card"><h3>Execution & errors</h3><ul><li>No network, API key, or runtime filesystem writes</li><li>Explicit now makes time behavior reproducible</li><li>Verified: all 6 saved stdout files reproduce byte-identically</li><li>Structured codes: BAD_INPUT · UNKNOWN_MODE · INTERNAL</li><li>Invalid input exits 1 without traceback</li><li>Chinese and English cues, sentence boundaries, filler rules</li></ul></article></div><div class="source-note">Version note: memory_extractor.py and skill.json report 0.2.0. README, SKILL.md, and judge_rules.yaml still contain legacy 0.1.0 text. This page follows the actual 0.2.0 runtime.</div></div></section>
+  <section class="section boundary"><div><div class="eyebrow">BOUNDARIES</div><h2>A memory utility, not a human brain</h2><div class="audience"><span>AI agent developers</span><span>Long-term memory builders</span><span>Local / private agent stacks</span><span>Conversation agents</span><span>Autonomous workflows</span><span>Memory-policy evaluators</span></div></div><div class="boundary-list"><div>It does not predict future user needs or automatically remember everything.</div><div>It does not browse, call an external AI, or persist records to a database.</div><div>Similarity and classification are lexical / rule-based heuristics, not a claim of deep semantic understanding.</div><div>Compression is subtractive cleanup; it does not add facts, promises, or missing context.</div></div></section>
+  <section class="cta"><div class="eyebrow">KEEP / COMPRESS / DELETE</div><h2>Keep what matters. Compress what repeats. Forget what no longer earns its place.</h2><p>Turn conversation into long-term memory data that can be explained, reproduced, and deliberately forgotten.</p><div class="cta-links"><a href="https://github.com/finchipaiorg/memory-extractor">GitHub Repository</a><a href="https://finchip.ai/skills/memory-extractor-finchip">FinChip Skill Page</a></div></section>
+</main>
+<footer class="site-footer"><span>MEMORY EXTRACTOR · MIT</span><span>REAL RUNTIME ASSETS · STANDALONE FILE:// · NO EXTERNAL REQUESTS</span></footer><script>
+document.querySelectorAll('[data-filter-group]').forEach(group=>{group.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;group.querySelectorAll('button').forEach(x=>x.classList.remove('active'));b.classList.add('active');const filter=b.dataset.filter;const table=group.nextElementSibling;table.querySelectorAll('tbody tr').forEach(row=>row.hidden=filter!=='all'&&row.dataset.op!==filter);});});
+document.querySelectorAll('details.raw').forEach(d=>d.addEventListener('toggle',()=>{const s=d.querySelector('summary span');if(s)s.textContent=d.open?'−':'+';}));
+</script></body></html>

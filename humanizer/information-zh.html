@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Humanizer：识别并改写 24 类常见 AI 写作模式，让文字更自然、具体，同时保留原意和语气。">
+  <title>Humanizer — 把 AI 腔改成人话</title>
+  <style>
+    :root{
+      --paper:#f5f0e6;--ink:#101114;--blue:#244cff;--coral:#ff6b57;
+      --red:#e6322b;--yellow:#ffd84d;--white:#fffdf8;--muted:#65645f;
+      --line:2px solid var(--ink);--shadow:7px 7px 0 var(--ink);
+      --radius:18px;--max:1240px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;line-height:1.55}
+    a{color:inherit}
+    button{font:inherit}
+    .shell{width:min(var(--max),calc(100% - 44px));margin:auto}
+    .topbar{height:62px;border-bottom:var(--line);display:flex;align-items:center;justify-content:space-between;text-transform:uppercase;letter-spacing:.08em;font-size:12px;font-weight:800}
+    .brand{display:flex;gap:10px;align-items:center;text-decoration:none}
+    .brand-mark{display:grid;place-items:center;width:31px;height:31px;background:var(--blue);color:white;border:2px solid var(--ink);border-radius:8px;transform:rotate(-3deg)}
+    .nav{display:flex;gap:24px;align-items:center}.nav a{text-decoration:none}.nav a:hover{text-decoration:underline}
+    .lang{padding:7px 11px;border:2px solid var(--ink);background:var(--white);box-shadow:3px 3px 0 var(--ink)}
+    .hero{min-height:760px;padding:66px 0 58px;display:grid;grid-template-columns:minmax(0,1.16fr) minmax(360px,.84fr);gap:44px;align-items:center;border-bottom:var(--line);position:relative}
+    .eyebrow{display:inline-flex;gap:10px;align-items:center;font-weight:900;text-transform:uppercase;letter-spacing:.12em;font-size:12px}
+    .dot{width:10px;height:10px;background:var(--coral);border:2px solid var(--ink);border-radius:50%}
+    h1{font-size:clamp(76px,11.5vw,164px);line-height:.77;letter-spacing:-.075em;margin:28px 0 34px;font-weight:950;max-width:800px}
+    h1 span{color:var(--blue);display:block;margin-left:.34em}
+    .lede{font-size:clamp(22px,2.5vw,38px);line-height:1.12;letter-spacing:-.035em;font-weight:780;max-width:750px;margin:0}
+    .hero-note{margin:25px 0 0;max-width:630px;color:var(--muted);font-size:15px}
+    .hero-actions{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:13px 18px;border:2px solid var(--ink);font-weight:850;text-decoration:none;background:var(--yellow);box-shadow:4px 4px 0 var(--ink);transition:.18s transform,.18s box-shadow}
+    .btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+    .btn.secondary{background:var(--white)}
+    .hero-board{position:relative;padding:24px 14px 36px}
+    .hero-board:before{content:"真实运行 01";position:absolute;right:0;top:-10px;background:var(--coral);border:var(--line);padding:8px 13px;font-weight:900;transform:rotate(5deg);z-index:2}
+    .mini-card{background:var(--white);border:var(--line);border-radius:16px;padding:24px;box-shadow:var(--shadow);position:relative}
+    .mini-card.before{transform:rotate(-2deg);z-index:1}
+    .mini-card.after{background:#e9edff;margin:-8px -14px 0 20px;transform:rotate(1.7deg);z-index:2}
+    .mini-label{font-size:11px;font-weight:950;letter-spacing:.14em;text-transform:uppercase;display:flex;justify-content:space-between;margin-bottom:14px}
+    .mini-card p{margin:0;font:650 18px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}
+    mark{background:#ffb4a9;color:inherit;padding:0 2px}
+    .after mark{background:#aebdff}
+    .down{width:52px;height:52px;border-radius:50%;background:var(--blue);color:white;border:var(--line);display:grid;place-items:center;font-size:25px;font-weight:900;margin:-6px auto;position:relative;z-index:5}
+    .scribble{position:absolute;right:-15px;bottom:-28px;font:800 16px/1.1 "Comic Sans MS",ui-rounded,cursive;color:var(--blue);transform:rotate(-7deg)}
+    .fact-strip{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:var(--line);background:var(--ink);color:var(--white)}
+    .fact{padding:20px 28px;border-right:1px solid #555}.fact:last-child{border:0}.fact b{font-size:30px;display:block;letter-spacing:-.04em}.fact span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#c7c6c1}
+    section{padding:100px 0;border-bottom:var(--line)}
+    .section-head{display:grid;grid-template-columns:120px 1fr auto;gap:24px;align-items:end;margin-bottom:44px}
+    .section-no{font-size:13px;font-weight:950;letter-spacing:.12em;color:var(--blue)}
+    h2{font-size:clamp(44px,6vw,84px);line-height:.93;letter-spacing:-.055em;margin:0;font-weight:950}
+    .section-kicker{max-width:300px;font:800 15px/1.35 "Comic Sans MS",ui-rounded,cursive;color:var(--red);transform:rotate(-3deg)}
+    .proof{background:var(--white)}
+    .proof .section-head{margin-bottom:30px}
+    .prompt-bar{border:var(--line);background:var(--yellow);padding:18px 22px;display:grid;grid-template-columns:128px 1fr;gap:22px;align-items:start;margin-bottom:22px;box-shadow:5px 5px 0 var(--ink)}
+    .prompt-bar strong{text-transform:uppercase;letter-spacing:.12em;font-size:12px}
+    .prompt-bar p{margin:0;font-size:14px}
+    .transform{display:grid;grid-template-columns:1fr 62px 1fr;gap:0;align-items:stretch}
+    .text-panel{border:var(--line);padding:30px;background:#f1eee7;min-height:350px;position:relative}
+    .text-panel.after{background:#e8ecff}
+    .panel-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;padding-bottom:15px;border-bottom:1px solid #8b8a85}
+    .panel-top b{font-size:12px;letter-spacing:.14em}.panel-top span{font-size:11px;color:var(--muted)}
+    .text-panel p{white-space:pre-line;font-size:18px;line-height:1.8;margin:0}
+    .arrow-box{display:grid;place-items:center;background:var(--blue);color:white;border-top:var(--line);border-bottom:var(--line);font-size:30px;font-weight:900;writing-mode:vertical-rl;letter-spacing:.08em}
+    .pattern-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.pattern{border:2px solid var(--ink);padding:8px 11px;background:var(--coral);font-size:12px;font-weight:800}
+    .cap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+    .cap{border:var(--line);background:var(--white);padding:24px;min-height:265px;position:relative;transition:.2s transform,.2s box-shadow}
+    .cap:hover{transform:translate(-4px,-4px);box-shadow:7px 7px 0 var(--ink)}
+    .cap:nth-child(2){background:#e9edff}.cap:nth-child(3){background:#ffd9d3}.cap:nth-child(4){background:var(--yellow)}
+    .cap-num{font-size:12px;font-weight:900;letter-spacing:.12em}.cap h3{font-size:28px;line-height:1.02;letter-spacing:-.035em;margin:58px 0 15px}.cap p{font-size:14px;margin:0;color:#353535}.cap .corner{position:absolute;right:18px;top:15px;font-size:34px}
+    .marquee{overflow:hidden;background:var(--blue);color:white;border-bottom:var(--line);padding:13px 0;font-weight:900;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}
+    .marquee-track{display:inline-block;animation:marquee 24s linear infinite}.marquee span{margin-right:42px}
+    @keyframes marquee{to{transform:translateX(-50%)}}
+    .cases{padding-bottom:55px}
+    .case{margin:0 0 72px;border-top:var(--line);padding-top:28px}
+    .case-header{display:grid;grid-template-columns:130px 1fr 320px;gap:22px;align-items:start;margin-bottom:26px}
+    .case-id{display:inline-block;background:var(--blue);color:white;border:2px solid var(--ink);padding:8px 12px;font-weight:900;box-shadow:3px 3px 0 var(--ink)}
+    .case h3{font-size:clamp(34px,4vw,60px);line-height:.95;letter-spacing:-.045em;margin:0}.case-summary{font-size:14px;color:var(--muted)}
+    .prompt-card{background:var(--ink);color:var(--white);padding:22px;border:2px solid var(--ink);margin-bottom:16px}
+    .prompt-card .label{color:var(--yellow)}
+    .label{font-size:11px;font-weight:950;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:10px}
+    .prompt-card p{white-space:pre-line;margin:0;font-size:13px;line-height:1.65}.prompt-card details{border-top:1px solid #555;padding-top:12px}.prompt-card summary{cursor:pointer;color:var(--yellow);font-size:12px;font-weight:850}.prompt-card details p{margin-top:12px;color:#f1f0eb}
+    .compare{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .copy{border:var(--line);background:var(--white);padding:24px;min-height:260px}
+    .copy.result{background:#e8ecff;box-shadow:5px 5px 0 var(--blue)}
+    .copy p{white-space:pre-line;margin:0;font-size:15px;line-height:1.72}
+    .observations{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.observations span{font-size:12px;border:1.5px solid var(--ink);background:var(--white);padding:7px 10px}
+    .workflow{background:var(--ink);color:var(--white)}
+    .workflow .section-no{color:var(--yellow)}.workflow .section-kicker{color:#ff9180}
+    .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:#4d4d4d;border:2px solid #727272}
+    .step{background:var(--ink);padding:28px;min-height:235px;position:relative}.step b{color:var(--yellow);font-size:12px;letter-spacing:.13em}.step h3{font-size:31px;margin:55px 0 10px}.step p{color:#c6c6c3;font-size:14px;margin:0}.step:not(:last-child):after{content:"→";position:absolute;right:-18px;top:31px;width:34px;height:34px;background:var(--coral);color:var(--ink);border:2px solid var(--ink);display:grid;place-items:center;font-weight:950;z-index:2}
+    .audience-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.audience{border:var(--line);background:var(--white);min-height:180px;padding:20px;display:flex;flex-direction:column;justify-content:space-between}.audience:nth-child(even){background:var(--yellow)}.audience i{font-style:normal;font-size:28px}.audience b{font-size:18px}.audience small{color:var(--muted)}
+    .notice{margin-top:26px;border-left:8px solid var(--red);padding:17px 20px;background:#fff2ef;font-size:14px}
+    .cta{padding:90px 0;background:var(--coral)}
+    .cta-box{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:end}.cta h2{font-size:clamp(58px,9vw,126px);max-width:900px}.cta p{font-size:18px;max-width:540px}
+    .cta .btn{background:var(--white);padding:18px 24px}
+    footer{background:var(--ink);color:white;padding:28px 0;font-size:12px}.footer-inner{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer-inner a{color:var(--yellow)}
+    .reveal{opacity:0;transform:translateY(20px);transition:.55s ease}.reveal.in{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.marquee-track{animation:none}.reveal{opacity:1;transform:none;transition:none}}
+    @media (max-width:900px){
+      .nav a:not(.lang){display:none}.hero{grid-template-columns:1fr;min-height:auto;padding-top:46px}.hero-board{max-width:620px;margin:auto}.fact-strip{grid-template-columns:1fr}.fact{border-right:0;border-bottom:1px solid #555}.section-head{grid-template-columns:80px 1fr}.section-kicker{grid-column:2}.cap-grid{grid-template-columns:1fr 1fr}.case-header{grid-template-columns:110px 1fr}.case-summary{grid-column:2}.steps{grid-template-columns:1fr 1fr}.step:nth-child(2):after{display:none}.audience-grid{grid-template-columns:1fr 1fr}.cta-box{grid-template-columns:1fr}.cta .btn{justify-self:start}
+    }
+    @media (max-width:620px){
+      .shell{width:min(100% - 28px,var(--max))}.topbar{height:54px}.hero{padding:42px 0}.hero h1{font-size:22vw}.lede{font-size:24px}.hero-board{padding-left:0;padding-right:0}.mini-card p{font-size:15px}.fact{padding:16px 20px}section{padding:68px 0}.section-head{grid-template-columns:1fr;gap:10px}.section-kicker{grid-column:1}.prompt-bar{grid-template-columns:1fr}.transform{grid-template-columns:1fr}.arrow-box{height:52px;border-left:var(--line);border-right:var(--line);writing-mode:horizontal-tb}.arrow-box::after{content:" HUMANIZER";font-size:12px}.text-panel{min-height:0;padding:22px}.cap-grid,.compare,.steps,.audience-grid{grid-template-columns:1fr}.case-header{grid-template-columns:1fr}.case-summary{grid-column:1}.step:not(:last-child):after{content:"↓";right:25px;top:auto;bottom:-18px}.step:nth-child(2):after{display:grid}.audience{min-height:135px}.cta h2{font-size:17vw}
+    }
+  </style>
+</head>
+<body>
+  <header class="shell topbar">
+    <a class="brand" href="#top"><span class="brand-mark">✦</span><span>FinChip / Skill File</span></a>
+    <nav class="nav" aria-label="页面导航"><a href="#proof">前后对照</a><a href="#cases">真实案例</a><a href="#workflow">工作方式</a><a class="lang" href="information-en.html">EN</a></nav>
+  </header>
+
+  <main id="top">
+    <div class="shell hero">
+      <div>
+        <div class="eyebrow"><span class="dot"></span> Instruction Skill · v2.1.1</div>
+        <h1>Human<span>izer.</span></h1>
+        <p class="lede">删掉 AI 腔，保住原来的意思。让文字更具体、更顺口，也更像你会说的话。</p>
+        <p class="hero-note">它不是“AI 检测器”，也不承诺绕过检测。它是一套编辑规则：识别 24 类常见 AI 写作模式，再按语境重写。</p>
+        <div class="hero-actions"><a class="btn" href="#proof">看真实前后对照 ↓</a><a class="btn secondary" href="#cases">浏览三组真实案例</a></div>
+      </div>
+      <div class="hero-board" aria-label="真实运行文字对照">
+        <div class="mini-card before"><div class="mini-label"><span>Before</span><span>周报通知</span></div><p>为了进一步提升跨部门协作效率并推动项目<mark>顺利落地</mark>，我们计划于下周正式启动全新的周报机制……</p></div>
+        <div class="down">↓</div>
+        <div class="mini-card after"><div class="mini-label"><span>After</span><span>Humanized</span></div><p><mark>从下周开始</mark>，我们会启用周报机制，用来同步项目进度、发现风险，并对齐关键目标。</p></div>
+        <div class="scribble">同样的意思。<br>少一点机器味。</div>
+      </div>
+    </div>
+
+    <section id="proof" class="proof">
+      <div class="shell">
+        <div class="section-head reveal"><div class="section-no">01 / PROOF</div><h2>先看结果，<br>再谈能力。</h2><div class="section-kicker">同一次真实运行<br>Prompt → Before → Output</div></div>
+        <div class="prompt-bar reveal"><strong>Actual prompt</strong><p>请使用 Humanizer 改写下面这封内部通知。保持专业、直接的语气，保留全部事实、截止时间和要求，不要添加原文没有的信息。请先给出改写结果，再简要说明改了哪些 AI 写作模式。</p></div>
+        <div class="transform reveal">
+          <article class="text-panel"><div class="panel-top"><b>BEFORE / 原文</b><span>真实输入 · 184 字符</span></div><p>各位同事好：
+为了进一步提升跨部门协作效率并推动项目顺利落地，我们计划于下周正式启动全新的周报机制。该机制不仅能够帮助我们及时掌握项目进展，还能够有效识别潜在风险，确保所有成员在关键目标上保持高度一致。请大家于每周五下午六点前提交周报，内容涵盖本周成果、当前挑战以及下周计划。相信通过大家的共同努力，我们一定能够构建更加高效、透明、协同的工作方式。感谢大家的积极配合！</p></article>
+          <div class="arrow-box" aria-hidden="true">→</div>
+          <article class="text-panel after"><div class="panel-top"><b>AFTER / HUMANIZER OUTPUT</b><span>实际输出 · 未改写</span></div><p>各位同事好：
+
+从下周开始，我们会启用周报机制，用来同步项目进度、发现风险，并对齐关键目标。请在每周五 18:00 前提交，内容包括本周成果、当前问题和下周计划。
+
+感谢配合。</p></article>
+        </div>
+        <div class="pattern-row reveal"><span class="pattern">删去套话</span><span class="pattern">拆掉“不仅…还…”</span><span class="pattern">保留时间与要求</span><span class="pattern">移除泛化结尾</span></div>
+      </div>
+    </section>
+
+    <div class="fact-strip">
+      <div class="fact"><b>24</b><span>文档中明确列出的模式</span></div>
+      <div class="fact"><b>6</b><span>本次真实运行 · 中英双语</span></div>
+      <div class="fact"><b>0</b><span>虚构分数 / 性能数据</span></div>
+    </div>
+
+    <section id="capabilities">
+      <div class="shell">
+        <div class="section-head reveal"><div class="section-no">02 / CAPABILITIES</div><h2>不是换几个词，<br>是做一次编辑。</h2><div class="section-kicker">全部来自 SKILL.md<br>没有脑补功能</div></div>
+        <div class="cap-grid">
+          <article class="cap reveal"><span class="cap-num">01 / SCAN</span><span class="corner">⌁</span><h3>识别 24 类<br>AI 写作模式</h3><p>覆盖意义拔高、宣传腔、模糊归因、AI 高频词、破折号滥用、三连词、聊天残留和过度缓和等模式。</p></article>
+          <article class="cap reveal"><span class="cap-num">02 / REWRITE</span><span class="corner">✎</span><h3>重写问题段落</h3><p>用更直接的动词、更具体的表达和更自然的句子节奏，替换公式化措辞与重复结构。</p></article>
+          <article class="cap reveal"><span class="cap-num">03 / PRESERVE</span><span class="corner">◎</span><h3>保留原意<br>匹配语气</h3><p>核心信息不变，并根据专业、随意、技术或营销场景维持合适的语气。结果仍需人工复核。</p></article>
+          <article class="cap reveal"><span class="cap-num">04 / VOICE</span><span class="corner">✦</span><h3>让文字<br>有一点人味</h3><p>在合适时加入观点、节奏变化、第一人称或真实的复杂感，避免“干净但没有灵魂”的文字。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <div class="marquee" aria-hidden="true"><div class="marquee-track"><span>LESS HYPE</span><span>MORE SPECIFIC</span><span>SAME MEANING</span><span>BETTER RHYTHM</span><span>LESS HYPE</span><span>MORE SPECIFIC</span><span>SAME MEANING</span><span>BETTER RHYTHM</span></div></div>
+
+    <section id="cases" class="cases">
+      <div class="shell">
+        <div class="section-head reveal"><div class="section-no">03 / REAL CASES</div><h2>三种场景，<br>三次真实运行。</h2><div class="section-kicker">中文 Prompt<br>中文原文<br>中文实际输出</div></div>
+
+        <article class="case reveal">
+          <div class="case-header"><div><span class="case-id">CASE 01</span></div><h3>专业沟通<br>周报通知</h3><p class="case-summary">目标：保留启动时间、截止时间与三项内容要求，压缩官样套话。</p></div>
+          <div class="prompt-card"><span class="label">Actual prompt</span><details><summary>查看完整实际 Prompt（含原文）</summary><p>请使用 Humanizer 改写下面这封内部通知。保持专业、直接的语气，保留全部事实、截止时间和要求，不要添加原文没有的信息。请先给出改写结果，再简要说明改了哪些 AI 写作模式。
+
+各位同事好：
+为了进一步提升跨部门协作效率并推动项目顺利落地，我们计划于下周正式启动全新的周报机制。该机制不仅能够帮助我们及时掌握项目进展，还能够有效识别潜在风险，确保所有成员在关键目标上保持高度一致。请大家于每周五下午六点前提交周报，内容涵盖本周成果、当前挑战以及下周计划。相信通过大家的共同努力，我们一定能够构建更加高效、透明、协同的工作方式。感谢大家的积极配合！</p></details></div>
+          <div class="compare"><div class="copy"><span class="label">Original</span><p>各位同事好：
+为了进一步提升跨部门协作效率并推动项目顺利落地，我们计划于下周正式启动全新的周报机制。该机制不仅能够帮助我们及时掌握项目进展，还能够有效识别潜在风险，确保所有成员在关键目标上保持高度一致。请大家于每周五下午六点前提交周报，内容涵盖本周成果、当前挑战以及下周计划。相信通过大家的共同努力，我们一定能够构建更加高效、透明、协同的工作方式。感谢大家的积极配合！</p></div><div class="copy result"><span class="label">Humanizer output</span><p>各位同事好：
+
+从下周开始，我们会启用周报机制，用来同步项目进度、发现风险，并对齐关键目标。请在每周五 18:00 前提交，内容包括本周成果、当前问题和下周计划。
+
+感谢配合。</p></div></div>
+          <div class="observations"><span>填充语删减</span><span>否定平行句式</span><span>泛化结尾移除</span></div>
+        </article>
+
+        <article class="case reveal">
+          <div class="case-header"><div><span class="case-id">CASE 02</span></div><h3>营销文案<br>功能上线</h3><p class="case-summary">目标：保留发布感与三个使用场景，不使用 emoji、夸张形容词或虚构功能。</p></div>
+          <div class="prompt-card"><span class="label">Actual prompt</span><details><summary>查看完整实际 Prompt（含原文）</summary><p>请使用 Humanizer 改写下面的社交媒体产品文案。保留“智能笔记已上线”以及会议纪要、学习规划、零散想法这三个使用场景；语气可以有发布感，但不要夸张、不要 emoji、不要虚构新功能。请先给出改写结果，再简要说明改了哪些 AI 写作模式。
+
+🚀 重磅来袭！我们的全新智能笔记功能正式上线！它不仅仅是一款记录工具，更是你探索灵感、提升效率、重塑生产力方式的关键伙伴。无论从会议纪要到学习规划，从零散想法到宏大愿景，它都能为你带来无缝、智能、高效的体验。立即开启你的灵感之旅，让每一个想法都绽放无限可能！✨</p></details></div>
+          <div class="compare"><div class="copy"><span class="label">Original</span><p>🚀 重磅来袭！我们的全新智能笔记功能正式上线！它不仅仅是一款记录工具，更是你探索灵感、提升效率、重塑生产力方式的关键伙伴。无论从会议纪要到学习规划，从零散想法到宏大愿景，它都能为你带来无缝、智能、高效的体验。立即开启你的灵感之旅，让每一个想法都绽放无限可能！✨</p></div><div class="copy result"><span class="label">Humanizer output</span><p>智能笔记功能上线了。
+
+会议纪要、学习计划和随手记下的想法，都可以放在一起整理。现在就试试，让记录更省事。</p></div></div>
+          <div class="observations"><span>Emoji 装饰移除</span><span>宣传腔降温</span><span>三连形容词具体化</span></div>
+        </article>
+
+        <article class="case reveal">
+          <div class="case-header"><div><span class="case-id">CASE 03</span></div><h3>学术表达<br>AI 与教育</h3><p class="case-summary">目标：保持正式与审慎，不新增数据或引文，把抽象判断落到功能与限制。</p></div>
+          <div class="prompt-card"><span class="label">Actual prompt</span><details><summary>查看完整实际 Prompt（含原文）</summary><p>请使用 Humanizer 改写下面的学术段落。保持正式、审慎，保留原文关于学习数据、知识薄弱点、教学参考、隐私和算法偏差的核心意思；不要添加数据、引文或新证据。请先给出改写结果，再简要说明改了哪些 AI 写作模式。
+
+在当今数字化快速发展的时代，人工智能技术在教育领域发挥着日益关键的作用，标志着传统教学模式向智能化与个性化方向转型的重要趋势。通过对学习数据进行深入分析，人工智能能够有效识别学生的知识薄弱点，从而为教师提供有价值的参考，并进一步促进教学质量的全面提升。尽管这一技术仍面临隐私保护和算法偏差等挑战，但其未来发展前景依然十分广阔。</p></details></div>
+          <div class="compare"><div class="copy"><span class="label">Original</span><p>在当今数字化快速发展的时代，人工智能技术在教育领域发挥着日益关键的作用，标志着传统教学模式向智能化与个性化方向转型的重要趋势。通过对学习数据进行深入分析，人工智能能够有效识别学生的知识薄弱点，从而为教师提供有价值的参考，并进一步促进教学质量的全面提升。尽管这一技术仍面临隐私保护和算法偏差等挑战，但其未来发展前景依然十分广阔。</p></div><div class="copy result"><span class="label">Humanizer output</span><p>人工智能可以分析学习数据，帮助教师识别学生的知识薄弱点，并提供更有针对性的教学参考。与此同时，隐私保护和算法偏差仍是需要解决的问题。它在教育中的价值，最终取决于实际应用效果。</p></div></div>
+          <div class="observations"><span>空泛开场删减</span><span>意义拔高移除</span><span>正向模板结尾改写</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="workflow" class="workflow">
+      <div class="shell">
+        <div class="section-head reveal"><div class="section-no">04 / WORKFLOW</div><h2>它实际<br>怎么工作？</h2><div class="section-kicker">没有隐藏算法声明<br>只有仓库写明的流程</div></div>
+        <div class="steps">
+          <article class="step reveal"><b>STEP 01</b><h3>Input</h3><p>读取用户提供的文字，以及场景、语气和必须保留的事实。</p></article>
+          <article class="step reveal"><b>STEP 02</b><h3>Analyze</h3><p>按文档列出的 24 类内容、语言、风格、沟通和填充模式进行检查。</p></article>
+          <article class="step reveal"><b>STEP 03</b><h3>Humanize</h3><p>重写问题段落，调整节奏、用词与句式，同时匹配原本的使用语境。</p></article>
+          <article class="step reveal"><b>STEP 04</b><h3>Output</h3><p>给出改写结果；有帮助时，再附上一段简短的改动说明。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="audience">
+      <div class="shell">
+        <div class="section-head reveal"><div class="section-no">05 / FOR WHOM</div><h2>AI 帮你起稿，<br>Humanizer 帮你收尾。</h2><div class="section-kicker">写作者不是一种职业<br>而是一种每天都在做的事</div></div>
+        <div class="audience-grid">
+          <article class="audience reveal"><i>01</i><div><b>内容创作者</b><br><small>文章、脚本、Newsletter</small></div></article>
+          <article class="audience reveal"><i>02</i><div><b>营销团队</b><br><small>产品文案、社交发布</small></div></article>
+          <article class="audience reveal"><i>03</i><div><b>学生与研究者</b><br><small>在允许 AI 辅助的前提下编辑表达</small></div></article>
+          <article class="audience reveal"><i>04</i><div><b>职场写作者</b><br><small>邮件、通知、报告</small></div></article>
+          <article class="audience reveal"><i>05</i><div><b>AI 辅助写作用户</b><br><small>把初稿调回自己的声音</small></div></article>
+        </div>
+        <div class="notice reveal"><b>使用边界：</b>Humanizer 适合合法编辑，不应被用于规避学校、职场、法律、出版或其他场景的 AI 披露要求。改写可能改变细微含义，发布前请复核。</div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="shell cta-box reveal"><div><div class="eyebrow">THE LAST EDIT</div><h2>用 AI 起稿。<br>用自己的声音定稿。</h2><p>给 Humanizer 一段文字、一个语气目标和不能丢的事实。它负责清掉套路，你负责判断这句话是不是你。</p></div><a class="btn" href="#cases">查看三组真实运行 →</a></div>
+    </section>
+  </main>
+
+  <footer><div class="shell footer-inner"><span>Humanizer Information · Chinese · Standalone static HTML</span><span>Verified against SKILL.md v2.1.1 · Real-run archive saved with the repository</span></div></footer>
+  <script>
+    (()=>{const items=[...document.querySelectorAll('.reveal')];if(!('IntersectionObserver'in window)){items.forEach(x=>x.classList.add('in'));return}const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});items.forEach(x=>io.observe(x))})();
+  </script>
+</body>
+</html>

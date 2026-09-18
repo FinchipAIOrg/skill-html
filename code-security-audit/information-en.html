@@ -1,0 +1,234 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Code Security Audit — Offline SAST-lite Skill</title><meta name="description" content="An offline, zero-dependency, rule-based SAST-lite Skill. Pass source files inline and get line-level evidence, severity, remediation guidance, plus a block / review / pass release verdict."><style>
+:root{--bg:#05080d;--panel:#0b1119;--panel2:#0d1621;--line:#1c2c3c;--muted:#8193a6;--text:#eef6ff;--cyan:#51e4ff;--blue:#5f86ff;--purple:#9e77ff;--green:#55e6ae;--amber:#ffc966;--red:#ff747f;--shadow:0 24px 80px rgba(0,0,0,.38)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 72% -5%,rgba(55,117,255,.14),transparent 28%),radial-gradient(circle at 0 24%,rgba(37,214,255,.08),transparent 25%),var(--bg);color:var(--text);font:15px/1.65 Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.grid-bg{position:fixed;inset:0;pointer-events:none;opacity:.28;background-image:linear-gradient(rgba(84,128,161,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(84,128,161,.10) 1px,transparent 1px);background-size:42px 42px;mask-image:linear-gradient(to bottom,black,transparent 75%)}a{color:inherit;text-decoration:none}.wrap{width:min(1180px,calc(100% - 40px));margin:auto}.nav{height:74px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(120,160,190,.14);position:relative;z-index:5}.brand{display:flex;gap:11px;align-items:center;font-weight:800;letter-spacing:-.02em}.brandmark{width:30px;height:30px;border:1px solid #3a6681;border-radius:9px;display:grid;place-items:center;background:linear-gradient(145deg,#0e1d29,#08111a);box-shadow:inset 0 0 22px rgba(81,228,255,.06)}.brandmark:before{content:"";width:10px;height:10px;border:2px solid var(--cyan);border-radius:2px;transform:rotate(45deg)}.pill{border:1px solid #25384b;background:#0b141e;color:#a8bbcb;padding:7px 11px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.04em}.hero{min-height:680px;display:grid;grid-template-columns:1.04fr .96fr;gap:58px;align-items:center;padding:74px 0 60px}.eyebrow{display:flex;gap:10px;align-items:center;color:#a7bed1;font-weight:750;font-size:12px;text-transform:uppercase;letter-spacing:.14em}.dot-live{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 14px rgba(85,230,174,.75)}h1{font-size:clamp(50px,7vw,88px);line-height:.96;letter-spacing:-.065em;margin:22px 0 25px;max-width:720px}.gradient-word{background:linear-gradient(90deg,#fff,#b6d5ff 56%,#70efff);-webkit-background-clip:text;background-clip:text;color:transparent}.lede{font-size:19px;color:#a7b8c8;max-width:650px}.actions{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}.btn{padding:12px 16px;border-radius:10px;font-weight:800;border:1px solid #2a4155;background:#0d1721}.btn.primary{background:#ecf9ff;color:#061018;border-color:#ecf9ff}.btn:hover{transform:translateY(-1px)}.trustline{display:flex;gap:20px;flex-wrap:wrap;margin-top:28px;color:#8196a8;font-size:13px}.trustline b{color:#d7e8f4}.console{border:1px solid #243a4d;background:linear-gradient(180deg,rgba(17,31,44,.94),rgba(7,13,20,.98));border-radius:22px;box-shadow:var(--shadow),inset 0 1px rgba(255,255,255,.03);overflow:hidden;position:relative}.console:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 49%,rgba(78,226,255,.035) 50%);background-size:100% 5px;pointer-events:none}.windowbar{height:49px;border-bottom:1px solid #1d3041;display:flex;align-items:center;justify-content:space-between;padding:0 17px;color:#7890a4;font:600 12px ui-monospace,monospace}.lights{display:flex;gap:7px}.lights i{width:8px;height:8px;border-radius:50%;background:#385164}.lights i:nth-child(1){background:#ff6e79}.lights i:nth-child(2){background:#ffc95d}.lights i:nth-child(3){background:#4edaa7}.console-body{padding:21px}.flow-row{display:grid;grid-template-columns:1fr 32px 1fr;gap:8px;align-items:center}.mini-code{border:1px solid #1a3041;background:#08111a;border-radius:13px;padding:15px;min-height:150px}.mini-title{display:flex;justify-content:space-between;color:#829bae;font:700 11px ui-monospace,monospace;margin-bottom:11px}.code{font:12px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;color:#c6d9e6;white-space:pre-wrap;word-break:break-word}.code .bad{color:#ff9aa3}.arrow{text-align:center;color:var(--cyan);font-size:22px}.verdict{display:flex;align-items:center;justify-content:space-between;padding:14px 15px;border:1px solid #41272f;background:#1a0e13;border-radius:12px;margin-top:12px}.verdict strong{color:#ff8893;font-size:20px}.scanline{height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.65;animation:scan 3.8s linear infinite}@keyframes scan{from{transform:translateY(-200px)}to{transform:translateY(420px)}}section{padding:82px 0}.section-head{display:flex;justify-content:space-between;gap:30px;align-items:end;margin-bottom:34px}.kicker{font:800 12px ui-monospace,monospace;letter-spacing:.14em;color:var(--cyan);text-transform:uppercase}.section-head h2{font-size:clamp(34px,5vw,56px);line-height:1.02;letter-spacing:-.045em;margin:8px 0 0}.section-head p{max-width:530px;color:#899daf;margin:0}.before-after{padding-top:24px}.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.ba{border:1px solid #1e3040;border-radius:20px;background:rgba(11,18,27,.78);overflow:hidden;min-height:420px}.ba-top{padding:20px 22px;border-bottom:1px solid #1b2d3c;display:flex;align-items:center;justify-content:space-between}.label{font:850 12px ui-monospace,monospace;letter-spacing:.12em}.before .label{color:#9aa7b2}.after .label{color:var(--green)}.pain-list{padding:22px}.pain{display:grid;grid-template-columns:32px 1fr;gap:12px;padding:15px 0;border-bottom:1px dashed #1e3040}.pain:last-child{border-bottom:0}.pain-num{width:25px;height:25px;border:1px solid #30475a;border-radius:7px;display:grid;place-items:center;color:#758b9e;font:700 11px ui-monospace}.pain b{display:block;margin-bottom:3px}.pain span{color:#8397a7}.after-body{padding:22px}.metric-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}.metric{border:1px solid #203448;background:#09131d;border-radius:10px;padding:11px}.metric small{display:block;color:#7890a4;font-size:10px;text-transform:uppercase;letter-spacing:.08em}.metric b{font-size:18px}.metric.danger b{color:var(--red)}.finding{border:1px solid #213649;background:#09131a;border-radius:10px;padding:12px 13px;margin-top:8px}.finding-top{display:flex;gap:8px;align-items:center;font:700 11px ui-monospace;flex-wrap:wrap}.sev{padding:2px 7px;border-radius:999px}.sev.high{color:#ff9ca4;background:#391920}.sev.medium{color:#ffd77b;background:#382c13}.sev.low{color:#84c5ff;background:#102b42}.finding p{margin:6px 0 0;color:#90a7b8;font-size:12px}.cards-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.feature{border:1px solid #1e3141;background:linear-gradient(180deg,#0c151f,#091119);border-radius:17px;padding:20px;min-height:210px;position:relative;overflow:hidden}.feature .n{font:800 11px ui-monospace;color:#638199}.feature h3{font-size:18px;margin:38px 0 8px}.feature p{color:#8195a6;margin:0;font-size:13px}.feature:after{content:"";position:absolute;width:85px;height:85px;border:1px solid rgba(81,228,255,.18);border-radius:50%;right:-28px;top:-28px}.statbar{margin-top:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{padding:18px;border:1px solid #203444;border-radius:14px;background:#09121b}.stat b{display:block;font-size:28px;line-height:1}.stat span{display:block;color:#7f94a5;font-size:12px;margin-top:6px}.workflow{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid #213546;border-radius:18px;overflow:hidden;background:#09131c}.step{padding:22px 18px;min-height:180px;border-right:1px solid #1c3040;position:relative}.step:last-child{border-right:0}.step .id{font:800 10px ui-monospace;color:#5fe6fb}.step h3{margin:38px 0 7px;font-size:16px}.step p{margin:0;color:#7f94a5;font-size:12px}.step:before{content:"";position:absolute;top:23px;right:-5px;width:8px;height:8px;border:1px solid #4fdff6;background:#09131c;transform:rotate(45deg);z-index:2}.step:last-child:before{display:none}.cases{display:grid;gap:26px}.case{border:1px solid #22384a;border-radius:22px;background:#08111a;overflow:hidden;box-shadow:0 18px 70px rgba(0,0,0,.22)}.case-head{display:grid;grid-template-columns:.65fr 1.35fr;gap:28px;padding:27px;border-bottom:1px solid #1d3041}.case-index{font:900 13px ui-monospace;color:var(--cyan);letter-spacing:.12em}.case h3{font-size:26px;letter-spacing:-.03em;margin:7px 0 6px}.case-sub{color:#8599aa;margin:0}.promptbox{border:1px solid #203648;background:#0b1620;border-radius:13px;padding:14px 16px}.promptbox small{display:block;color:#678095;text-transform:uppercase;font:800 10px ui-monospace;letter-spacing:.12em;margin-bottom:7px}.promptbox p{margin:0;color:#d7e5ef}.case-main{display:grid;grid-template-columns:.82fr 1.18fr;gap:0}.case-info{padding:25px;border-right:1px solid #1d3041}.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:18px}.result-chip{padding:10px;border:1px solid #1f3445;border-radius:10px;background:#0b151e}.result-chip small{display:block;font-size:9px;color:#6f8597;text-transform:uppercase}.result-chip b{font-size:16px}.findings-list{display:grid;gap:8px}.runline{margin-top:18px;border-top:1px dashed #203344;padding-top:14px;color:#6f879a;font:11px/1.55 ui-monospace,monospace}.case-shot{padding:20px;background:linear-gradient(145deg,#0a131d,#071019);display:flex;align-items:flex-start;justify-content:center}.case-shot img{width:100%;max-height:560px;object-fit:cover;object-position:top;border-radius:13px;border:1px solid #23394b;box-shadow:0 20px 70px rgba(0,0,0,.4)}details{margin-top:13px}summary{cursor:pointer;color:#8eb1c7;font-size:12px}.raw{max-height:330px;overflow:auto;white-space:pre-wrap;background:#050a10;border:1px solid #172a39;border-radius:10px;padding:13px;color:#b8cddd;font:11px/1.55 ui-monospace,monospace}.reliability{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}.matrix,.note-panel{border:1px solid #203546;border-radius:19px;background:#09121b;padding:24px}.matrix-row{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;padding:13px 0;border-bottom:1px solid #172a39}.matrix-row:last-child{border-bottom:0}.matrix-row span{color:#8196a7}.ok{color:var(--green)!important}.warn{color:var(--amber)!important}.note-panel h3{font-size:23px;margin:0 0 10px}.note-panel p{color:#8da1b1}.tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.tag{font:700 11px ui-monospace;border:1px solid #264154;border-radius:999px;padding:7px 9px;color:#9eb7c8;background:#0b1720}.audience{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.aud{border:1px solid #203546;border-radius:16px;padding:18px;background:#09131c}.aud b{display:block;margin-bottom:6px}.aud span{color:#7f94a5;font-size:13px}.cta{padding:60px 0 100px}.cta-box{border:1px solid #2a465a;border-radius:25px;padding:46px;background:radial-gradient(circle at 85% 15%,rgba(81,228,255,.12),transparent 30%),linear-gradient(145deg,#0b1722,#071019);display:flex;justify-content:space-between;align-items:center;gap:24px;overflow:hidden;position:relative}.cta-box h2{font-size:42px;line-height:1;letter-spacing:-.04em;margin:0 0 10px}.cta-box p{color:#8da2b3;margin:0}.footer{border-top:1px solid #172938;padding:25px 0 45px;color:#61788c;font-size:12px}.footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding-top:55px}.ba-grid,.reliability{grid-template-columns:1fr}.cards-4,.audience{grid-template-columns:repeat(2,1fr)}.workflow{grid-template-columns:1fr}.step{border-right:0;border-bottom:1px solid #1c3040}.step:before{display:none}.case-head,.case-main{grid-template-columns:1fr}.case-info{border-right:0;border-bottom:1px solid #1d3041}.section-head{display:block}.section-head p{margin-top:15px}.cta-box{display:block}.cta-box .actions{margin-top:24px}}
+@media(max-width:560px){.wrap{width:min(100% - 24px,1180px)}h1{font-size:48px}.hero{min-height:auto;padding-bottom:40px}.metric-strip,.statbar,.result-grid{grid-template-columns:repeat(2,1fr)}.cards-4,.audience{grid-template-columns:1fr}.flow-row{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}section{padding:58px 0}.case-head,.case-info,.case-shot{padding:18px}.case-shot img{max-height:420px}.nav .pill{display:none}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style></head><body><div class="grid-bg"></div>
+    <header class="wrap nav"><a class="brand" href="#top"><span class="brandmark"></span><span>Code Security Audit</span></a><span class="pill">v0.1.0 · OFFLINE SAST-LITE</span></header>
+    <main id="top"><div class="wrap hero"><div><div class="eyebrow"><span class="dot-live"></span>FINCHIP SECURITY SKILL · VERIFIED RUNS</div><h1><span class="gradient-word">Flag dangerous code patterns before they ship.</span></h1><p class="lede">An offline, zero-dependency, rule-based SAST-lite Skill. Pass source files inline and get line-level evidence, severity, remediation guidance, plus a block / review / pass release verdict.</p><div class="actions"><a class="btn primary" href="#cases">View real cases</a><a class="btn" href="#reliability">See boundaries</a></div><div class="trustline"><span><b>0</b> network calls</span><span><b>0</b> API keys</span><span><b>Python ≥3.9</b></span><span><b>11</b> fixed checks</span></div></div>
+    <div class="console"><div class="windowbar"><div class="lights"><i></i><i></i><i></i></div><span>audit / case-01</span></div><div class="console-body"><div class="flow-row"><div class="mini-code"><div class="mini-title"><span>INPUT</span><span>payments_api.py</span></div><div class="code">cursor.execute(<span class="bad">f"SELECT ... {user_id}"</span>)
+requests.get(url, <span class="bad">verify=False</span>)
+return <span class="bad">eval(...)</span></div></div><div class="arrow">→</div><div class="mini-code"><div class="mini-title"><span>FINDINGS</span><span>6 total</span></div><div class="code"><span class="bad">HIGH</span> sql_injection
+<span class="bad">HIGH</span> dangerous_eval
+<span class="bad">HIGH</span> tls_verification_disabled
+MEDIUM debug_enabled</div></div></div><div class="verdict"><span>RELEASE VERDICT</span><strong>BLOCK</strong></div></div><div class="scanline"></div></div></div>
+
+    <section class="before-after" id="before-after"><div class="wrap"><div class="section-head"><div><div class="kicker">01 · BEFORE / AFTER</div><h2>Security review should not depend on memory and scattered grep</h2></div><p>Lightweight manual review often breaks between finding a risky line and producing repeatable, prioritized evidence a team can act on.</p></div><div class="ba-grid"><div class="ba before"><div class="ba-top"><span class="label">BEFORE</span><span class="pill">MANUAL / FRAGMENTED</span></div><div class="pain-list">
+      <div class="pain"><span class="pain-num">01</span><div><b>Manual dangerous-API hunting</b><span>Rules live across reviewer memory, checklists, and ad-hoc grep.</span></div></div>
+      <div class="pain"><span class="pain-num">02</span><div><b>Inconsistent prioritization</b><span>Findings still need hand-sorted severity and release impact.</span></div></div>
+      <div class="pain"><span class="pain-num">03</span><div><b>Unstable evidence format</b><span>Path, line, rule, and remediation fields are easy to lose.</span></div></div>
+      <div class="pain"><span class="pain-num">04</span><div><b>Repeated cost for lightweight checks</b><span>The same patterns get re-checked in every review.</span></div></div>
+    </div></div><div class="ba after"><div class="ba-top"><span class="label">AFTER · ACTUAL CASE 01</span><span class="pill">STRUCTURED JSON</span></div><div class="after-body"><div class="metric-strip"><div class="metric danger"><small>Verdict</small><b>BLOCK</b></div><div class="metric"><small>Findings</small><b>6</b></div><div class="metric"><small>High</small><b>3</b></div><div class="metric"><small>Files</small><b>1</b></div></div><div class="promptbox"><small>ACTUAL PROMPT</small><p>Audit this payment API for dynamic code execution, SQL injection, TLS configuration, debug mode, and network exposure. Return severities and remediation guidance.</p></div><div class="finding"><div class="finding-top"><span class="sev high">HIGH</span><span>dangerous_eval</span><span>· app/payments_api.py:9</span></div><p>return eval(request.args[&quot;expr&quot;])</p></div><div class="finding"><div class="finding-top"><span class="sev high">HIGH</span><span>sql_injection</span><span>· app/payments_api.py:14</span></div><p>cursor.execute(f&quot;SELECT * FROM invoices WHERE user_id = {user_id}&quot;)</p></div><div class="finding"><div class="finding-top"><span class="sev high">HIGH</span><span>tls_verification_disabled</span><span>· app/payments_api.py:18</span></div><p>return requests.get(url, verify=False)</p></div></div></div></div></div></section>
+
+    <section id="capabilities"><div class="wrap"><div class="section-head"><div><div class="kicker">02 · CAPABILITIES</div><h2>Fixed rules. Deterministic output.</h2></div><p>It is not a full SAST engine and does not claim business-context understanding. Its value is offline execution, repeatability, and a stable result schema for fast security gates.</p></div><div class="cards-4"><div class="feature"><span class="n">01 / EVIDENCE</span><h3>Line-level evidence</h3><p>Every finding carries path, line, rule_id, category, severity, excerpt, and recommendation.</p></div><div class="feature"><span class="n">02 / TRIAGE</span><h3>Block / Review / Pass</h3><p>High findings trigger block; Medium-only findings trigger review; otherwise pass.</p></div><div class="feature"><span class="n">03 / COVERAGE</span><h3>Code + config + compliance</h3><p>Checks code execution, command injection, deserialization, SQL, TLS, crypto, DEBUG, CORS, binding, randomness, and LICENSE.</p></div><div class="feature"><span class="n">04 / RUNTIME</span><h3>Fully offline</h3><p>Python standard library only; no network, API keys, or filesystem writes.</p></div></div><div class="statbar"><div class="stat"><b>11</b><span>fixed checks</span></div><div class="stat"><b>5 / 3 / 3</b><span>High / Medium / Low*</span></div><div class="stat"><b>1</b><span>execution mode: audit</span></div><div class="stat"><b>JSON</b><span>deterministic output</span></div></div><p style="color:#5f7486;font-size:11px;margin-top:8px">* Low includes 2 line rules plus the repo-level missing_license check.</p></div></section>
+
+    <section id="workflow"><div class="wrap"><div class="section-head"><div><div class="kicker">03 · WORKFLOW</div><h2>One fixed path from source to release verdict</h2></div></div><div class="workflow"><div class="step"><span class="id">01</span><h3>Inline source</h3><p>Provide each file as {path, content} in the files array.</p></div><div class="step"><span class="id">02</span><h3>Line-by-line scan</h3><p>Fixed regex rules scan each line, with guards on selected checks.</p></div><div class="step"><span class="id">03</span><h3>Structured findings</h3><p>Return evidence, category, severity, and remediation.</p></div><div class="step"><span class="id">04</span><h3>Sort & summarize</h3><p>Sort High → Medium → Low, then path and line.</p></div><div class="step"><span class="id">05</span><h3>Release verdict</h3><p>Emit block / review / pass.</p></div></div></div></section>
+
+    <section id="cases"><div class="wrap"><div class="section-head"><div><div class="kicker">04 · REAL RUNS</div><h2>3 real English execution cases</h2></div><p>Each case preserves the actual JSON input, actual stdout, and a result screenshot rendered directly from that stdout.</p></div><div class="cases"><article class="case" id="case-1"><div class="case-head"><div><div class="case-index">CASE 01</div><h3>High-risk payment API</h3><p class="case-sub">Dynamic execution, SQL injection, TLS, debug mode, and bind exposure</p></div><div class="promptbox"><small>ACTUAL PROMPT</small><p>Audit this payment API for dynamic code execution, SQL injection, TLS configuration, debug mode, and network exposure. Return severities and remediation guidance.</p></div></div><div class="case-main"><div class="case-info"><div class="result-grid"><div class="result-chip"><small>Verdict</small><b style="color:#ff818c">BLOCK</b></div><div class="result-chip"><small>Findings</small><b>6</b></div><div class="result-chip"><small>High</small><b>3</b></div><div class="result-chip"><small>Files</small><b>1</b></div></div><div class="findings-list"><div class="finding"><div class="finding-top"><span class="sev high">HIGH</span><span>dangerous_eval</span><span>· app/payments_api.py:9</span></div><p>return eval(request.args[&quot;expr&quot;])</p></div><div class="finding"><div class="finding-top"><span class="sev high">HIGH</span><span>sql_injection</span><span>· app/payments_api.py:14</span></div><p>cursor.execute(f&quot;SELECT * FROM invoices WHERE user_id = {user_id}&quot;)</p></div><div class="finding"><div class="finding-top"><span class="sev high">HIGH</span><span>tls_verification_disabled</span><span>· app/payments_api.py:18</span></div><p>return requests.get(url, verify=False)</p></div><div class="finding"><div class="finding-top"><span class="sev medium">MEDIUM</span><span>debug_enabled</span><span>· app/payments_api.py:20</span></div><p>app.run(host=&quot;0.0.0.0&quot;, debug=True)</p></div></div><div class="runline">$ python3 code_audit.py inputs/en_case1_web_api.json<br>Executed with Python 3. Stdout is one structured JSON object. The prompt is preserved in the input for documentation; scan logic reads mode + files.</div><details><summary>Expand full actual Output / Result</summary><pre class="raw">{
+  &quot;ok&quot;: true,
+  &quot;skill&quot;: &quot;code-security-audit&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;mode&quot;: &quot;audit&quot;,
+  &quot;data&quot;: {
+    &quot;findings&quot;: [
+      {
+        &quot;path&quot;: &quot;app/payments_api.py&quot;,
+        &quot;line&quot;: 9,
+        &quot;rule_id&quot;: &quot;dangerous_eval&quot;,
+        &quot;category&quot;: &quot;code_execution&quot;,
+        &quot;severity&quot;: &quot;high&quot;,
+        &quot;excerpt&quot;: &quot;return eval(request.args[\&quot;expr\&quot;])&quot;,
+        &quot;recommendation&quot;: &quot;Avoid eval/exec on dynamic input; use explicit parsing (e.g. ast.literal_eval) or a dispatch table instead.&quot;
+      },
+      {
+        &quot;path&quot;: &quot;app/payments_api.py&quot;,
+        &quot;line&quot;: 14,
+        &quot;rule_id&quot;: &quot;sql_injection&quot;,
+        &quot;category&quot;: &quot;injection&quot;,
+        &quot;severity&quot;: &quot;high&quot;,
+        &quot;excerpt&quot;: &quot;cursor.execute(f\&quot;SELECT * FROM invoices WHERE user_id = {user_id}\&quot;)&quot;,
+        &quot;recommendation&quot;: &quot;Use parameterized queries / bound parameters instead of string concatenation or formatting to build SQL.&quot;
+      },
+      {
+        &quot;path&quot;: &quot;app/payments_api.py&quot;,
+        &quot;line&quot;: 18,
+        &quot;rule_id&quot;: &quot;tls_verification_disabled&quot;,
+        &quot;category&quot;: &quot;transport&quot;,
+        &quot;severity&quot;: &quot;high&quot;,
+        &quot;excerpt&quot;: &quot;return requests.get(url, verify=False)&quot;,
+        &quot;recommendation&quot;: &quot;Keep TLS certificate verification enabled; configure a trusted CA bundle rather than disabling verification.&quot;
+      },
+      {
+        &quot;path&quot;: &quot;app/payments_api.py&quot;,
+        &quot;line&quot;: 20,
+        &quot;rule_id&quot;: &quot;debug_enabled&quot;,
+        &quot;category&quot;: &quot;config&quot;,
+        &quot;severity&quot;: &quot;medium&quot;,
+        &quot;excerpt&quot;: &quot;app.run(host=\&quot;0.0.0.0\&quot;, debug=True)&quot;,
+        &quot;recommendation&quot;: &quot;Disable debug mode in production; it can expose stack traces and enable interactive code execution.&quot;
+      },
+      {
+        &quot;path&quot;: &quot;&lt;repo&gt;&quot;,
+        &quot;line&quot;: 0,
+        &quot;rule_id&quot;: &quot;missing_license&quot;,
+        &quot;category&quot;: &quot;compliance&quot;,
+        &quot;severity&quot;: &quot;low&quot;,
+        &quot;excerpt&quot;: &quot;&quot;,
+        &quot;recommendation&quot;: &quot;Add a LICENSE file (e.g. LICENSE or LICENSE.txt) so usage terms are explicit and license compliance can be assessed.&quot;
+      },
+      {
+        &quot;path&quot;: &quot;app/payments_api.py&quot;,
+        &quot;line&quot;: 20,
+        &quot;rule_id&quot;: &quot;bind_all_interfaces&quot;,
+        &quot;category&quot;: &quot;config&quot;,
+        &quot;severity&quot;: &quot;low&quot;,
+        &quot;excerpt&quot;: &quot;app.run(host=\&quot;0.0.0.0\&quot;, debug=True)&quot;,
+        &quot;recommendation&quot;: &quot;Binding to 0.0.0.0 exposes the service on all interfaces; bind to a specific interface or place it behind a firewall/proxy.&quot;
+      }
+    ],
+    &quot;summary&quot;: {
+      &quot;files_scanned&quot;: 1,
+      &quot;total&quot;: 6,
+      &quot;by_severity&quot;: {
+        &quot;high&quot;: 3,
+        &quot;medium&quot;: 1,
+        &quot;low&quot;: 2
+      },
+      &quot;by_category&quot;: {
+        &quot;code_execution&quot;: 1,
+        &quot;injection&quot;: 1,
+        &quot;transport&quot;: 1,
+        &quot;config&quot;: 2,
+        &quot;compliance&quot;: 1
+      }
+    },
+    &quot;verdict&quot;: &quot;block&quot;
+  }
+}</pre></details></div><div class="case-shot"><img loading="lazy" src="assets/en_case1_web_api_terminal.png" alt="Actual terminal output for case 1"></div></div></article><article class="case" id="case-2"><div class="case-head"><div><div class="case-index">CASE 02</div><h3>Background task worker</h3><p class="case-sub">Deserialization, shell=True, MD5, and token randomness</p></div><div class="promptbox"><small>ACTUAL PROMPT</small><p>Audit this background task worker for unsafe deserialization, shell command execution, weak hashing, insecure token randomness, and repository license status.</p></div></div><div class="case-main"><div class="case-info"><div class="result-grid"><div class="result-chip"><small>Verdict</small><b style="color:#ff818c">BLOCK</b></div><div class="result-chip"><small>Findings</small><b>4</b></div><div class="result-chip"><small>High</small><b>2</b></div><div class="result-chip"><small>Files</small><b>2</b></div></div><div class="findings-list"><div class="finding"><div class="finding-top"><span class="sev high">HIGH</span><span>unsafe_deserialization</span><span>· worker/task_worker.py:8</span></div><p>job = pickle.loads(payload)</p></div><div class="finding"><div class="finding-top"><span class="sev high">HIGH</span><span>shell_injection</span><span>· worker/task_worker.py:9</span></div><p>subprocess.run(command, shell=True)</p></div><div class="finding"><div class="finding-top"><span class="sev medium">MEDIUM</span><span>weak_hash</span><span>· worker/task_worker.py:10</span></div><p>digest = hashlib.md5(payload).hexdigest()</p></div><div class="finding"><div class="finding-top"><span class="sev low">LOW</span><span>insecure_random_for_token</span><span>· worker/task_worker.py:11</span></div><p>token = random.choice(&quot;abcdef0123456789&quot;)</p></div></div><div class="runline">$ python3 code_audit.py inputs/en_case2_worker.json<br>Executed with Python 3. Stdout is one structured JSON object. The prompt is preserved in the input for documentation; scan logic reads mode + files.</div><details><summary>Expand full actual Output / Result</summary><pre class="raw">{
+  &quot;ok&quot;: true,
+  &quot;skill&quot;: &quot;code-security-audit&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;mode&quot;: &quot;audit&quot;,
+  &quot;data&quot;: {
+    &quot;findings&quot;: [
+      {
+        &quot;path&quot;: &quot;worker/task_worker.py&quot;,
+        &quot;line&quot;: 8,
+        &quot;rule_id&quot;: &quot;unsafe_deserialization&quot;,
+        &quot;category&quot;: &quot;deserialization&quot;,
+        &quot;severity&quot;: &quot;high&quot;,
+        &quot;excerpt&quot;: &quot;job = pickle.loads(payload)&quot;,
+        &quot;recommendation&quot;: &quot;Never deserialize untrusted data; use json, or yaml.safe_load with an explicit safe Loader.&quot;
+      },
+      {
+        &quot;path&quot;: &quot;worker/task_worker.py&quot;,
+        &quot;line&quot;: 9,
+        &quot;rule_id&quot;: &quot;shell_injection&quot;,
+        &quot;category&quot;: &quot;command_injection&quot;,
+        &quot;severity&quot;: &quot;high&quot;,
+        &quot;excerpt&quot;: &quot;subprocess.run(command, shell=True)&quot;,
+        &quot;recommendation&quot;: &quot;Do not build shell commands from untrusted input; pass an argument list and avoid shell=True.&quot;
+      },
+      {
+        &quot;path&quot;: &quot;worker/task_worker.py&quot;,
+        &quot;line&quot;: 10,
+        &quot;rule_id&quot;: &quot;weak_hash&quot;,
+        &quot;category&quot;: &quot;crypto&quot;,
+        &quot;severity&quot;: &quot;medium&quot;,
+        &quot;excerpt&quot;: &quot;digest = hashlib.md5(payload).hexdigest()&quot;,
+        &quot;recommendation&quot;: &quot;Use a strong algorithm (SHA-256+ for hashing, AES-GCM for encryption); avoid MD5, SHA-1, DES, and ECB mode.&quot;
+      },
+      {
+        &quot;path&quot;: &quot;worker/task_worker.py&quot;,
+        &quot;line&quot;: 11,
+        &quot;rule_id&quot;: &quot;insecure_random_for_token&quot;,
+        &quot;category&quot;: &quot;crypto&quot;,
+        &quot;severity&quot;: &quot;low&quot;,
+        &quot;excerpt&quot;: &quot;token = random.choice(\&quot;abcdef0123456789\&quot;)&quot;,
+        &quot;recommendation&quot;: &quot;Use the &#x27;secrets&#x27; module (or os.urandom) for tokens, secrets, passwords, and nonces instead of the &#x27;random&#x27; module.&quot;
+      }
+    ],
+    &quot;summary&quot;: {
+      &quot;files_scanned&quot;: 2,
+      &quot;total&quot;: 4,
+      &quot;by_severity&quot;: {
+        &quot;high&quot;: 2,
+        &quot;medium&quot;: 1,
+        &quot;low&quot;: 1
+      },
+      &quot;by_category&quot;: {
+        &quot;deserialization&quot;: 1,
+        &quot;command_injection&quot;: 1,
+        &quot;crypto&quot;: 2
+      }
+    },
+    &quot;verdict&quot;: &quot;block&quot;
+  }
+}</pre></details></div><div class="case-shot"><img loading="lazy" src="assets/en_case2_worker_terminal.png" alt="Actual terminal output for case 2"></div></div></article><article class="case" id="case-3"><div class="case-head"><div><div class="case-index">CASE 03</div><h3>Service config & legacy crypto</h3><p class="case-sub">Production DEBUG, wildcard CORS, SHA-1, and bind-all configuration</p></div><div class="promptbox"><small>ACTUAL PROMPT</small><p>Audit this service configuration and crypto helper for production debug settings, CORS, weak hashing, and bind address. Decide whether release should be blocked or reviewed.</p></div></div><div class="case-main"><div class="case-info"><div class="result-grid"><div class="result-chip"><small>Verdict</small><b style="color:#ffd170">REVIEW</b></div><div class="result-chip"><small>Findings</small><b>4</b></div><div class="result-chip"><small>High</small><b>0</b></div><div class="result-chip"><small>Files</small><b>2</b></div></div><div class="findings-list"><div class="finding"><div class="finding-top"><span class="sev medium">MEDIUM</span><span>debug_enabled</span><span>· config/service.py:3</span></div><p>DEBUG = True</p></div><div class="finding"><div class="finding-top"><span class="sev medium">MEDIUM</span><span>cors_wildcard</span><span>· config/service.py:4</span></div><p>HEADERS = {&quot;Access-Control-Allow-Origin&quot;: &quot;*&quot;}</p></div><div class="finding"><div class="finding-top"><span class="sev medium">MEDIUM</span><span>weak_hash</span><span>· config/service.py:9</span></div><p>return hashlib.sha1(data).hexdigest()</p></div><div class="finding"><div class="finding-top"><span class="sev low">LOW</span><span>bind_all_interfaces</span><span>· config/service.py:5</span></div><p>HOST = &quot;0.0.0.0&quot;</p></div></div><div class="runline">$ python3 code_audit.py inputs/en_case3_config.json<br>Executed with Python 3. Stdout is one structured JSON object. The prompt is preserved in the input for documentation; scan logic reads mode + files.</div><details><summary>Expand full actual Output / Result</summary><pre class="raw">{
+  &quot;ok&quot;: true,
+  &quot;skill&quot;: &quot;code-security-audit&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;mode&quot;: &quot;audit&quot;,
+  &quot;data&quot;: {
+    &quot;findings&quot;: [
+      {
+        &quot;path&quot;: &quot;config/service.py&quot;,
+        &quot;line&quot;: 3,
+        &quot;rule_id&quot;: &quot;debug_enabled&quot;,
+        &quot;category&quot;: &quot;config&quot;,
+        &quot;severity&quot;: &quot;medium&quot;,
+        &quot;excerpt&quot;: &quot;DEBUG = True&quot;,
+        &quot;recommendation&quot;: &quot;Disable debug mode in production; it can expose stack traces and enable interactive code execution.&quot;
+      },
+      {
+        &quot;path&quot;: &quot;config/service.py&quot;,
+        &quot;line&quot;: 4,
+        &quot;rule_id&quot;: &quot;cors_wildcard&quot;,
+        &quot;category&quot;: &quot;config&quot;,
+        &quot;severity&quot;: &quot;medium&quot;,
+        &quot;excerpt&quot;: &quot;HEADERS = {\&quot;Access-Control-Allow-Origin\&quot;: \&quot;*\&quot;}&quot;,
+        &quot;recommendation&quot;: &quot;Do not allow all origins with &#x27;*&#x27;; restrict CORS to an explicit allow-list of trusted origins.&quot;
+      },
+      {
+        &quot;path&quot;: &quot;config/service.py&quot;,
+        &quot;line&quot;: 9,
+        &quot;rule_id&quot;: &quot;weak_hash&quot;,
+        &quot;category&quot;: &quot;crypto&quot;,
+        &quot;severity&quot;: &quot;medium&quot;,
+        &quot;excerpt&quot;: &quot;return hashlib.sha1(data).hexdigest()&quot;,
+        &quot;recommendation&quot;: &quot;Use a strong algorithm (SHA-256+ for hashing, AES-GCM for encryption); avoid MD5, SHA-1, DES, and ECB mode.&quot;
+      },
+      {
+        &quot;path&quot;: &quot;config/service.py&quot;,
+        &quot;line&quot;: 5,
+        &quot;rule_id&quot;: &quot;bind_all_interfaces&quot;,
+        &quot;category&quot;: &quot;config&quot;,
+        &quot;severity&quot;: &quot;low&quot;,
+        &quot;excerpt&quot;: &quot;HOST = \&quot;0.0.0.0\&quot;&quot;,
+        &quot;recommendation&quot;: &quot;Binding to 0.0.0.0 exposes the service on all interfaces; bind to a specific interface or place it behind a firewall/proxy.&quot;
+      }
+    ],
+    &quot;summary&quot;: {
+      &quot;files_scanned&quot;: 2,
+      &quot;total&quot;: 4,
+      &quot;by_severity&quot;: {
+        &quot;high&quot;: 0,
+        &quot;medium&quot;: 3,
+        &quot;low&quot;: 1
+      },
+      &quot;by_category&quot;: {
+        &quot;config&quot;: 3,
+        &quot;crypto&quot;: 1
+      }
+    },
+    &quot;verdict&quot;: &quot;review&quot;
+  }
+}</pre></details></div><div class="case-shot"><img loading="lazy" src="assets/en_case3_config_terminal.png" alt="Actual terminal output for case 3"></div></div></article></div></div></section>
+
+    <section id="reliability"><div class="wrap"><div class="section-head"><div><div class="kicker">05 · RELIABILITY</div><h2>Security boundaries &amp; reliability</h2></div><p>Clear limitations are part of a trustworthy security product.</p></div><div class="reliability"><div class="matrix"><div class="matrix-row"><b>Runtime</b><span>Python ≥ 3.9</span><span class="ok">stdlib only</span></div><div class="matrix-row"><b>Network</b><span>Not required</span><span class="ok">disabled</span></div><div class="matrix-row"><b>API Keys</b><span>Not read</span><span class="ok">none</span></div><div class="matrix-row"><b>Filesystem write</b><span>Not required</span><span class="ok">none</span></div><div class="matrix-row"><b>Analysis</b><span>line-oriented regex heuristics</span><span class="warn">human review</span></div><div class="matrix-row"><b>Known limitation</b><span>false positives; not full SAST</span><span class="warn">advisory</span></div></div><div class="note-panel"><h3>Why is the result verifiable?</h3><p>The rule set is fixed, execution is offline, the schema is stable, and each finding includes path and line evidence. The same input is repeatable. It does not perform deep inter-file dataflow, business-logic, or semantic analysis, so it should not replace a full SAST product or human security review.</p><div class="tags"><span class="tag">dangerous_eval · High</span><span class="tag">shell_injection · High</span><span class="tag">unsafe_deserialization · High</span><span class="tag">sql_injection · High</span><span class="tag">tls_verification_disabled · High</span><span class="tag">weak_hash · Medium</span><span class="tag">debug_enabled · Medium</span><span class="tag">cors_wildcard · Medium</span><span class="tag">bind_all_interfaces · Low</span><span class="tag">insecure_random_for_token · Low</span><span class="tag">missing_license · Low</span></div></div></div></div></section>
+
+    <section id="audience"><div class="wrap"><div class="section-head"><div><div class="kicker">06 · USERS</div><h2>Built for practical review workflows</h2></div></div><div class="audience"><div class="aud"><b>Developers</b><span>Quickly catch common risky patterns before review.</span></div><div class="aud"><b>Security engineers</b><span>Front-load deterministic low-cost checks before deeper analysis.</span></div><div class="aud"><b>Engineering teams</b><span>Use structured verdicts as a lightweight quality gate.</span></div><div class="aud"><b>Agent / AI coding workflows</b><span>Local callable tool with no network or API-key dependency.</span></div></div></div></section>
+
+    <div class="cta"><div class="wrap"><div class="cta-box"><div><div class="kicker">CODE SECURITY AUDIT · v0.1.0</div><h2>Put a lightweight security gate before the merge.</h2><p>Useful for agent workflows, pre-review checks, teaching demos, and fast triage on small codebases.</p></div><div class="actions"><a class="btn primary" href="#cases">Inspect 3 real results</a><a class="btn" href="https://github.com/finchipaiorg/code-security-audit">GitHub</a></div></div></div></div>
+    </main><footer class="footer"><div class="wrap"><span>Real test artifacts · 2026-09-15 · code-security-audit v0.1.0</span><span>Heuristic static checks · advisory findings · human review required</span></div></footer></body></html>

@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Xiaohongshu Copywriter — English Information</title>
+  <style>
+    @font-face{font-family:NotoLocal;src:url('assets/fonts/NotoSansSC-Regular.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
+    @font-face{font-family:NotoLocal;src:url('assets/fonts/NotoSansSC-SemiBold.ttf') format('truetype');font-weight:600;font-style:normal;font-display:swap}
+    @font-face{font-family:NotoLocal;src:url('assets/fonts/NotoSansSC-ExtraBold.ttf') format('truetype');font-weight:800;font-style:normal;font-display:swap}
+    :root{--cream:#f4efe5;--paper:#fffdf8;--ink:#171717;--muted:#6f6a62;--line:#d8d0c2;--red:#f04f43;--blue:#2367ff;--pink:#f3a4c5;--yellow:#ffd447;--green:#3c9a68;--shadow:0 18px 50px rgba(23,23,23,.09)}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:var(--cream);color:var(--ink);font-family:NotoLocal,Arial,sans-serif;line-height:1.55} a{color:inherit} img{display:block;max-width:100%} code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace} .topbar{position:sticky;top:0;z-index:20;background:rgba(23,23,23,.96);color:#fff;border-bottom:4px solid var(--red)} .topbar-inner{max-width:1440px;margin:auto;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px} .brand{font-weight:800;letter-spacing:-.02em} .topbar nav{display:flex;gap:18px;font-size:13px} .topbar a{text-decoration:none;opacity:.82} .topbar a:hover{opacity:1;color:var(--pink)} .status-dot{display:inline-block;width:9px;height:9px;border-radius:99px;background:#60d394;margin-right:9px} main{overflow:hidden} .wrap{max-width:1440px;margin:auto;padding:0 28px} .hero{padding:82px 0 66px;border-bottom:2px solid var(--ink);position:relative} .hero:before{content:"";position:absolute;width:330px;height:330px;border:48px solid var(--pink);border-radius:50%;right:-130px;top:-135px;opacity:.6} .hero-kicker,.eyebrow{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase} .hero-kicker{display:inline-block;background:var(--yellow);padding:8px 12px;transform:rotate(-1deg)} h1{font-size:clamp(58px,9.5vw,145px);line-height:.84;letter-spacing:-.075em;margin:35px 0 28px;max-width:1220px;text-transform:uppercase} h1 span{color:var(--red)} .hero-sub{font-size:clamp(19px,2vw,30px);max-width:930px;margin:0 0 54px} .workbench{display:grid;grid-template-columns:1fr .72fr 1.1fr;background:var(--paper);border:2px solid var(--ink);box-shadow:14px 14px 0 var(--blue);position:relative} .workbench>div{padding:34px;min-height:280px} .workbench>div+div{border-left:2px solid var(--ink)} .workbench small,.case-meta small,.optimized-copy small{font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--muted)} .workbench h3{font-size:28px;line-height:1.15;margin:18px 0 8px} .engine-panel{background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:18px} .mode-chip{padding:16px 18px;border:1px solid #555;font-size:20px;font-weight:800} .mode-chip:first-of-type{background:var(--blue)} .mode-chip:last-of-type{background:var(--red)} .output-panel .output-number{font-size:52px;font-weight:800;line-height:1;margin:12px 0} .output-panel .output-number:last-child{color:var(--red)} .fact-tape{margin-top:38px;display:flex;flex-wrap:wrap;gap:10px} .fact-tape span{border:1px solid var(--ink);background:var(--paper);padding:8px 12px;font-size:13px;font-weight:600}
+    .section{padding:90px 0} .section-head{display:flex;justify-content:space-between;gap:30px;align-items:flex-end;margin-bottom:40px} .section-head h2{font-size:clamp(38px,5vw,76px);line-height:.98;letter-spacing:-.045em;margin:10px 0 0} .section-head>p{max-width:500px;color:var(--muted);font-size:18px} .before-after{border-bottom:2px solid var(--ink)} .ba-grid{display:grid;grid-template-columns:1fr 120px 1fr;align-items:stretch} .ba-card{background:var(--paper);border:2px solid var(--ink);padding:32px;min-width:0} .ba-card h3{font-size:26px;margin:0 0 20px} .ba-card .draft-title{font-size:30px;font-weight:800;line-height:1.25;margin-bottom:18px} .ba-card .draft-body{white-space:pre-wrap;font-size:17px} .arrow-column{display:flex;align-items:center;justify-content:center;background:var(--blue);color:#fff;font-size:46px;font-weight:800;border-block:2px solid var(--ink)} .annotation-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:25px} .annotation-list span{background:var(--yellow);padding:7px 10px;font-size:12px;font-weight:600} .after-score{display:flex;align-items:baseline;gap:8px;margin:12px 0 20px} .after-score strong{font-size:80px;line-height:1;color:var(--red)} .after-score span{font-size:22px;font-weight:800} .after-layout{display:grid;grid-template-columns:.95fr 1.05fr;gap:22px} .dimensions{display:grid;gap:14px} .dimension{min-width:0} .dim-label{display:flex;justify-content:space-between;gap:10px;font-size:13px} .meter{height:10px;background:#e3dcd0;margin-top:5px} .meter i{display:block;height:100%;background:var(--blue)} .dimension p{font-size:11px;color:var(--muted);margin:4px 0 0} .flags-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px} .flag{border:1px solid var(--line);padding:15px;background:var(--paper)} .flag>div{display:flex;justify-content:space-between;gap:10px} .flag-type{font-weight:800} .flag small{text-transform:uppercase;color:var(--muted)} .flag p{font-size:12px;margin:8px 0 0} .flag-warn{border-left:7px solid var(--yellow)} .flag-info{border-left:7px solid var(--pink)} .no-flags{border:1px dashed var(--green);padding:20px;display:flex;flex-direction:column;gap:8px} .optimized-preview{background:var(--ink);color:white;padding:28px;margin-top:22px} .optimized-preview h4{font-size:24px;margin:8px 0} .optimized-preview p{white-space:pre-wrap} .optimized-preview ul{padding-left:20px} .manual-warning{background:var(--red);color:#fff;padding:18px 22px;margin-top:22px;font-weight:600}
+    .capabilities{border-bottom:2px solid var(--ink)} .cap-grid{display:grid;grid-template-columns:repeat(5,1fr);border:2px solid var(--ink)} .cap-grid article{padding:28px;background:var(--paper);min-height:250px} .cap-grid article+article{border-left:2px solid var(--ink)} .cap-grid b{font-size:36px;color:var(--red)} .cap-grid h3{font-size:21px;margin:20px 0 10px} .cap-grid p{font-size:14px;color:var(--muted)} .flow-section{padding:90px 0;background:var(--ink);color:#fff} .flow-section h2{font-size:clamp(40px,6vw,82px);margin:0 0 40px;letter-spacing:-.05em} .flow-lanes{display:grid;grid-template-columns:1fr 1fr;gap:28px} .flow-lane{border:1px solid #555;padding:30px} .flow-lane h3{font-size:26px;margin:0 0 25px;color:var(--pink)} .flow-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px} .flow-steps span{padding:18px 12px;border:1px solid #666;text-align:center;font-size:13px;position:relative} .flow-steps span:not(:last-child):after{content:"→";position:absolute;right:-13px;z-index:2;color:var(--yellow);font-weight:800}
+    .cases-intro{padding:90px 0 20px} .cases-intro h2{font-size:clamp(44px,6vw,86px);letter-spacing:-.055em;line-height:.95;margin:10px 0} .case-section{max-width:1440px;margin:auto;padding:80px 28px;border-bottom:2px solid var(--ink)} .case-stamp{background:var(--green);color:#fff;padding:9px 12px;font-size:12px;font-weight:800;letter-spacing:.08em;white-space:nowrap} .case-meta{display:grid;grid-template-columns:.9fr 1.3fr 1fr;gap:14px;margin-bottom:36px} .case-meta article{background:var(--paper);border:1px solid var(--line);padding:22px;min-width:0} .case-meta p{margin:12px 0 0} .case-meta code{display:block;margin-top:12px;font-size:12px;word-break:break-all;color:var(--blue)} .case-result-label{display:flex;align-items:center;gap:24px;margin:28px 0 16px} .case-result-label span{background:var(--ink);color:#fff;padding:8px 12px;font-size:12px;font-weight:800;letter-spacing:.1em} .case-result-label p{margin:0;color:var(--muted)} .directions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px} .direction{background:var(--paper);border:1px solid var(--line);padding:25px;border-top:10px solid var(--red);min-width:0} .direction.blue{border-top-color:var(--blue)} .direction.pink{border-top-color:var(--pink)} .direction-kicker{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted)} .direction-kicker b{font-size:25px;color:var(--red)} .direction h4{font-size:26px;margin:8px 0} .direction blockquote{margin:15px 0;padding:15px;background:#f2ecdf;font-weight:600} .direction ol{padding-left:20px;font-size:13px} .keyword-row{display:flex;flex-wrap:wrap;gap:6px} .keyword-row span{background:var(--yellow);padding:4px 7px;font-size:11px} .hashtags{font-size:12px;color:var(--blue);word-break:break-word} .runtime-note{background:var(--yellow);padding:13px 16px} .review-result{display:grid;grid-template-columns:260px 1fr;gap:18px;margin-bottom:18px} .score-card{background:var(--red);color:#fff;padding:28px;display:flex;align-items:baseline;gap:7px} .score-card span{align-self:flex-start;font-size:13px} .score-card strong{font-size:95px;line-height:1} .score-card small{font-size:18px} .optimized-copy{display:grid;grid-template-columns:.9fr 1.2fr 1fr;gap:1px;background:var(--ink);color:#fff;margin-top:18px} .optimized-copy>div{padding:24px;border:1px solid #454545;min-width:0} .optimized-copy h4{font-size:21px} .optimized-copy p{font-size:14px;white-space:pre-wrap} .optimized-copy li{font-size:13px;margin-bottom:8px} .runtime-shot{margin:30px 0;background:var(--ink);padding:14px;box-shadow:var(--shadow)} .runtime-shot img{width:100%;height:auto} .runtime-shot figcaption{color:#ddd;padding:12px 6px 2px;font-size:12px} .raw-box{background:var(--paper);border:1px solid var(--ink)} .raw-box summary{padding:18px 22px;cursor:pointer;font-weight:800} .raw-grid{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line)} .raw-grid>div{min-width:0;padding:18px} .raw-grid>div+div{border-left:1px solid var(--line)} .raw-grid h5{margin:0 0 12px} pre{margin:0;white-space:pre-wrap;word-break:break-word;font-size:11px;max-height:520px;overflow:auto;background:#181818;color:#f7f2ea;padding:16px} .asset-links{display:flex;gap:10px;flex-wrap:wrap;padding:14px 18px} .asset-links a{background:var(--blue);color:#fff;text-decoration:none;padding:6px 10px;font-size:12px}
+    .reliability{padding:90px 0;border-bottom:2px solid var(--ink)} .reliability-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px} .reliability-card{background:var(--paper);border:2px solid var(--ink);padding:32px} .reliability-card h3{font-size:27px;margin-top:0} .boundary-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0;list-style:none} .boundary-list li{background:#efe7d9;padding:14px;font-size:14px} .error-sample{background:#181818;color:#fff;padding:20px;font-size:12px;overflow:auto} .cta{padding:100px 0;background:var(--red);color:#fff} .cta h2{font-size:clamp(48px,8vw,120px);letter-spacing:-.06em;line-height:.92;margin:10px 0 30px;max-width:1200px} .audience-row{display:flex;flex-wrap:wrap;gap:10px} .audience-row span{border:1px solid white;padding:9px 13px} footer{background:var(--ink);color:#fff;padding:34px 0} footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap} footer p{margin:0;color:#bbb;font-size:12px} footer a{color:var(--pink)}
+    @media(max-width:1050px){.workbench,.cap-grid,.ba-grid,.flow-lanes,.case-meta,.directions-grid,.review-result,.optimized-copy,.reliability-grid{grid-template-columns:1fr} .workbench>div+div,.cap-grid article+article{border-left:0;border-top:2px solid var(--ink)} .arrow-column{min-height:80px;border:2px solid var(--ink)} .arrow-column span{transform:rotate(90deg)} .cap-grid article{min-height:0} .flow-steps{grid-template-columns:1fr 1fr} .raw-grid{grid-template-columns:1fr} .raw-grid>div+div{border-left:0;border-top:1px solid var(--line)}}
+    @media(max-width:700px){.topbar nav{display:none} .wrap,.case-section{padding-left:16px;padding-right:16px} .hero{padding-top:50px} h1{font-size:43px;letter-spacing:-.055em} .workbench{box-shadow:7px 7px 0 var(--blue)} .section,.reliability{padding:62px 0} .section-head{display:block} .section-head>p{margin-top:18px} .flags-grid,.after-layout,.boundary-list{grid-template-columns:1fr} .flow-steps{grid-template-columns:1fr} .flow-steps span:not(:last-child):after{content:"↓";right:50%;bottom:-19px;top:auto} .case-section{padding-top:58px;padding-bottom:58px} .case-result-label{display:block} .case-result-label p{margin-top:12px} .score-card strong{font-size:72px} .optimized-copy{display:block} .optimized-copy>div{border-bottom:1px solid #454545}}
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar-inner"><div class="brand"><span class="status-dot"></span>XIAOHONGSHU COPYWRITER</div><nav><a href="#before-after">BEFORE / AFTER</a><a href="#capabilities">CAPABILITIES</a><a href="#cases">REAL CASES</a><a href="#boundaries">BOUNDARIES</a></nav></div></header>
+  <main>
+    <section class="hero"><div class="wrap">
+      <span class="hero-kicker">LOCAL CREATOR CHECKLIST · DETERMINISTIC RULES · v0.1.0</span>
+      <h1>XIAOHONGSHU<br><span>COPYWRITER</span></h1>
+      <p class="hero-sub">Turn one idea into three concrete starting directions, or pass a finished draft through an explainable pre-publish check. It is a transparent checklist—not a virality engine.</p>
+      <div class="workbench">
+        <div><small>YOU PROVIDE</small><h3>one topic + core value</h3><p>First solo day trip</p><h3>or a finished draft</h3><p>The 100% Best Study Method!!! Guaranteed in 7 Days</p></div>
+        <div class="engine-panel"><small>TWO ACTUAL MODES</small><div class="mode-chip">IDEATE →</div><div class="mode-chip">REVIEW →</div></div>
+        <div class="output-panel"><small>IT RETURNS</small><div class="output-number">exactly 3 directions</div><p>真实体验型 / 干货清单型 / 反差观点型</p><div class="output-number">24 / 100 + 4 flag types</div><p>绝对化表达 · 标点过密 · 表情过多 · 话题过多</p></div>
+      </div>
+      <div class="fact-tape"><span>Python ≥ 3.9</span><span>stdlib only</span><span>no network</span><span>no API key</span><span>no external LLM</span><span>deterministic</span><span>MIT</span></div>
+    </div></section>
+
+    <section class="section before-after" id="before-after"><div class="wrap">
+      <div class="section-head"><div><span class="eyebrow">02 · PROOF, NOT PROMISES</span><h2>A real Before / After</h2></div><p>This is English Case 03 as the runtime actually returned it, including its Chinese fixed labels and rule limits.</p></div>
+      <div class="ba-grid">
+        <article class="ba-card"><h3>BEFORE · ORIGINAL DRAFT</h3><div class="draft-title">The 100% Best Study Method!!! Guaranteed in 7 Days</div><div class="draft-body">This method is 100% effective!!! Follow it for 7 days and you will never struggle again??? Study for 2 hours a day and success is guaranteed!!!🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥 Save this now!!! #StudyTips #College #Finals #Productivity #Focus #Revision #ExamPrep #TimeManagement #Notes #Campus #Growth #Motivation #Routine</div><h4>actual detected evidence</h4><div class="annotation-list"><span>绝对化表达 · 100%</span><span>标点过密 · 连续标点：!!! ???；感叹号 12 个</span><span>表情过多 · 共检测到约 13 个表情符号</span><span>话题过多 · 共 13 个话题：#StudyTips #College #Finals #Productivity #Focus #Revision #ExamPrep #TimeManagement #Notes #Campus …</span></div></article>
+        <div class="arrow-column"><span>→</span></div>
+        <article class="ba-card"><h3>AFTER · RUNTIME RETURN</h3><div class="after-score"><strong>24</strong><span>/ 100</span></div><div class="after-layout"><div class="dimensions"><div class="dimension">
+          <div class="dim-label"><span>标题钩子</span><b>5 / 20</b></div>
+          <div class="meter"><i style="width:25.0%"></i></div>
+          <p>标题偏长（42 字），建议精简到 22 字内。</p>
+        </div><div class="dimension">
+          <div class="dim-label"><span>内容价值</span><b>12 / 20</b></div>
+          <div class="meter"><i style="width:60.0%"></i></div>
+          <p>正文约 248 字，篇幅适中。</p>
+        </div><div class="dimension">
+          <div class="dim-label"><span>真实可信</span><b>0 / 15</b></div>
+          <div class="meter"><i style="width:0.0%"></i></div>
+          <p>缺少第一人称视角，建议加入亲身体验。</p>
+        </div><div class="dimension">
+          <div class="dim-label"><span>阅读结构</span><b>0 / 15</b></div>
+          <div class="meter"><i style="width:0.0%"></i></div>
+          <p>正文没有换行，容易变成一大段，建议分段。</p>
+        </div><div class="dimension">
+          <div class="dim-label"><span>互动意愿</span><b>5 / 15</b></div>
+          <div class="meter"><i style="width:33.3%"></i></div>
+          <p>正文含提问，能引发思考。</p>
+        </div><div class="dimension">
+          <div class="dim-label"><span>搜索友好</span><b>2 / 15</b></div>
+          <div class="meter"><i style="width:13.3%"></i></div>
+          <p>标题缺少可识别的中文核心词。</p>
+        </div></div><div class="flags-grid"><article class="flag flag-warn">
+          <div><span class="flag-type">绝对化表达</span><small>warn</small></div>
+          <p><b>evidence</b> · 100%</p>
+          <p>小红书/广告规范不建议绝对化用词，建议改为「个人觉得很不错」等相对表达。</p>
+        </article><article class="flag flag-info">
+          <div><span class="flag-type">标点过密</span><small>info</small></div>
+          <p><b>evidence</b> · 连续标点：!!! ???；感叹号 12 个</p>
+          <p>过多的连续标点会显得情绪化，建议一处最多保留一个感叹号/问号。</p>
+        </article><article class="flag flag-info">
+          <div><span class="flag-type">表情过多</span><small>info</small></div>
+          <p><b>evidence</b> · 共检测到约 13 个表情符号</p>
+          <p>表情建议控制在 10 个以内，重点段落点缀即可。</p>
+        </article><article class="flag flag-info">
+          <div><span class="flag-type">话题过多</span><small>info</small></div>
+          <p><b>evidence</b> · 共 13 个话题：#StudyTips #College #Finals #Productivity #Focus #Revision #ExamPrep #TimeManagement #Notes #Campus …</p>
+          <p>话题标签建议不超过 10 个，保留最相关的即可。</p>
+        </article></div></div><div class="optimized-preview"><small>optimized_title</small><h4>The 很大程度上 Best Study Method！ Guaranteed in 7 Days</h4><small>optimized_body</small><p>This method is 很大程度上 effective！Follow it for 7 days and you will never struggle again？
+
+Study for 2 hours a day and success is guaranteed！🔥🔥🔥🔥🔥🔥🔥🔥 Save this now！
+
+#StudyTips #College #Finals #Productivity #Focus #Revision</p><small>changes</small><ul><li>标题：合并了重复标点。</li><li>标题：软化绝对化用词（100% → 很大程度上）。</li><li>正文：合并了重复标点（如 !!! → ！）。</li><li>正文：表情从 13 个精简到 8 个以内。</li><li>正文：话题标签从 13 个精简到 6 个。</li><li>正文：软化绝对化用词（100% → 很大程度上）。</li><li>正文：为大段文字补充了分段，便于阅读。</li></ul></div></article>
+      </div>
+      <p class="manual-warning">Light cleanup is not a full rewrite. The English word “Guaranteed” remains because the sensitive-promise list is Chinese; only “100%” triggers the absolute-expression rule here. Manual review is still required.</p>
+    </div></section>
+
+    <section class="section capabilities" id="capabilities"><div class="wrap"><div class="section-head"><div><span class="eyebrow">03 · VERIFIED SCOPE</span><h2>What it actually does</h2></div><p>Two input states, two fixed paths. Every capability below is verified against the current repository.</p></div><div class="cap-grid"><article><b>01</b><h3>Start from an Idea</h3><p>topic + core_value → exactly 3 template directions</p></article><article><b>02</b><h3>Review Before Publishing</h3><p>title + body → six weighted dimensions / 100</p></article><article><b>03</b><h3>Evidence-backed Flags</h3><p>Each triggered rule cites the matched text or count.</p></article><article><b>04</b><h3>Meaning-preserving Cleanup</h3><p>Punctuation, emoji, hashtag, selected absolutes, paragraph breaks.</p></article><article><b>05</b><h3>Local by Design</h3><p>Python stdlib only. No network, API key, upload, or external LLM.</p></article></div></div></section>
+
+    <section class="flow-section"><div class="wrap"><span class="eyebrow">04 · FIXED FLOW</span><h2>How it works</h2><div class="flow-lanes"><article class="flow-lane"><h3>IDEATE</h3><div class="flow-steps"><span>Topic</span><span>Core Value</span><span>3 Directions</span><span>Draft</span></div></article><article class="flow-lane"><h3>REVIEW</h3><div class="flow-steps"><span>Title + Body</span><span>Six Dimensions</span><span>Flags</span><span>Light Cleanup</span></div></article></div></div></section>
+
+    <section class="cases-intro" id="cases"><div class="wrap"><span class="eyebrow">05 · REPRODUCIBLE RUNS</span><h2>Three English runs from the six-run set</h2></div></section>
+    <section class="case-section" id="case-1">
+      <div class="section-head">
+        <div><span class="eyebrow">CASE 01 · IDEATE</span><h2>Start from zero: only a topic</h2></div>
+        <span class="case-stamp">REAL RUN / EXIT 0</span>
+      </div>
+      <div class="case-meta">
+        <article><small>SCENARIO</small><p>The user has a topic, a core value, an audience, a tone, and one personal detail—but no draft yet.</p></article>
+        <article><small>PROMPT</small><p>I only have a topic for a Xiaohongshu post: my first solo day trip. Give me three starting directions that show why choosing three stops felt calmer than planning eight, for college students traveling alone for the first time, in a calm and candid tone.</p></article>
+        <article class="command"><small>ACTUAL COMMAND</small><code>python3 xhs_assistant.py deliverable/assets/runs/en-case-01/input.json</code></article>
+      </div>
+      <div class="case-result-label"><span>OUTPUT / RESULT</span><p>The runtime returns exactly three directions. Because templates are Chinese, English inputs are inserted into Chinese scaffolding without translation or LLM rewriting.</p></div>
+      <div class="directions-grid"><article class="direction red">
+          <div class="direction-kicker"><b>01</b><span>authentic-experience</span></div>
+          <h4>真实体验型</h4>
+          <blockquote>我亲测「First solo day trip」：Choosing three stops made the day calmer than planning eight到底靠不靠谱（语气：calm and candid）</blockquote>
+          <ol><li>开头：抛出我在「First solo day trip」上真实遇到的一个场景或困惑</li><li>过程：按时间线讲我怎么做的、踩过哪些坑</li><li>转折：让「college students traveling alone for the first time」看到「Choosing three stops made the day calmer than planning eight」是怎么发生的</li><li>用具体依据支撑：I cut my plan from eight places to three and still had energy to organize my photos on the way home</li><li>结尾：给一句真诚的个人感受，避免夸大</li></ol>
+          <div class="keyword-row"><span>First solo day trip</span><span>First</span><span>solo</span><span>day</span><span>trip</span><span>Choosing</span></div>
+          <p class="hashtags">#Firstsolodaytrip #First #solo #day #trip #Choosing</p>
+        </article><article class="direction blue">
+          <div class="direction-kicker"><b>02</b><span>tips-list</span></div>
+          <h4>干货清单型</h4>
+          <blockquote>「First solo day trip」实操清单：Choosing three stops made the day calmer than planning eight的3个关键点（语气：calm and candid）</blockquote>
+          <ol><li>开头：一句话说清这篇能帮「college students traveling alone for the first time」解决什么</li><li>清单1：围绕「First solo day trip」的第一个可执行要点</li><li>清单2：直接指向「Choosing three stops made the day calmer than planning eight」的关键动作</li><li>清单3：一个容易被忽略的小提醒</li><li>用具体依据支撑：I cut my plan from eight places to three and still had energy to organize my photos on the way home</li><li>结尾：把要点收拢成一句可收藏的总结</li></ol>
+          <div class="keyword-row"><span>First solo day trip</span><span>First</span><span>solo</span><span>day</span><span>trip</span><span>Choosing</span></div>
+          <p class="hashtags">#Firstsolodaytrip #First #solo #day #trip #Choosing</p>
+        </article><article class="direction pink">
+          <div class="direction-kicker"><b>03</b><span>contrarian-take</span></div>
+          <h4>反差观点型</h4>
+          <blockquote>关于「First solo day trip」，也许你想错了：换个角度看Choosing three stops made the day calmer than planning eight（语气：calm and candid）</blockquote>
+          <ol><li>开头：先说一个关于「First solo day trip」的常见误区</li><li>反差：给出我不一样的看法，并说明为什么</li><li>论证：用「Choosing three stops made the day calmer than planning eight」这个角度重新解释给「college students traveling alone for the first time」</li><li>用具体依据支撑：I cut my plan from eight places to three and still had energy to organize my photos on the way home</li><li>结尾：邀请读者说说他们是怎么想的</li></ol>
+          <div class="keyword-row"><span>First solo day trip</span><span>First</span><span>solo</span><span>day</span><span>trip</span><span>Choosing</span></div>
+          <p class="hashtags">#Firstsolodaytrip #First #solo #day #trip #Choosing</p>
+        </article></div>
+        <p class="runtime-note"><b>runtime note</b> · 模板化生成，供起稿参考，非爆款保证</p>
+      <figure class="runtime-shot"><img src="assets/runs/en-case-01/screenshot.png" alt="en-case-01 actual runtime output screenshot"><figcaption>Run screenshot rendered directly from the saved output.json · en-case-01</figcaption></figure>
+      <details class="raw-box">
+      <summary>Open the actual input.json / output.json</summary>
+      <div class="raw-grid">
+        <div><h5>input.json</h5><pre>{
+  &quot;mode&quot;: &quot;ideate&quot;,
+  &quot;topic&quot;: &quot;First solo day trip&quot;,
+  &quot;core_value&quot;: &quot;Choosing three stops made the day calmer than planning eight&quot;,
+  &quot;audience&quot;: &quot;college students traveling alone for the first time&quot;,
+  &quot;tone&quot;: &quot;calm and candid&quot;,
+  &quot;evidence&quot;: &quot;I cut my plan from eight places to three and still had energy to organize my photos on the way home&quot;
+}</pre></div>
+        <div><h5>output.json</h5><pre>{
+  &quot;ok&quot;: true,
+  &quot;skill&quot;: &quot;xiaohongshu-copywriter&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;mode&quot;: &quot;ideate&quot;,
+  &quot;data&quot;: {
+    &quot;topic&quot;: &quot;First solo day trip&quot;,
+    &quot;directions&quot;: [
+      {
+        &quot;angle&quot;: &quot;authentic-experience&quot;,
+        &quot;angle_cn&quot;: &quot;真实体验型&quot;,
+        &quot;sample_title&quot;: &quot;我亲测「First solo day trip」：Choosing three stops made the day calmer than planning eight到底靠不靠谱（语气：calm and candid）&quot;,
+        &quot;outline&quot;: [
+          &quot;开头：抛出我在「First solo day trip」上真实遇到的一个场景或困惑&quot;,
+          &quot;过程：按时间线讲我怎么做的、踩过哪些坑&quot;,
+          &quot;转折：让「college students traveling alone for the first time」看到「Choosing three stops made the day calmer than planning eight」是怎么发生的&quot;,
+          &quot;用具体依据支撑：I cut my plan from eight places to three and still had energy to organize my photos on the way home&quot;,
+          &quot;结尾：给一句真诚的个人感受，避免夸大&quot;
+        ],
+        &quot;suggested_keywords&quot;: [
+          &quot;First solo day trip&quot;,
+          &quot;First&quot;,
+          &quot;solo&quot;,
+          &quot;day&quot;,
+          &quot;trip&quot;,
+          &quot;Choosing&quot;
+        ],
+        &quot;suggested_hashtags&quot;: [
+          &quot;#Firstsolodaytrip&quot;,
+          &quot;#First&quot;,
+          &quot;#solo&quot;,
+          &quot;#day&quot;,
+          &quot;#trip&quot;,
+          &quot;#Choosing&quot;
+        ]
+      },
+      {
+        &quot;angle&quot;: &quot;tips-list&quot;,
+        &quot;angle_cn&quot;: &quot;干货清单型&quot;,
+        &quot;sample_title&quot;: &quot;「First solo day trip」实操清单：Choosing three stops made the day calmer than planning eight的3个关键点（语气：calm and candid）&quot;,
+        &quot;outline&quot;: [
+          &quot;开头：一句话说清这篇能帮「college students traveling alone for the first time」解决什么&quot;,
+          &quot;清单1：围绕「First solo day trip」的第一个可执行要点&quot;,
+          &quot;清单2：直接指向「Choosing three stops made the day calmer than planning eight」的关键动作&quot;,
+          &quot;清单3：一个容易被忽略的小提醒&quot;,
+          &quot;用具体依据支撑：I cut my plan from eight places to three and still had energy to organize my photos on the way home&quot;,
+          &quot;结尾：把要点收拢成一句可收藏的总结&quot;
+        ],
+        &quot;suggested_keywords&quot;: [
+          &quot;First solo day trip&quot;,
+          &quot;First&quot;,
+          &quot;solo&quot;,
+          &quot;day&quot;,
+          &quot;trip&quot;,
+          &quot;Choosing&quot;
+        ],
+        &quot;suggested_hashtags&quot;: [
+          &quot;#Firstsolodaytrip&quot;,
+          &quot;#First&quot;,
+          &quot;#solo&quot;,
+          &quot;#day&quot;,
+          &quot;#trip&quot;,
+          &quot;#Choosing&quot;
+        ]
+      },
+      {
+        &quot;angle&quot;: &quot;contrarian-take&quot;,
+        &quot;angle_cn&quot;: &quot;反差观点型&quot;,
+        &quot;sample_title&quot;: &quot;关于「First solo day trip」，也许你想错了：换个角度看Choosing three stops made the day calmer than planning eight（语气：calm and candid）&quot;,
+        &quot;outline&quot;: [
+          &quot;开头：先说一个关于「First solo day trip」的常见误区&quot;,
+          &quot;反差：给出我不一样的看法，并说明为什么&quot;,
+          &quot;论证：用「Choosing three stops made the day calmer than planning eight」这个角度重新解释给「college students traveling alone for the first time」&quot;,
+          &quot;用具体依据支撑：I cut my plan from eight places to three and still had energy to organize my photos on the way home&quot;,
+          &quot;结尾：邀请读者说说他们是怎么想的&quot;
+        ],
+        &quot;suggested_keywords&quot;: [
+          &quot;First solo day trip&quot;,
+          &quot;First&quot;,
+          &quot;solo&quot;,
+          &quot;day&quot;,
+          &quot;trip&quot;,
+          &quot;Choosing&quot;
+        ],
+        &quot;suggested_hashtags&quot;: [
+          &quot;#Firstsolodaytrip&quot;,
+          &quot;#First&quot;,
+          &quot;#solo&quot;,
+          &quot;#day&quot;,
+          &quot;#trip&quot;,
+          &quot;#Choosing&quot;
+        ]
+      }
+    ],
+    &quot;note&quot;: &quot;模板化生成，供起稿参考，非爆款保证&quot;
+  }
+}</pre></div>
+      </div>
+      <div class="asset-links">
+        <a href="assets/runs/en-case-01/input.json">input.json</a>
+        <a href="assets/runs/en-case-01/stdout.txt">stdout.txt</a>
+        <a href="assets/runs/en-case-01/output.json">output.json</a>
+      </div>
+    </details>
+    </section><section class="case-section" id="case-2">
+      <div class="section-head">
+        <div><span class="eyebrow">CASE 02 · REVIEW</span><h2>Ordinary draft: one flat paragraph</h2></div>
+        <span class="case-stamp">REAL RUN / EXIT 0</span>
+      </div>
+      <div class="case-meta">
+        <article><small>SCENARIO</small><p>The user has a plain English draft in one paragraph and wants a pre-publish structure check.</p></article>
+        <article><small>PROMPT</small><p>Review this finished low-budget campus fitness draft before publishing. It is written as one flat paragraph. Return the actual six-dimension score and a meaning-preserving light cleanup.</p></article>
+        <article class="command"><small>ACTUAL COMMAND</small><code>python3 xhs_assistant.py deliverable/assets/runs/en-case-02/input.json</code></article>
+      </div>
+      <div class="case-result-label"><span>OUTPUT / RESULT</span><p>Actual score: 36/100; 0 flags. The optimizer returns the original text unchanged in this run.</p></div>
+      <div class="review-result">
+          <div class="score-card"><span>TOTAL SCORE</span><strong>36</strong><small>/ 100</small></div>
+          <div class="dimensions"><div class="dimension">
+          <div class="dim-label"><span>标题钩子</span><b>8 / 20</b></div>
+          <div class="meter"><i style="width:40.0%"></i></div>
+          <p>标题偏长（29 字），建议精简到 22 字内。</p>
+        </div><div class="dimension">
+          <div class="dim-label"><span>内容价值</span><b>14 / 20</b></div>
+          <div class="meter"><i style="width:70.0%"></i></div>
+          <p>正文约 374 字，信息量充足。</p>
+        </div><div class="dimension">
+          <div class="dim-label"><span>真实可信</span><b>4 / 15</b></div>
+          <div class="meter"><i style="width:26.7%"></i></div>
+          <p>缺少第一人称视角，建议加入亲身体验。</p>
+        </div><div class="dimension">
+          <div class="dim-label"><span>阅读结构</span><b>0 / 15</b></div>
+          <div class="meter"><i style="width:0.0%"></i></div>
+          <p>正文没有换行，容易变成一大段，建议分段。</p>
+        </div><div class="dimension">
+          <div class="dim-label"><span>互动意愿</span><b>9 / 15</b></div>
+          <div class="meter"><i style="width:60.0%"></i></div>
+          <p>正文含提问，能引发思考。</p>
+        </div><div class="dimension">
+          <div class="dim-label"><span>搜索友好</span><b>1 / 15</b></div>
+          <div class="meter"><i style="width:6.7%"></i></div>
+          <p>标题缺少可识别的中文核心词。</p>
+        </div></div>
+        </div>
+        <div class="flags-grid"><div class="no-flags"><b>flags: []</b><span>The runtime returned an empty flags array for this run.</span></div></div>
+        <div class="optimized-copy">
+          <div><small>optimized_title</small><h4>My low-budget campus fitness week</h4></div>
+          <div><small>optimized_body</small><p>This semester I started tracking my workouts instead of waiting for the perfect gym. I used the campus track, an empty corner of my dorm, and the school pool. I trained 3 times, usually for 40 minutes, and swam for 20 minutes on the weekend. The hardest part was leaving my room after class, so I changed into workout clothes before dinner. I want to keep this routine for a few more weeks and see what actually lasts. What simple routine has worked for you?</p></div>
+          <div><small>changes</small><ul><li>未发现需要清理的结构问题，原文保持不变。</li></ul></div>
+        </div>
+      <figure class="runtime-shot"><img src="assets/runs/en-case-02/screenshot.png" alt="en-case-02 actual runtime output screenshot"><figcaption>Run screenshot rendered directly from the saved output.json · en-case-02</figcaption></figure>
+      <details class="raw-box">
+      <summary>Open the actual input.json / output.json</summary>
+      <div class="raw-grid">
+        <div><h5>input.json</h5><pre>{
+  &quot;mode&quot;: &quot;review&quot;,
+  &quot;title&quot;: &quot;My low-budget campus fitness week&quot;,
+  &quot;body&quot;: &quot;This semester I started tracking my workouts instead of waiting for the perfect gym. I used the campus track, an empty corner of my dorm, and the school pool. I trained 3 times, usually for 40 minutes, and swam for 20 minutes on the weekend. The hardest part was leaving my room after class, so I changed into workout clothes before dinner. I want to keep this routine for a few more weeks and see what actually lasts. What simple routine has worked for you?&quot;
+}</pre></div>
+        <div><h5>output.json</h5><pre>{
+  &quot;ok&quot;: true,
+  &quot;skill&quot;: &quot;xiaohongshu-copywriter&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;mode&quot;: &quot;review&quot;,
+  &quot;data&quot;: {
+    &quot;total_score&quot;: 36,
+    &quot;dimensions&quot;: [
+      {
+        &quot;key&quot;: &quot;title_hook&quot;,
+        &quot;name_cn&quot;: &quot;标题钩子&quot;,
+        &quot;score&quot;: 8,
+        &quot;max&quot;: 20,
+        &quot;notes&quot;: [
+          &quot;标题偏长（29 字），建议精简到 22 字内。&quot;,
+          &quot;含利益点/收益暗示。&quot;
+        ]
+      },
+      {
+        &quot;key&quot;: &quot;content_value&quot;,
+        &quot;name_cn&quot;: &quot;内容价值&quot;,
+        &quot;score&quot;: 14,
+        &quot;max&quot;: 20,
+        &quot;notes&quot;: [
+          &quot;正文约 374 字，信息量充足。&quot;,
+          &quot;含 3 处数字/数据，具体可信。&quot;,
+          &quot;未检测到明显的步骤/清单，实操性偏弱。&quot;
+        ]
+      },
+      {
+        &quot;key&quot;: &quot;authenticity&quot;,
+        &quot;name_cn&quot;: &quot;真实可信&quot;,
+        &quot;score&quot;: 4,
+        &quot;max&quot;: 15,
+        &quot;notes&quot;: [
+          &quot;缺少第一人称视角，建议加入亲身体验。&quot;,
+          &quot;缺少具体单位/细节，可信度一般。&quot;,
+          &quot;未检测到夸大/承诺性用词。&quot;
+        ]
+      },
+      {
+        &quot;key&quot;: &quot;reading_structure&quot;,
+        &quot;name_cn&quot;: &quot;阅读结构&quot;,
+        &quot;score&quot;: 0,
+        &quot;max&quot;: 15,
+        &quot;notes&quot;: [
+          &quot;正文没有换行，容易变成一大段，建议分段。&quot;,
+          &quot;未检测到列表/编号结构。&quot;,
+          &quot;存在超长段落（约 374 字），建议拆分。&quot;
+        ]
+      },
+      {
+        &quot;key&quot;: &quot;engagement&quot;,
+        &quot;name_cn&quot;: &quot;互动意愿&quot;,
+        &quot;score&quot;: 9,
+        &quot;max&quot;: 15,
+        &quot;notes&quot;: [
+          &quot;正文含提问，能引发思考。&quot;,
+          &quot;缺少互动号召，建议在结尾邀请读者留言/收藏。&quot;,
+          &quot;结尾处有互动/提问收束，收尾到位。&quot;
+        ]
+      },
+      {
+        &quot;key&quot;: &quot;seo&quot;,
+        &quot;name_cn&quot;: &quot;搜索友好&quot;,
+        &quot;score&quot;: 1,
+        &quot;max&quot;: 15,
+        &quot;notes&quot;: [
+          &quot;标题缺少可识别的中文核心词。&quot;,
+          &quot;未使用任何话题标签，建议补 3-6 个相关标签。&quot;,
+          &quot;标题关键词不够聚焦。&quot;
+        ]
+      }
+    ],
+    &quot;flags&quot;: [],
+    &quot;optimized&quot;: {
+      &quot;optimized_title&quot;: &quot;My low-budget campus fitness week&quot;,
+      &quot;optimized_body&quot;: &quot;This semester I started tracking my workouts instead of waiting for the perfect gym. I used the campus track, an empty corner of my dorm, and the school pool. I trained 3 times, usually for 40 minutes, and swam for 20 minutes on the weekend. The hardest part was leaving my room after class, so I changed into workout clothes before dinner. I want to keep this routine for a few more weeks and see what actually lasts. What simple routine has worked for you?&quot;,
+      &quot;changes&quot;: [
+        &quot;未发现需要清理的结构问题，原文保持不变。&quot;
+      ]
+    },
+    &quot;note&quot;: &quot;发布前结构检查，不保证爆款、不预测流量&quot;
+  }
+}</pre></div>
+      </div>
+      <div class="asset-links">
+        <a href="assets/runs/en-case-02/input.json">input.json</a>
+        <a href="assets/runs/en-case-02/stdout.txt">stdout.txt</a>
+        <a href="assets/runs/en-case-02/output.json">output.json</a>
+      </div>
+    </details>
+    </section><section class="case-section" id="case-3">
+      <div class="section-head">
+        <div><span class="eyebrow">CASE 03 · REVIEW</span><h2>Pre-publish: concentrated risk check</h2></div>
+        <span class="case-stamp">REAL RUN / EXIT 0</span>
+      </div>
+      <div class="case-meta">
+        <article><small>SCENARIO</small><p>The user deliberately tests absolute wording, repeated punctuation, emoji volume, and hashtag volume in English.</p></article>
+        <article><small>PROMPT</small><p>Check this English draft for pre-publish risks, especially absolute wording, repeated punctuation, excessive emoji, and too many hashtags. Return the actual evidence and light optimization without inventing facts.</p></article>
+        <article class="command"><small>ACTUAL COMMAND</small><code>python3 xhs_assistant.py deliverable/assets/runs/en-case-03/input.json</code></article>
+      </div>
+      <div class="case-result-label"><span>OUTPUT / RESULT</span><p>Actual score: 24/100; 4 flag types. The result exposes the rule set’s language limits rather than hiding them.</p></div>
+      <div class="review-result">
+          <div class="score-card"><span>TOTAL SCORE</span><strong>24</strong><small>/ 100</small></div>
+          <div class="dimensions"><div class="dimension">
+          <div class="dim-label"><span>标题钩子</span><b>5 / 20</b></div>
+          <div class="meter"><i style="width:25.0%"></i></div>
+          <p>标题偏长（42 字），建议精简到 22 字内。</p>
+        </div><div class="dimension">
+          <div class="dim-label"><span>内容价值</span><b>12 / 20</b></div>
+          <div class="meter"><i style="width:60.0%"></i></div>
+          <p>正文约 248 字，篇幅适中。</p>
+        </div><div class="dimension">
+          <div class="dim-label"><span>真实可信</span><b>0 / 15</b></div>
+          <div class="meter"><i style="width:0.0%"></i></div>
+          <p>缺少第一人称视角，建议加入亲身体验。</p>
+        </div><div class="dimension">
+          <div class="dim-label"><span>阅读结构</span><b>0 / 15</b></div>
+          <div class="meter"><i style="width:0.0%"></i></div>
+          <p>正文没有换行，容易变成一大段，建议分段。</p>
+        </div><div class="dimension">
+          <div class="dim-label"><span>互动意愿</span><b>5 / 15</b></div>
+          <div class="meter"><i style="width:33.3%"></i></div>
+          <p>正文含提问，能引发思考。</p>
+        </div><div class="dimension">
+          <div class="dim-label"><span>搜索友好</span><b>2 / 15</b></div>
+          <div class="meter"><i style="width:13.3%"></i></div>
+          <p>标题缺少可识别的中文核心词。</p>
+        </div></div>
+        </div>
+        <div class="flags-grid"><article class="flag flag-warn">
+          <div><span class="flag-type">绝对化表达</span><small>warn</small></div>
+          <p><b>evidence</b> · 100%</p>
+          <p>小红书/广告规范不建议绝对化用词，建议改为「个人觉得很不错」等相对表达。</p>
+        </article><article class="flag flag-info">
+          <div><span class="flag-type">标点过密</span><small>info</small></div>
+          <p><b>evidence</b> · 连续标点：!!! ???；感叹号 12 个</p>
+          <p>过多的连续标点会显得情绪化，建议一处最多保留一个感叹号/问号。</p>
+        </article><article class="flag flag-info">
+          <div><span class="flag-type">表情过多</span><small>info</small></div>
+          <p><b>evidence</b> · 共检测到约 13 个表情符号</p>
+          <p>表情建议控制在 10 个以内，重点段落点缀即可。</p>
+        </article><article class="flag flag-info">
+          <div><span class="flag-type">话题过多</span><small>info</small></div>
+          <p><b>evidence</b> · 共 13 个话题：#StudyTips #College #Finals #Productivity #Focus #Revision #ExamPrep #TimeManagement #Notes #Campus …</p>
+          <p>话题标签建议不超过 10 个，保留最相关的即可。</p>
+        </article></div>
+        <div class="optimized-copy">
+          <div><small>optimized_title</small><h4>The 很大程度上 Best Study Method！ Guaranteed in 7 Days</h4></div>
+          <div><small>optimized_body</small><p>This method is 很大程度上 effective！Follow it for 7 days and you will never struggle again？
+
+Study for 2 hours a day and success is guaranteed！🔥🔥🔥🔥🔥🔥🔥🔥 Save this now！
+
+#StudyTips #College #Finals #Productivity #Focus #Revision</p></div>
+          <div><small>changes</small><ul><li>标题：合并了重复标点。</li><li>标题：软化绝对化用词（100% → 很大程度上）。</li><li>正文：合并了重复标点（如 !!! → ！）。</li><li>正文：表情从 13 个精简到 8 个以内。</li><li>正文：话题标签从 13 个精简到 6 个。</li><li>正文：软化绝对化用词（100% → 很大程度上）。</li><li>正文：为大段文字补充了分段，便于阅读。</li></ul></div>
+        </div>
+      <figure class="runtime-shot"><img src="assets/runs/en-case-03/screenshot.png" alt="en-case-03 actual runtime output screenshot"><figcaption>Run screenshot rendered directly from the saved output.json · en-case-03</figcaption></figure>
+      <details class="raw-box">
+      <summary>Open the actual input.json / output.json</summary>
+      <div class="raw-grid">
+        <div><h5>input.json</h5><pre>{
+  &quot;mode&quot;: &quot;review&quot;,
+  &quot;title&quot;: &quot;The 100% Best Study Method!!! Guaranteed in 7 Days&quot;,
+  &quot;body&quot;: &quot;This method is 100% effective!!! Follow it for 7 days and you will never struggle again??? Study for 2 hours a day and success is guaranteed!!!🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥 Save this now!!! #StudyTips #College #Finals #Productivity #Focus #Revision #ExamPrep #TimeManagement #Notes #Campus #Growth #Motivation #Routine&quot;
+}</pre></div>
+        <div><h5>output.json</h5><pre>{
+  &quot;ok&quot;: true,
+  &quot;skill&quot;: &quot;xiaohongshu-copywriter&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;mode&quot;: &quot;review&quot;,
+  &quot;data&quot;: {
+    &quot;total_score&quot;: 24,
+    &quot;dimensions&quot;: [
+      {
+        &quot;key&quot;: &quot;title_hook&quot;,
+        &quot;name_cn&quot;: &quot;标题钩子&quot;,
+        &quot;score&quot;: 5,
+        &quot;max&quot;: 20,
+        &quot;notes&quot;: [
+          &quot;标题偏长（42 字），建议精简到 22 字内。&quot;,
+          &quot;含数字，具体感更强。&quot;,
+          &quot;标题含绝对化用词，有标题党风险，酌情扣分。&quot;
+        ]
+      },
+      {
+        &quot;key&quot;: &quot;content_value&quot;,
+        &quot;name_cn&quot;: &quot;内容价值&quot;,
+        &quot;score&quot;: 12,
+        &quot;max&quot;: 20,
+        &quot;notes&quot;: [
+          &quot;正文约 248 字，篇幅适中。&quot;,
+          &quot;含 3 处数字/数据，具体可信。&quot;,
+          &quot;未检测到明显的步骤/清单，实操性偏弱。&quot;
+        ]
+      },
+      {
+        &quot;key&quot;: &quot;authenticity&quot;,
+        &quot;name_cn&quot;: &quot;真实可信&quot;,
+        &quot;score&quot;: 0,
+        &quot;max&quot;: 15,
+        &quot;notes&quot;: [
+          &quot;缺少第一人称视角，建议加入亲身体验。&quot;,
+          &quot;缺少具体单位/细节，可信度一般。&quot;,
+          &quot;含夸大或承诺性用词（100%），削弱真实感。&quot;
+        ]
+      },
+      {
+        &quot;key&quot;: &quot;reading_structure&quot;,
+        &quot;name_cn&quot;: &quot;阅读结构&quot;,
+        &quot;score&quot;: 0,
+        &quot;max&quot;: 15,
+        &quot;notes&quot;: [
+          &quot;正文没有换行，容易变成一大段，建议分段。&quot;,
+          &quot;未检测到列表/编号结构。&quot;,
+          &quot;存在超长段落（约 248 字），建议拆分。&quot;
+        ]
+      },
+      {
+        &quot;key&quot;: &quot;engagement&quot;,
+        &quot;name_cn&quot;: &quot;互动意愿&quot;,
+        &quot;score&quot;: 5,
+        &quot;max&quot;: 15,
+        &quot;notes&quot;: [
+          &quot;正文含提问，能引发思考。&quot;,
+          &quot;缺少互动号召，建议在结尾邀请读者留言/收藏。&quot;,
+          &quot;结尾没有互动收束，可加一句邀请。&quot;
+        ]
+      },
+      {
+        &quot;key&quot;: &quot;seo&quot;,
+        &quot;name_cn&quot;: &quot;搜索友好&quot;,
+        &quot;score&quot;: 2,
+        &quot;max&quot;: 15,
+        &quot;notes&quot;: [
+          &quot;标题缺少可识别的中文核心词。&quot;,
+          &quot;话题标签过多（13 个），建议精简到 10 个内。&quot;,
+          &quot;标题关键词不够聚焦。&quot;
+        ]
+      }
+    ],
+    &quot;flags&quot;: [
+      {
+        &quot;type&quot;: &quot;绝对化表达&quot;,
+        &quot;severity&quot;: &quot;warn&quot;,
+        &quot;evidence&quot;: &quot;100%&quot;,
+        &quot;suggestion&quot;: &quot;小红书/广告规范不建议绝对化用词，建议改为「个人觉得很不错」等相对表达。&quot;
+      },
+      {
+        &quot;type&quot;: &quot;标点过密&quot;,
+        &quot;severity&quot;: &quot;info&quot;,
+        &quot;evidence&quot;: &quot;连续标点：!!! ???；感叹号 12 个&quot;,
+        &quot;suggestion&quot;: &quot;过多的连续标点会显得情绪化，建议一处最多保留一个感叹号/问号。&quot;
+      },
+      {
+        &quot;type&quot;: &quot;表情过多&quot;,
+        &quot;severity&quot;: &quot;info&quot;,
+        &quot;evidence&quot;: &quot;共检测到约 13 个表情符号&quot;,
+        &quot;suggestion&quot;: &quot;表情建议控制在 10 个以内，重点段落点缀即可。&quot;
+      },
+      {
+        &quot;type&quot;: &quot;话题过多&quot;,
+        &quot;severity&quot;: &quot;info&quot;,
+        &quot;evidence&quot;: &quot;共 13 个话题：#StudyTips #College #Finals #Productivity #Focus #Revision #ExamPrep #TimeManagement #Notes #Campus …&quot;,
+        &quot;suggestion&quot;: &quot;话题标签建议不超过 10 个，保留最相关的即可。&quot;
+      }
+    ],
+    &quot;optimized&quot;: {
+      &quot;optimized_title&quot;: &quot;The 很大程度上 Best Study Method！ Guaranteed in 7 Days&quot;,
+      &quot;optimized_body&quot;: &quot;This method is 很大程度上 effective！Follow it for 7 days and you will never struggle again？\n\nStudy for 2 hours a day and success is guaranteed！🔥🔥🔥🔥🔥🔥🔥🔥 Save this now！\n\n#StudyTips #College #Finals #Productivity #Focus #Revision&quot;,
+      &quot;changes&quot;: [
+        &quot;标题：合并了重复标点。&quot;,
+        &quot;标题：软化绝对化用词（100% → 很大程度上）。&quot;,
+        &quot;正文：合并了重复标点（如 !!! → ！）。&quot;,
+        &quot;正文：表情从 13 个精简到 8 个以内。&quot;,
+        &quot;正文：话题标签从 13 个精简到 6 个。&quot;,
+        &quot;正文：软化绝对化用词（100% → 很大程度上）。&quot;,
+        &quot;正文：为大段文字补充了分段，便于阅读。&quot;
+      ]
+    },
+    &quot;note&quot;: &quot;发布前结构检查，不保证爆款、不预测流量&quot;
+  }
+}</pre></div>
+      </div>
+      <div class="asset-links">
+        <a href="assets/runs/en-case-03/input.json">input.json</a>
+        <a href="assets/runs/en-case-03/stdout.txt">stdout.txt</a>
+        <a href="assets/runs/en-case-03/output.json">output.json</a>
+      </div>
+    </details>
+    </section>
+
+    <section class="reliability" id="boundaries"><div class="wrap"><div class="section-head"><div><span class="eyebrow">06 · HONEST LIMITS</span><h2>Reliability &amp; boundaries</h2></div></div><div class="reliability-grid">
+      <article class="reliability-card"><h3>Boundaries confirmed in code</h3><ul class="boundary-list"><li>Template ideation, not full-post generation</li><li>Deterministic heuristic scoring, no traffic forecast</li><li>No promise of likes, saves, followers, or virality</li><li>Cleanup adds no new facts or promises</li><li>Rule vocabulary is mainly Chinese; English coverage is limited</li><li>Fully local; no network, API key, or external AI</li></ul></article>
+      <article class="reliability-card"><h3>Structured errors, exit code 1</h3><p>Missing fields, unknown mode, and malformed JSON were run and returned ok:false without a Python traceback.</p><pre class="error-sample">{
+  "ok": false,
+  "skill": "xiaohongshu-copywriter",
+  "version": "0.1.0",
+  "error": {
+    "code": "BAD_INPUT",
+    "message": "Missing required field 'body'."
+  }
+}</pre><div class="asset-links"><a href="assets/error-tests/bad-input.stdout.txt">BAD_INPUT stdout</a><a href="assets/error-tests/unknown-mode.stdout.txt">UNKNOWN_MODE stdout</a><a href="assets/error-tests/invalid-json.stdout.txt">invalid JSON stdout</a></div></article>
+    </div></div></section>
+
+    <section class="cta"><div class="wrap"><span class="eyebrow">07 · WHO IT'S FOR</span><p>For creators who need a starting point or a final check</p><h2>From one idea to a clearer pre-publish version.</h2><div class="audience-row"><span>Xiaohongshu creators</span><span>Brand operations</span><span>Marketing</span><span>Social editors</span><span>First-time writers</span><span>Pre-publish reviewers</span></div></div></section>
+  </main>
+  <footer><div class="wrap"><p>Repository HEAD · 910108a42a75e43d7dba874563e5db8ca3cfc25e · skill runtime v0.1.0 · FinChip listing v1.0.0</p><p><a href="https://github.com/finchipaiorg/xiaohongshu-copywriter">GitHub source</a> · <a href="https://finchip.ai/skills/xiaohongshu-copywriter-finchip">FinChip listing</a></p></div></footer>
+</body></html>

@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PPT Generator 将结构化 JSON 或 Markdown 离线渲染为真实、可编辑并经过自校验的 PowerPoint 文件。">
+  <title>PPT Generator | FinChip Information</title>
+  <style>
+:root {
+  color-scheme: dark;
+  --bg: #06080d;
+  --bg-soft: #0a0e16;
+  --panel: rgba(16, 22, 34, 0.78);
+  --panel-strong: #101722;
+  --line: rgba(171, 195, 232, 0.16);
+  --line-strong: rgba(87, 190, 255, 0.38);
+  --text: #f5f8ff;
+  --muted: #98a5b9;
+  --blue: #4f8cff;
+  --cyan: #55e7ff;
+  --purple: #9a78ff;
+  --green: #57e9b1;
+  --danger: #ff8f9f;
+  --radius: 22px;
+  --shadow: 0 28px 90px rgba(0, 0, 0, 0.46);
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 78% 4%, rgba(39, 102, 210, 0.19), transparent 32rem),
+    radial-gradient(circle at 8% 28%, rgba(69, 224, 255, 0.07), transparent 28rem),
+    var(--bg);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+body::before {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  pointer-events: none;
+  opacity: 0.26;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, #000, transparent 82%);
+}
+
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+button, input { font: inherit; }
+
+.shell { width: min(1440px, calc(100% - 48px)); margin: 0 auto; }
+
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  background: rgba(6, 8, 13, .76);
+  backdrop-filter: blur(18px);
+}
+
+.nav-inner {
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  font-size: .9rem;
+  font-weight: 720;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.brand-mark {
+  width: 29px;
+  height: 29px;
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  background: linear-gradient(145deg, rgba(85,231,255,.2), rgba(79,140,255,.45));
+  box-shadow: inset 0 0 18px rgba(93,214,255,.25), 0 0 28px rgba(79,140,255,.18);
+}
+
+.nav-links { display: flex; align-items: center; gap: 24px; color: var(--muted); font-size: .84rem; }
+.nav-links a { text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
+
+.locale-link {
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text) !important;
+}
+
+.hero {
+  min-height: 760px;
+  padding: 102px 0 74px;
+  display: grid;
+  align-items: center;
+}
+
+.hero-copy { max-width: 900px; }
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  color: var(--cyan);
+  font-size: .76rem;
+  font-weight: 750;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.eyebrow::before { width: 36px; height: 1px; content: ""; background: currentColor; box-shadow: 0 0 12px currentColor; }
+
+h1, h2, h3, p { margin-top: 0; }
+h1 {
+  margin-bottom: 22px;
+  max-width: 980px;
+  font-size: clamp(3.5rem, 7.6vw, 7.1rem);
+  line-height: .94;
+  letter-spacing: -.065em;
+  font-weight: 650;
+}
+.hero-gradient { color: transparent; background: linear-gradient(95deg, #fff 0%, #90dfff 46%, #7c8fff 100%); background-clip: text; }
+.lede { max-width: 760px; color: #b6c1d2; font-size: clamp(1rem, 1.7vw, 1.24rem); }
+.truth-note { margin-top: 18px; color: #76849a; font-size: .82rem; }
+
+.hero-studio {
+  position: relative;
+  margin-top: 54px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: minmax(250px, .78fr) 118px minmax(460px, 1.65fr);
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: linear-gradient(150deg, rgba(21,29,43,.88), rgba(8,11,18,.94));
+  box-shadow: var(--shadow), inset 0 1px rgba(255,255,255,.04);
+}
+
+.studio-topline {
+  position: absolute;
+  top: 0;
+  left: 9%;
+  right: 9%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), var(--blue), transparent);
+  box-shadow: 0 0 28px var(--blue);
+}
+
+.prompt-panel, .render-panel {
+  min-width: 0;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 17px;
+  background: #0a0e16;
+  overflow: hidden;
+}
+
+.panel-bar {
+  height: 41px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,.075);
+  color: #77849a;
+  font: 650 .69rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.lights { display: flex; gap: 5px; }
+.lights i { width: 6px; height: 6px; border-radius: 50%; background: #344054; }
+.lights i:first-child { background: var(--cyan); box-shadow: 0 0 9px var(--cyan); }
+
+pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font: .74rem/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.prompt-code { min-height: 280px; padding: 19px; color: #b9c6d8; }
+.prompt-code .key { color: #71dcff; }
+.prompt-code .string { color: #c7b7ff; }
+.prompt-code .comment { color: #66748a; }
+
+.render-rail { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
+.render-rail::before { position: absolute; top: 14%; bottom: 14%; width: 1px; content: ""; background: linear-gradient(var(--blue), var(--cyan)); opacity: .55; }
+.rail-step {
+  position: relative;
+  z-index: 1;
+  width: 90px;
+  padding: 9px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #0c111b;
+  color: #95a2b6;
+  text-align: center;
+  font: 650 .63rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .06em;
+  animation: railPulse 4.6s infinite;
+}
+.rail-step:nth-child(2) { animation-delay: .7s; }
+.rail-step:nth-child(3) { animation-delay: 1.4s; }
+.rail-step:nth-child(4) { animation-delay: 2.1s; }
+
+.render-panel { padding: 10px; background: #05070b; }
+.hero-slide-wrap { position: relative; overflow: hidden; border-radius: 9px; background: #fff; box-shadow: 0 22px 58px rgba(0,0,0,.45); }
+.hero-slide-wrap img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+.hero-filmstrip { margin-top: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.hero-filmstrip img { border: 1px solid rgba(255,255,255,.12); border-radius: 6px; aspect-ratio: 16/9; object-fit: cover; }
+
+.section { padding: 120px 0; }
+.section-head { max-width: 760px; margin-bottom: 48px; }
+.kicker { margin-bottom: 12px; color: var(--cyan); font: 700 .73rem/1.2 ui-monospace, monospace; letter-spacing: .14em; text-transform: uppercase; }
+h2 { margin-bottom: 17px; font-size: clamp(2.25rem, 5vw, 4.7rem); line-height: 1.02; letter-spacing: -.045em; font-weight: 620; }
+.section-head p { color: var(--muted); font-size: 1.05rem; }
+
+.before-after { padding-top: 100px; border-top: 1px solid rgba(255,255,255,.06); }
+.compare-grid { display: grid; grid-template-columns: .82fr 1.18fr; gap: 22px; }
+.compare-card {
+  min-width: 0;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(12, 17, 26, .74);
+  box-shadow: 0 22px 70px rgba(0,0,0,.24);
+}
+.compare-card.after { border-color: rgba(79,140,255,.35); background: linear-gradient(150deg, rgba(19,32,57,.92), rgba(8,12,20,.88)); }
+.card-index { color: #617088; font: 650 .68rem ui-monospace, monospace; letter-spacing: .12em; }
+.compare-card h3 { margin: 12px 0 8px; font-size: 1.55rem; letter-spacing: -.025em; }
+.compare-card > p { color: var(--muted); }
+.chaos-board { position: relative; height: 340px; margin-top: 28px; border: 1px solid rgba(255,255,255,.06); border-radius: 14px; background: #080b11; overflow: hidden; }
+.chaos-line { position: absolute; left: 16%; right: 13%; top: 50%; height: 1px; transform: rotate(-7deg); background: #344259; }
+.chaos-chip { position: absolute; padding: 9px 12px; border: 1px solid rgba(255,255,255,.1); border-radius: 8px; background: #111722; color: #9da9bb; font: .7rem ui-monospace, monospace; box-shadow: 0 10px 26px rgba(0,0,0,.32); }
+.chaos-chip:nth-child(2) { left: 7%; top: 12%; transform: rotate(-4deg); }
+.chaos-chip:nth-child(3) { right: 7%; top: 18%; transform: rotate(3deg); }
+.chaos-chip:nth-child(4) { left: 24%; top: 45%; transform: rotate(2deg); }
+.chaos-chip:nth-child(5) { right: 16%; top: 55%; transform: rotate(-5deg); }
+.chaos-chip:nth-child(6) { left: 9%; bottom: 10%; transform: rotate(4deg); }
+.chaos-chip:nth-child(7) { right: 7%; bottom: 8%; transform: rotate(-2deg); }
+.time-loss { position: absolute; right: 16px; top: 16px; color: var(--danger); font: .67rem ui-monospace, monospace; }
+
+.after-flow { margin: 24px 0 18px; display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 10px; align-items: center; }
+.after-node { min-height: 64px; padding: 12px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 11px; background: rgba(5,8,14,.58); color: #c8d3e4; text-align: center; font: .7rem/1.4 ui-monospace, monospace; }
+.after-node.done { border-color: rgba(87,233,177,.3); color: var(--green); }
+.flow-arrow { color: var(--cyan); }
+.after-slides { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+.after-slides img { aspect-ratio: 16/9; object-fit: cover; border: 1px solid rgba(255,255,255,.12); border-radius: 7px; background: #fff; }
+
+.workflow-track { position: relative; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.workflow-track::before { position: absolute; top: 27px; left: 10%; right: 10%; height: 1px; content: ""; background: linear-gradient(90deg, var(--blue), var(--cyan)); opacity: .42; }
+.workflow-step { position: relative; padding-top: 63px; }
+.workflow-dot { position: absolute; z-index: 1; top: 16px; left: 0; width: 23px; height: 23px; border: 6px solid #0a0e16; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 18px rgba(85,231,255,.55); }
+.workflow-step span { display: block; margin-bottom: 8px; color: #d9e2ef; font-size: .94rem; font-weight: 650; }
+.workflow-step p { color: #7f8ba0; font-size: .79rem; }
+
+.case { padding: 70px 0 110px; }
+.case + .case { border-top: 1px solid rgba(255,255,255,.06); }
+.case-header { margin-bottom: 30px; display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: end; }
+.case-number { color: #4e5b70; font: 650 .7rem ui-monospace, monospace; letter-spacing: .14em; }
+.case-header h3 { margin: 9px 0 8px; font-size: clamp(2rem, 4.6vw, 4rem); line-height: 1.02; letter-spacing: -.045em; font-weight: 610; }
+.case-header p { max-width: 720px; color: var(--muted); }
+.status-pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid rgba(87,233,177,.28); border-radius: 999px; color: var(--green); font: 650 .7rem ui-monospace, monospace; white-space: nowrap; }
+.status-pill::before { width: 7px; height: 7px; content: ""; border-radius: 50%; background: currentColor; box-shadow: 0 0 11px currentColor; }
+
+.case-grid { display: grid; grid-template-columns: minmax(290px, .72fr) minmax(0, 1.55fr); gap: 18px; align-items: start; }
+.case-console { position: sticky; top: 90px; border: 1px solid var(--line); border-radius: var(--radius); background: #0a0e15; overflow: hidden; }
+.case-console pre { max-height: 310px; padding: 20px; overflow: auto; color: #aab7c9; border-bottom: 1px solid rgba(255,255,255,.07); }
+.proof { padding: 18px 20px; border-bottom: 1px solid rgba(255,255,255,.07); }
+.proof-label { display: block; margin-bottom: 9px; color: #647187; font: 650 .64rem ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; }
+.command { color: #dbe5f2; font: .72rem/1.55 ui-monospace, monospace; word-break: break-all; }
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+.metric { padding: 10px 8px; border: 1px solid rgba(255,255,255,.07); border-radius: 9px; background: rgba(255,255,255,.025); }
+.metric strong { display: block; color: var(--green); font: 700 .82rem ui-monospace, monospace; }
+.metric small { color: #68758a; font-size: .65rem; }
+.downloads { padding: 17px 20px; display: flex; flex-wrap: wrap; gap: 8px; }
+.download-link { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; color: #b9c5d7; text-decoration: none; font: .68rem ui-monospace, monospace; }
+.download-link:hover { border-color: var(--line-strong); color: #fff; }
+
+.deck-viewer { min-width: 0; padding: 11px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(145deg, rgba(18,25,38,.88), rgba(6,9,14,.94)); box-shadow: var(--shadow); }
+.viewer-bar { height: 43px; padding: 0 13px; display: flex; align-items: center; justify-content: space-between; color: #6f7c90; font: .68rem ui-monospace, monospace; }
+.viewer-stage { overflow: hidden; border-radius: 10px; background: #fff; }
+.viewer-stage img { width: 100%; aspect-ratio: 16/9; object-fit: cover; transition: opacity .25s ease, transform .35s ease; }
+.viewer-stage img.switching { opacity: .2; transform: scale(.992); }
+.thumb-strip { padding-top: 10px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.thumb {
+  padding: 0;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 7px;
+  background: #111722;
+  overflow: hidden;
+  cursor: pointer;
+}
+.thumb img { aspect-ratio: 16/9; object-fit: cover; opacity: .54; transition: opacity .2s, transform .2s; }
+.thumb:hover img, .thumb.active img { opacity: 1; transform: scale(1.02); }
+.thumb.active { border-color: var(--cyan); box-shadow: 0 0 16px rgba(85,231,255,.2); }
+
+.feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.feature { min-height: 210px; padding: 24px; border: 1px solid var(--line); border-radius: 17px; background: rgba(12,17,26,.68); }
+.feature-icon { width: 36px; height: 36px; margin-bottom: 42px; display: grid; place-items: center; border: 1px solid var(--line-strong); border-radius: 10px; color: var(--cyan); font: .72rem ui-monospace, monospace; }
+.feature h3 { margin-bottom: 8px; font-size: 1rem; }
+.feature p { color: #7f8ba0; font-size: .82rem; }
+
+.limits { margin-top: 20px; padding: 23px; border: 1px solid rgba(255,143,159,.2); border-radius: 17px; background: rgba(35,14,22,.35); }
+.limits strong { color: #ffc1cb; }
+.limits p { margin: 7px 0 0; color: #a79098; font-size: .84rem; }
+
+.use-cases { display: flex; flex-wrap: wrap; gap: 10px; }
+.use-case { padding: 11px 15px; border: 1px solid var(--line); border-radius: 999px; color: #aebacd; background: rgba(255,255,255,.025); font-size: .83rem; }
+
+.cta {
+  margin: 40px 0 100px;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: .82fr 1.18fr;
+  gap: 28px;
+  align-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 28px;
+  background: linear-gradient(145deg, rgba(18,37,64,.88), rgba(8,11,18,.95));
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.cta-copy { padding: 34px; }
+.cta h2 { font-size: clamp(2.2rem, 4.5vw, 4.4rem); }
+.cta p { color: #9aa7ba; }
+.cta-actions { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 10px; }
+.button { display: inline-flex; align-items: center; justify-content: center; min-height: 43px; padding: 0 16px; border: 1px solid var(--line); border-radius: 10px; color: #dce7f6; text-decoration: none; font-size: .8rem; font-weight: 680; }
+.button.primary { border-color: transparent; color: #041018; background: linear-gradient(100deg, var(--cyan), #75a3ff); box-shadow: 0 12px 28px rgba(79,140,255,.22); }
+.cta-deck { position: relative; min-width: 0; padding: 12px; }
+.cta-deck img { width: 100%; border-radius: 10px; background: #fff; box-shadow: 0 24px 56px rgba(0,0,0,.48); transform: rotate(-1.2deg); }
+.cta-deck img + img { position: absolute; width: 44%; right: -5%; bottom: -7%; transform: rotate(3deg); border: 5px solid #0b1220; }
+
+footer { padding: 30px 0 54px; border-top: 1px solid rgba(255,255,255,.06); color: #657187; font-size: .76rem; }
+.footer-inner { display: flex; justify-content: space-between; gap: 24px; }
+
+[data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity .7s ease, transform .7s ease; }
+[data-reveal].visible { opacity: 1; transform: none; }
+
+@keyframes railPulse {
+  0%, 20%, 100% { border-color: var(--line); color: #7d899c; box-shadow: none; }
+  8% { border-color: var(--cyan); color: #eaffff; box-shadow: 0 0 22px rgba(85,231,255,.18); }
+}
+
+@media (max-width: 1040px) {
+  .hero-studio { grid-template-columns: .8fr 80px 1.2fr; }
+  .compare-grid, .case-grid { grid-template-columns: 1fr; }
+  .case-console { position: static; }
+  .feature-grid { grid-template-columns: repeat(2, 1fr); }
+  .cta { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 760px) {
+  .shell { width: min(100% - 28px, 640px); }
+  .nav-links a:not(.locale-link) { display: none; }
+  .hero { min-height: auto; padding: 72px 0 50px; }
+  h1 { font-size: clamp(3.1rem, 16vw, 5.3rem); }
+  .hero-studio { grid-template-columns: 1fr; padding: 10px; }
+  .render-rail { min-height: 70px; flex-direction: row; overflow: hidden; }
+  .render-rail::before { top: 50%; bottom: auto; left: 8%; right: 8%; width: auto; height: 1px; }
+  .rail-step { width: auto; padding: 8px 10px; }
+  .section { padding: 82px 0; }
+  .before-after { padding-top: 72px; }
+  .chaos-board { height: 300px; }
+  .after-flow { grid-template-columns: 1fr; }
+  .flow-arrow { transform: rotate(90deg); text-align: center; }
+  .workflow-track { grid-template-columns: 1fr; }
+  .workflow-track::before { left: 11px; right: auto; top: 20px; bottom: 20px; width: 1px; height: auto; }
+  .workflow-step { padding: 0 0 25px 45px; }
+  .workflow-dot { top: 0; }
+  .case-header { grid-template-columns: 1fr; }
+  .case { padding: 54px 0 82px; }
+  .thumb-strip { grid-template-columns: repeat(3, 1fr); }
+  .feature-grid { grid-template-columns: 1fr; }
+  .feature { min-height: 170px; }
+  .feature-icon { margin-bottom: 26px; }
+  .cta { margin-bottom: 70px; }
+  .cta-copy { padding: 20px 12px; }
+  .footer-inner { flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  [data-reveal] { opacity: 1; transform: none; }
+}
+
+  </style>
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const revealItems = document.querySelectorAll("[data-reveal]");
+  const observer = new IntersectionObserver(
+    entries => entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        observer.unobserve(entry.target);
+      }
+    }),
+    { threshold: 0.12 }
+  );
+  revealItems.forEach(item => observer.observe(item));
+
+  document.querySelectorAll("[data-deck-viewer]").forEach(viewer => {
+    const stage = viewer.querySelector("[data-stage-image]");
+    const thumbs = [...viewer.querySelectorAll("[data-slide-src]")];
+    thumbs.forEach(button => button.addEventListener("click", () => {
+      const nextSource = button.dataset.slideSrc;
+      if (!nextSource || stage.getAttribute("src") === nextSource) return;
+      thumbs.forEach(item => item.classList.remove("active"));
+      button.classList.add("active");
+      stage.classList.add("switching");
+      window.setTimeout(() => {
+        stage.setAttribute("src", nextSource);
+        stage.setAttribute("alt", button.dataset.slideAlt || "Generated slide preview");
+        stage.classList.remove("switching");
+      }, 150);
+    }));
+  });
+});
+
+  </script>
+</head>
+<body>
+  <nav class="site-nav" aria-label="页面导航">
+    <div class="shell nav-inner">
+      <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"></span>PPT Generator</a>
+      <div class="nav-links">
+        <a href="#workflow">流程</a>
+        <a href="#cases">真实案例</a>
+        <a href="#features">能力</a>
+        <a class="locale-link" href="ppt-generator_info_en.html" lang="en">EN</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="top">
+    <section class="hero shell">
+      <div>
+        <div class="hero-copy" data-reveal>
+          <div class="eyebrow">Offline PowerPoint Render Engine</div>
+          <h1>从结构化 Prompt 到<span class="hero-gradient">可编辑演示文稿</span></h1>
+          <p class="lede">输入 deck JSON 或受限 Markdown，PPT Generator 会离线编译、渲染并重新打开成品校验。输出不是示意图，而是真实的 <code>.pptx</code> 文件。</p>
+          <p class="truth-note">真实能力边界：它不调用 LLM 做研究或文案策划；它把你已经提供的内容可靠地转换成 PowerPoint。</p>
+        </div>
+
+        <div class="hero-studio" data-reveal>
+          <div class="studio-topline" aria-hidden="true"></div>
+          <div class="prompt-panel">
+            <div class="panel-bar"><span>INPUT / JSON</span><span class="lights"><i></i><i></i><i></i></span></div>
+            <pre class="prompt-code"><span class="key">"mode"</span>: <span class="string">"generate"</span>,
+<span class="key">"deck"</span>: {
+  <span class="key">"title"</span>: <span class="string">"北极星 SaaS 亚太增长策略"</span>,
+  <span class="key">"slides"</span>: [
+    <span class="string">"title"</span>, <span class="string">"section"</span>,
+    <span class="string">"bullets"</span>, <span class="string">"two_col"</span>,
+    <span class="string">"table"</span>, <span class="string">"bullets"</span>
+  ]
+}
+<span class="comment">// validate: true</span></pre>
+          </div>
+
+          <div class="render-rail" role="group" aria-label="生成步骤">
+            <span class="rail-step">VALIDATE</span>
+            <span class="rail-step">COMPILE</span>
+            <span class="rail-step">RENDER</span>
+            <span class="rail-step">VERIFY</span>
+          </div>
+
+          <div class="render-panel">
+            <div class="panel-bar"><span>REAL OUTPUT / 6 SLIDES</span><span>OK</span></div>
+            <div class="hero-slide-wrap">
+              <img src="assets/decks/zh-business-strategy/slide-1.png" alt="真实生成的北极星 SaaS 亚太增长策略标题页">
+            </div>
+            <div class="hero-filmstrip" role="group" aria-label="真实生成的幻灯片缩略图">
+              <img src="assets/decks/zh-business-strategy/slide-3.png" alt="市场优先级幻灯片">
+              <img src="assets/decks/zh-business-strategy/slide-4.png" alt="双栏策略幻灯片">
+              <img src="assets/decks/zh-business-strategy/slide-5.png" alt="90 天计划表格幻灯片">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section before-after" aria-labelledby="compare-title">
+      <div class="shell">
+        <div class="section-head" data-reveal>
+          <div class="kicker">Before / After</div>
+          <h2 id="compare-title">把反复排版，压缩成一条可验证的生成链</h2>
+          <p>下面的 After 直接使用“北极星 SaaS 亚太增长策略”真实运行结果。每张画面都来自生成的 PPTX，没有重制幻灯片。</p>
+        </div>
+
+        <div class="compare-grid">
+          <article class="compare-card" data-reveal>
+            <span class="card-index">BEFORE / MANUAL WORKFLOW</span>
+            <h3>内容散落，格式反复返工</h3>
+            <p>研究、结构、文案、版式、素材、对齐和修改在多个工具之间来回切换。</p>
+            <div class="chaos-board" role="group" aria-label="传统 PPT 制作流程">
+              <span class="time-loss">REVISION LOOP × N</span>
+              <span class="chaos-chip">01 Research</span>
+              <span class="chaos-chip">02 Structure</span>
+              <span class="chaos-chip">03 Copy</span>
+              <span class="chaos-chip">04 Layout</span>
+              <span class="chaos-chip">05 Find visuals</span>
+              <span class="chaos-chip">06 Align + revise</span>
+              <span class="chaos-line" aria-hidden="true"></span>
+            </div>
+          </article>
+
+          <article class="compare-card after" data-reveal>
+            <span class="card-index">AFTER / ACTUAL RUN</span>
+            <h3>结构化输入，直接得到可编辑文件</h3>
+            <p>同一份 JSON 经过验证、Markdown 编译、硬化渲染和文件回读校验。</p>
+            <div class="after-flow" role="group" aria-label="真实生成流程">
+              <div class="after-node">deck JSON<br>6 slides</div><span class="flow-arrow">→</span>
+              <div class="after-node">md2pptx<br>offline render</div><span class="flow-arrow">→</span>
+              <div class="after-node done">PPTX<br>validation OK</div>
+            </div>
+            <div class="after-slides">
+              <img src="assets/decks/zh-business-strategy/slide-1.png" alt="真实生成标题页" loading="lazy">
+              <img src="assets/decks/zh-business-strategy/slide-4.png" alt="真实生成双栏页" loading="lazy">
+              <img src="assets/decks/zh-business-strategy/slide-5.png" alt="真实生成表格页" loading="lazy">
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="workflow" aria-labelledby="workflow-title">
+      <div class="shell">
+        <div class="section-head" data-reveal>
+          <div class="kicker">Verified Workflow</div>
+          <h2 id="workflow-title">真实程序如何生成一份 PPT</h2>
+          <p>流程来自仓库中的 <code>ppt_generator.py</code>、<code>deck_schema.py</code> 与 <code>md2pptx_bridge.py</code>。</p>
+        </div>
+        <div class="workflow-track" data-reveal>
+          <div class="workflow-step"><i class="workflow-dot"></i><span>01 输入</span><p>读取一个 JSON 对象；优先使用结构化 deck，也支持受限 Markdown。</p></div>
+          <div class="workflow-step"><i class="workflow-dot"></i><span>02 验证</span><p>检查字段、布局、表格尺寸、本地图片路径和内容安全。</p></div>
+          <div class="workflow-step"><i class="workflow-dot"></i><span>03 编译</span><p>转换为 FinChip 控制的 md2pptx Markdown 子集。</p></div>
+          <div class="workflow-step"><i class="workflow-dot"></i><span>04 渲染</span><p>子进程调用内置 Martin Template，生成真实 PowerPoint。</p></div>
+          <div class="workflow-step"><i class="workflow-dot"></i><span>05 回读校验</span><p>重新打开 PPTX，核对页数、空页、表格与本地图片。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="cases" aria-labelledby="cases-title">
+      <div class="shell section-head" data-reveal>
+        <div class="kicker">Three Chinese Runs</div>
+        <h2 id="cases-title">三份中文真实生成案例</h2>
+        <p>每个案例均由仓库当前版本实际运行。点击缩略图可切换大图，输入、日志、PPTX 与 PDF 均保留。</p>
+      </div>
+
+      <article class="case" aria-labelledby="zh-case-1-title">
+        <div class="shell">
+          <header class="case-header" data-reveal>
+            <div><span class="case-number">CASE 01 / BUSINESS STRATEGY</span><h3 id="zh-case-1-title">北极星 SaaS 亚太增长策略</h3><p>用标题、章节、要点、双栏和表格布局组织市场进入假设与 90 天计划。</p></div>
+            <span class="status-pill">REAL RUN · VALIDATED</span>
+          </header>
+          <div class="case-grid">
+            <aside class="case-console" data-reveal aria-label="商业策略案例输入与运行证据">
+              <div class="panel-bar"><span>REPRESENTATIVE PROMPT</span><span>JSON</span></div>
+              <pre>{
+  "mode": "generate",
+  "deck": {
+    "title": "北极星 SaaS 亚太增长策略",
+    "slides": [
+      "title", "section", "bullets",
+      "two_col", "table", "bullets"
+    ]
+  },
+  "validate": true
+}</pre>
+              <div class="proof"><span class="proof-label">Actual command</span><div class="command">python3 ppt_generator.py information/assets/inputs/zh-business-strategy.json</div></div>
+              <div class="proof"><span class="proof-label">Actual result</span><div class="metrics"><div class="metric"><strong>ok:true</strong><small>status</small></div><div class="metric"><strong>6</strong><small>slides</small></div><div class="metric"><strong>0</strong><small>issues</small></div></div></div>
+              <div class="downloads"><a class="download-link" href="assets/inputs/zh-business-strategy.json">完整输入</a><a class="download-link" href="assets/logs/zh-business-strategy.json">运行日志</a><a class="download-link" href="assets/outputs/zh-business-strategy.pptx">PPTX</a><a class="download-link" href="assets/decks/zh-business-strategy/zh-business-strategy.pdf">PDF</a></div>
+            </aside>
+            <div class="deck-viewer" data-deck-viewer data-reveal>
+              <div class="viewer-bar"><span>zh-business-strategy.pptx</span><span>16:9 · EDITABLE</span></div>
+              <div class="viewer-stage"><img data-stage-image src="assets/decks/zh-business-strategy/slide-1.png" alt="北极星 SaaS 亚太增长策略标题页"></div>
+              <div class="thumb-strip">
+                <button type="button" class="thumb active" data-slide-src="assets/decks/zh-business-strategy/slide-1.png" data-slide-alt="北极星 SaaS 亚太增长策略标题页"><img src="assets/decks/zh-business-strategy/slide-1.png" alt="第 1 页"></button>
+                <button type="button" class="thumb" data-slide-src="assets/decks/zh-business-strategy/slide-3.png" data-slide-alt="三个优先市场"><img src="assets/decks/zh-business-strategy/slide-3.png" alt="第 3 页"></button>
+                <button type="button" class="thumb" data-slide-src="assets/decks/zh-business-strategy/slide-4.png" data-slide-alt="市场进入与产品准备"><img src="assets/decks/zh-business-strategy/slide-4.png" alt="第 4 页"></button>
+                <button type="button" class="thumb" data-slide-src="assets/decks/zh-business-strategy/slide-5.png" data-slide-alt="90 天执行节奏表格"><img src="assets/decks/zh-business-strategy/slide-5.png" alt="第 5 页"></button>
+                <button type="button" class="thumb" data-slide-src="assets/decks/zh-business-strategy/slide-6.png" data-slide-alt="决策门槛"><img src="assets/decks/zh-business-strategy/slide-6.png" alt="第 6 页"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case" aria-labelledby="zh-case-2-title">
+        <div class="shell">
+          <header class="case-header" data-reveal>
+            <div><span class="case-number">CASE 02 / RESEARCH DATA</span><h3 id="zh-case-2-title">大学生通勤方式研究</h3><p>用输入中提供的 120 份示例数据测试研究结构、嵌套要点、原生表格和限制讨论。</p></div>
+            <span class="status-pill">REAL RUN · VALIDATED</span>
+          </header>
+          <div class="case-grid">
+            <aside class="case-console" data-reveal aria-label="研究数据案例输入与运行证据">
+              <div class="panel-bar"><span>REPRESENTATIVE PROMPT</span><span>JSON</span></div>
+              <pre>{
+  "deck": {
+    "title": "大学生通勤方式小样本研究",
+    "table": {
+      "headers": ["方式", "人数", "时间", "满意度"],
+      "rows": ["步行", "公交", "地铁", "其他"]
+    }
+  },
+  "validate": true
+}</pre>
+              <div class="proof"><span class="proof-label">Actual command</span><div class="command">python3 ppt_generator.py information/assets/inputs/zh-research-data.json</div></div>
+              <div class="proof"><span class="proof-label">Actual result</span><div class="metrics"><div class="metric"><strong>ok:true</strong><small>status</small></div><div class="metric"><strong>6</strong><small>slides</small></div><div class="metric"><strong>0</strong><small>issues</small></div></div></div>
+              <div class="downloads"><a class="download-link" href="assets/inputs/zh-research-data.json">完整输入</a><a class="download-link" href="assets/logs/zh-research-data.json">运行日志</a><a class="download-link" href="assets/outputs/zh-research-data.pptx">PPTX</a><a class="download-link" href="assets/decks/zh-research-data/zh-research-data.pdf">PDF</a></div>
+            </aside>
+            <div class="deck-viewer" data-deck-viewer data-reveal>
+              <div class="viewer-bar"><span>zh-research-data.pptx</span><span>16:9 · EDITABLE</span></div>
+              <div class="viewer-stage"><img data-stage-image src="assets/decks/zh-research-data/slide-1.png" alt="大学生通勤方式研究标题页"></div>
+              <div class="thumb-strip">
+                <button type="button" class="thumb active" data-slide-src="assets/decks/zh-research-data/slide-1.png" data-slide-alt="大学生通勤方式研究标题页"><img src="assets/decks/zh-research-data/slide-1.png" alt="第 1 页"></button>
+                <button type="button" class="thumb" data-slide-src="assets/decks/zh-research-data/slide-3.png" data-slide-alt="样本与研究问题"><img src="assets/decks/zh-research-data/slide-3.png" alt="第 3 页"></button>
+                <button type="button" class="thumb" data-slide-src="assets/decks/zh-research-data/slide-4.png" data-slide-alt="通勤方式分布表格"><img src="assets/decks/zh-research-data/slide-4.png" alt="第 4 页"></button>
+                <button type="button" class="thumb" data-slide-src="assets/decks/zh-research-data/slide-5.png" data-slide-alt="观察与限制"><img src="assets/decks/zh-research-data/slide-5.png" alt="第 5 页"></button>
+                <button type="button" class="thumb" data-slide-src="assets/decks/zh-research-data/slide-6.png" data-slide-alt="下一步分析"><img src="assets/decks/zh-research-data/slide-6.png" alt="第 6 页"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case" aria-labelledby="zh-case-3-title">
+        <div class="shell">
+          <header class="case-header" data-reveal>
+            <div><span class="case-number">CASE 03 / PRODUCT LAUNCH</span><h3 id="zh-case-3-title">FocusDock 产品发布提案</h3><p>将用户问题、核心体验、传播计划与成功标准组织成产品营销演示。</p></div>
+            <span class="status-pill">REAL RUN · VALIDATED</span>
+          </header>
+          <div class="case-grid">
+            <aside class="case-console" data-reveal aria-label="产品发布案例输入与运行证据">
+              <div class="panel-bar"><span>REPRESENTATIVE PROMPT</span><span>JSON</span></div>
+              <pre>{
+  "deck": {
+    "title": "FocusDock 桌面专注助手发布提案",
+    "slides": [
+      "产品主张", "用户问题",
+      "体验与传播重点", "四周发布节奏",
+      "发布成功的判断方式"
+    ]
+  }
+}</pre>
+              <div class="proof"><span class="proof-label">Actual command</span><div class="command">python3 ppt_generator.py information/assets/inputs/zh-product-launch.json</div></div>
+              <div class="proof"><span class="proof-label">Actual result</span><div class="metrics"><div class="metric"><strong>ok:true</strong><small>status</small></div><div class="metric"><strong>6</strong><small>slides</small></div><div class="metric"><strong>0</strong><small>issues</small></div></div></div>
+              <div class="downloads"><a class="download-link" href="assets/inputs/zh-product-launch.json">完整输入</a><a class="download-link" href="assets/logs/zh-product-launch.json">运行日志</a><a class="download-link" href="assets/outputs/zh-product-launch.pptx">PPTX</a><a class="download-link" href="assets/decks/zh-product-launch/zh-product-launch.pdf">PDF</a></div>
+            </aside>
+            <div class="deck-viewer" data-deck-viewer data-reveal>
+              <div class="viewer-bar"><span>zh-product-launch.pptx</span><span>16:9 · EDITABLE</span></div>
+              <div class="viewer-stage"><img data-stage-image src="assets/decks/zh-product-launch/slide-1.png" alt="FocusDock 产品发布提案标题页"></div>
+              <div class="thumb-strip">
+                <button type="button" class="thumb active" data-slide-src="assets/decks/zh-product-launch/slide-1.png" data-slide-alt="FocusDock 标题页"><img src="assets/decks/zh-product-launch/slide-1.png" alt="第 1 页"></button>
+                <button type="button" class="thumb" data-slide-src="assets/decks/zh-product-launch/slide-3.png" data-slide-alt="用户面对的具体问题"><img src="assets/decks/zh-product-launch/slide-3.png" alt="第 3 页"></button>
+                <button type="button" class="thumb" data-slide-src="assets/decks/zh-product-launch/slide-4.png" data-slide-alt="体验与传播重点"><img src="assets/decks/zh-product-launch/slide-4.png" alt="第 4 页"></button>
+                <button type="button" class="thumb" data-slide-src="assets/decks/zh-product-launch/slide-5.png" data-slide-alt="四周发布节奏"><img src="assets/decks/zh-product-launch/slide-5.png" alt="第 5 页"></button>
+                <button type="button" class="thumb" data-slide-src="assets/decks/zh-product-launch/slide-6.png" data-slide-alt="发布成功判断方式"><img src="assets/decks/zh-product-launch/slide-6.png" alt="第 6 页"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="section" id="features" aria-labelledby="features-title">
+      <div class="shell">
+        <div class="section-head" data-reveal><div class="kicker">Code-Verified Features</div><h2 id="features-title">代码中真实存在的能力</h2><p>这里只列出仓库当前版本能够执行和验证的功能。</p></div>
+        <div class="feature-grid">
+          <article class="feature" data-reveal><div class="feature-icon">JSON</div><h3>结构化 deck 合约</h3><p>支持 title、section、bullets、two_col、table 与 image_caption 六种布局。</p></article>
+          <article class="feature" data-reveal><div class="feature-icon">MD</div><h3>Markdown 便捷输入</h3><p>标题、要点与 GFM 表格通过确定性规则编译，不调用 LLM。</p></article>
+          <article class="feature" data-reveal><div class="feature-icon">PPTX</div><h3>真实可编辑输出</h3><p>基于内置 Martin Template 和 python-pptx 生成标准 PowerPoint 文件。</p></article>
+          <article class="feature" data-reveal><div class="feature-icon">CHK</div><h3>文件回读校验</h3><p>检查页数、空页、表格行列和本地图片是否真实写入。</p></article>
+          <article class="feature" data-reveal><div class="feature-icon">FIT</div><h3>溢出预警</h3><p>按要点数量、字符数与表格单元格数给出 warning；极端输入会被拒绝。</p></article>
+          <article class="feature" data-reveal><div class="feature-icon">OFF</div><h3>离线与安全硬化</h3><p>禁用 md2pptx 内联代码执行与网络抓取，只接受本地图片路径。</p></article>
+        </div>
+        <div class="limits" data-reveal><strong>当前限制</strong><p><code>theme</code> 字段已保留但尚未生效；所有 deck 使用同一内置模板。Skill 不负责自动研究、自动写内容、生成图表或挑选线上图片。溢出检测是启发式检查，不是像素级排版测量。</p></div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="use-title">
+      <div class="shell">
+        <div class="section-head" data-reveal><div class="kicker">Good Fits</div><h2 id="use-title">适合内容已准备好的演示任务</h2><p>当结构或数据已经明确，需要稳定输出 PowerPoint 时最合适。</p></div>
+        <div class="use-cases" data-reveal><span class="use-case">商业策略简报</span><span class="use-case">季度回顾</span><span class="use-case">研究结果展示</span><span class="use-case">课程汇报</span><span class="use-case">产品发布提案</span><span class="use-case">计划与路线图</span><span class="use-case">离线批量生成</span></div>
+      </div>
+    </section>
+
+    <section class="shell cta" aria-labelledby="cta-title" data-reveal>
+      <div class="cta-copy"><div class="kicker">Ship The Actual File</div><h2 id="cta-title">输入结构，拿到真正的 PPTX</h2><p>从可复现的 JSON 输入，到经过回读校验的演示文稿。下载真实案例，直接检查内容与可编辑性。</p><div class="cta-actions"><a class="button primary" href="assets/outputs/zh-product-launch.pptx">下载中文案例 PPTX</a><a class="button" href="https://github.com/finchipaiorg/ppt-generator">查看 GitHub</a></div></div>
+      <div class="cta-deck"><img src="assets/decks/zh-product-launch/slide-1.png" alt="真实生成的 FocusDock 标题页" loading="lazy"><img src="assets/decks/zh-product-launch/slide-5.png" alt="真实生成的发布节奏表格页" loading="lazy"></div>
+    </section>
+  </main>
+
+  <footer><div class="shell footer-inner"><span>PPT Generator · FinChip Information</span><span>页面中的 36 张预览均由 6 份真实 PPTX 导出</span></div></footer>
+</body>
+</html>

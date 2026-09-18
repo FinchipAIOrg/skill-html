@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Humanizer identifies and rewrites 24 recurring AI-writing patterns so text reads naturally while preserving meaning and tone.">
+  <title>Humanizer — Take the AI out of the writing</title>
+  <style>
+    :root{
+      --paper:#f5f0e6;--ink:#101114;--blue:#244cff;--coral:#ff6b57;
+      --red:#e6322b;--yellow:#ffd84d;--white:#fffdf8;--muted:#65645f;
+      --line:2px solid var(--ink);--shadow:7px 7px 0 var(--ink);
+      --radius:18px;--max:1240px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,Arial,system-ui,-apple-system,sans-serif;line-height:1.55}
+    a{color:inherit}button{font:inherit}
+    .shell{width:min(var(--max),calc(100% - 44px));margin:auto}
+    .topbar{height:62px;border-bottom:var(--line);display:flex;align-items:center;justify-content:space-between;text-transform:uppercase;letter-spacing:.08em;font-size:12px;font-weight:800}
+    .brand{display:flex;gap:10px;align-items:center;text-decoration:none}.brand-mark{display:grid;place-items:center;width:31px;height:31px;background:var(--blue);color:white;border:2px solid var(--ink);border-radius:8px;transform:rotate(-3deg)}
+    .nav{display:flex;gap:24px;align-items:center}.nav a{text-decoration:none}.nav a:hover{text-decoration:underline}.lang{padding:7px 11px;border:2px solid var(--ink);background:var(--white);box-shadow:3px 3px 0 var(--ink)}
+    .hero{min-height:760px;padding:66px 0 58px;display:grid;grid-template-columns:minmax(0,1.16fr) minmax(360px,.84fr);gap:44px;align-items:center;border-bottom:var(--line);position:relative}
+    .eyebrow{display:inline-flex;gap:10px;align-items:center;font-weight:900;text-transform:uppercase;letter-spacing:.12em;font-size:12px}.dot{width:10px;height:10px;background:var(--coral);border:2px solid var(--ink);border-radius:50%}
+    h1{font-size:clamp(76px,11.5vw,164px);line-height:.77;letter-spacing:-.075em;margin:28px 0 34px;font-weight:950;max-width:800px}h1 span{color:var(--blue);display:block;margin-left:.34em}
+    .lede{font-size:clamp(22px,2.5vw,38px);line-height:1.12;letter-spacing:-.035em;font-weight:780;max-width:750px;margin:0}.hero-note{margin:25px 0 0;max-width:630px;color:var(--muted);font-size:15px}
+    .hero-actions{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 18px;border:2px solid var(--ink);font-weight:850;text-decoration:none;background:var(--yellow);box-shadow:4px 4px 0 var(--ink);transition:.18s transform,.18s box-shadow}.btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}.btn.secondary{background:var(--white)}
+    .hero-board{position:relative;padding:24px 14px 36px}.hero-board:before{content:"REAL RUN 01";position:absolute;right:0;top:-10px;background:var(--coral);border:var(--line);padding:8px 13px;font-weight:900;transform:rotate(5deg);z-index:2}
+    .mini-card{background:var(--white);border:var(--line);border-radius:16px;padding:24px;box-shadow:var(--shadow);position:relative}.mini-card.before{transform:rotate(-2deg);z-index:1}.mini-card.after{background:#e9edff;margin:-8px -14px 0 20px;transform:rotate(1.7deg);z-index:2}.mini-label{font-size:11px;font-weight:950;letter-spacing:.14em;text-transform:uppercase;display:flex;justify-content:space-between;margin-bottom:14px}.mini-card p{margin:0;font:650 17px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}mark{background:#ffb4a9;color:inherit;padding:0 2px}.after mark{background:#aebdff}.down{width:52px;height:52px;border-radius:50%;background:var(--blue);color:white;border:var(--line);display:grid;place-items:center;font-size:25px;font-weight:900;margin:-6px auto;position:relative;z-index:5}.scribble{position:absolute;right:-15px;bottom:-28px;font:800 16px/1.1 "Comic Sans MS",ui-rounded,cursive;color:var(--blue);transform:rotate(-7deg)}
+    .fact-strip{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:var(--line);background:var(--ink);color:var(--white)}.fact{padding:20px 28px;border-right:1px solid #555}.fact:last-child{border:0}.fact b{font-size:30px;display:block;letter-spacing:-.04em}.fact span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#c7c6c1}
+    section{padding:100px 0;border-bottom:var(--line)}.section-head{display:grid;grid-template-columns:120px 1fr auto;gap:24px;align-items:end;margin-bottom:44px}.section-no{font-size:13px;font-weight:950;letter-spacing:.12em;color:var(--blue)}h2{font-size:clamp(44px,6vw,84px);line-height:.93;letter-spacing:-.055em;margin:0;font-weight:950}.section-kicker{max-width:300px;font:800 15px/1.35 "Comic Sans MS",ui-rounded,cursive;color:var(--red);transform:rotate(-3deg)}
+    .proof{background:var(--white)}.proof .section-head{margin-bottom:30px}.prompt-bar{border:var(--line);background:var(--yellow);padding:18px 22px;display:grid;grid-template-columns:128px 1fr;gap:22px;align-items:start;margin-bottom:22px;box-shadow:5px 5px 0 var(--ink)}.prompt-bar strong{text-transform:uppercase;letter-spacing:.12em;font-size:12px}.prompt-bar p{margin:0;font-size:14px}
+    .transform{display:grid;grid-template-columns:1fr 62px 1fr;gap:0;align-items:stretch}.text-panel{border:var(--line);padding:30px;background:#f1eee7;min-height:390px;position:relative}.text-panel.after{background:#e8ecff}.panel-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;padding-bottom:15px;border-bottom:1px solid #8b8a85}.panel-top b{font-size:12px;letter-spacing:.14em}.panel-top span{font-size:11px;color:var(--muted)}.text-panel p{white-space:pre-line;font-size:17px;line-height:1.78;margin:0}.arrow-box{display:grid;place-items:center;background:var(--blue);color:white;border-top:var(--line);border-bottom:var(--line);font-size:30px;font-weight:900;writing-mode:vertical-rl;letter-spacing:.08em}.pattern-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.pattern{border:2px solid var(--ink);padding:8px 11px;background:var(--coral);font-size:12px;font-weight:800}
+    .cap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.cap{border:var(--line);background:var(--white);padding:24px;min-height:285px;position:relative;transition:.2s transform,.2s box-shadow}.cap:hover{transform:translate(-4px,-4px);box-shadow:7px 7px 0 var(--ink)}.cap:nth-child(2){background:#e9edff}.cap:nth-child(3){background:#ffd9d3}.cap:nth-child(4){background:var(--yellow)}.cap-num{font-size:12px;font-weight:900;letter-spacing:.12em}.cap h3{font-size:28px;line-height:1.02;letter-spacing:-.035em;margin:58px 0 15px}.cap p{font-size:14px;margin:0;color:#353535}.cap .corner{position:absolute;right:18px;top:15px;font-size:34px}
+    .marquee{overflow:hidden;background:var(--blue);color:white;border-bottom:var(--line);padding:13px 0;font-weight:900;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}.marquee-track{display:inline-block;animation:marquee 24s linear infinite}.marquee span{margin-right:42px}@keyframes marquee{to{transform:translateX(-50%)}}
+    .cases{padding-bottom:55px}.case{margin:0 0 72px;border-top:var(--line);padding-top:28px}.case-header{display:grid;grid-template-columns:130px 1fr 320px;gap:22px;align-items:start;margin-bottom:26px}.case-id{display:inline-block;background:var(--blue);color:white;border:2px solid var(--ink);padding:8px 12px;font-weight:900;box-shadow:3px 3px 0 var(--ink)}.case h3{font-size:clamp(34px,4vw,60px);line-height:.95;letter-spacing:-.045em;margin:0}.case-summary{font-size:14px;color:var(--muted)}
+    .prompt-card{background:var(--ink);color:var(--white);padding:22px;border:2px solid var(--ink);margin-bottom:16px}.prompt-card .label{color:var(--yellow)}.label{font-size:11px;font-weight:950;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:10px}.prompt-card p{white-space:pre-line;margin:0;font-size:13px;line-height:1.65}.prompt-card details{border-top:1px solid #555;padding-top:12px}.prompt-card summary{cursor:pointer;color:var(--yellow);font-size:12px;font-weight:850}.prompt-card details p{margin-top:12px;color:#f1f0eb}.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px}.copy{border:var(--line);background:var(--white);padding:24px;min-height:290px}.copy.result{background:#e8ecff;box-shadow:5px 5px 0 var(--blue)}.copy p{white-space:pre-line;margin:0;font-size:15px;line-height:1.72}.observations{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.observations span{font-size:12px;border:1.5px solid var(--ink);background:var(--white);padding:7px 10px}
+    .workflow{background:var(--ink);color:var(--white)}.workflow .section-no{color:var(--yellow)}.workflow .section-kicker{color:#ff9180}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:#4d4d4d;border:2px solid #727272}.step{background:var(--ink);padding:28px;min-height:235px;position:relative}.step b{color:var(--yellow);font-size:12px;letter-spacing:.13em}.step h3{font-size:31px;margin:55px 0 10px}.step p{color:#c6c6c3;font-size:14px;margin:0}.step:not(:last-child):after{content:"→";position:absolute;right:-18px;top:31px;width:34px;height:34px;background:var(--coral);color:var(--ink);border:2px solid var(--ink);display:grid;place-items:center;font-weight:950;z-index:2}
+    .audience-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.audience{border:var(--line);background:var(--white);min-height:190px;padding:20px;display:flex;flex-direction:column;justify-content:space-between}.audience:nth-child(even){background:var(--yellow)}.audience i{font-style:normal;font-size:28px}.audience b{font-size:18px}.audience small{color:var(--muted)}.notice{margin-top:26px;border-left:8px solid var(--red);padding:17px 20px;background:#fff2ef;font-size:14px}
+    .cta{padding:90px 0;background:var(--coral)}.cta-box{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:end}.cta h2{font-size:clamp(58px,9vw,126px);max-width:900px}.cta p{font-size:18px;max-width:540px}.cta .btn{background:var(--white);padding:18px 24px}
+    footer{background:var(--ink);color:white;padding:28px 0;font-size:12px}.footer-inner{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer-inner a{color:var(--yellow)}.reveal{opacity:0;transform:translateY(20px);transition:.55s ease}.reveal.in{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.marquee-track{animation:none}.reveal{opacity:1;transform:none;transition:none}}
+    @media (max-width:900px){.nav a:not(.lang){display:none}.hero{grid-template-columns:1fr;min-height:auto;padding-top:46px}.hero-board{max-width:620px;margin:auto}.fact-strip{grid-template-columns:1fr}.fact{border-right:0;border-bottom:1px solid #555}.section-head{grid-template-columns:80px 1fr}.section-kicker{grid-column:2}.cap-grid{grid-template-columns:1fr 1fr}.case-header{grid-template-columns:110px 1fr}.case-summary{grid-column:2}.steps{grid-template-columns:1fr 1fr}.step:nth-child(2):after{display:none}.audience-grid{grid-template-columns:1fr 1fr}.cta-box{grid-template-columns:1fr}.cta .btn{justify-self:start}}
+    @media (max-width:620px){.shell{width:min(100% - 28px,var(--max))}.topbar{height:54px}.hero{padding:42px 0}.hero h1{font-size:22vw}.lede{font-size:24px}.hero-board{padding-left:0;padding-right:0}.mini-card p{font-size:14px}.fact{padding:16px 20px}section{padding:68px 0}.section-head{grid-template-columns:1fr;gap:10px}.section-kicker{grid-column:1}.prompt-bar{grid-template-columns:1fr}.transform{grid-template-columns:1fr}.arrow-box{height:52px;border-left:var(--line);border-right:var(--line);writing-mode:horizontal-tb}.arrow-box::after{content:" HUMANIZER";font-size:12px}.text-panel{min-height:0;padding:22px}.cap-grid,.compare,.steps,.audience-grid{grid-template-columns:1fr}.case-header{grid-template-columns:1fr}.case-summary{grid-column:1}.step:not(:last-child):after{content:"↓";right:25px;top:auto;bottom:-18px}.step:nth-child(2):after{display:grid}.audience{min-height:135px}.cta h2{font-size:17vw}}
+  </style>
+</head>
+<body>
+  <header class="shell topbar">
+    <a class="brand" href="#top"><span class="brand-mark">✦</span><span>FinChip / Skill File</span></a>
+    <nav class="nav" aria-label="Page navigation"><a href="#proof">Before / after</a><a href="#cases">Real cases</a><a href="#workflow">Workflow</a><a class="lang" href="information-zh.html">中文</a></nav>
+  </header>
+
+  <main id="top">
+    <div class="shell hero">
+      <div>
+        <div class="eyebrow"><span class="dot"></span> Instruction Skill · v2.1.1</div>
+        <h1>Human<span>izer.</span></h1>
+        <p class="lede">Take the AI out of the writing—not the meaning. Make every line more specific, natural, and recognizably yours.</p>
+        <p class="hero-note">This is not an “AI detector,” and it does not promise to bypass one. It is an editing guide that spots 24 recurring AI-writing patterns and rewrites them in context.</p>
+        <div class="hero-actions"><a class="btn" href="#proof">See the real rewrite ↓</a><a class="btn secondary" href="#cases">Browse three real cases</a></div>
+      </div>
+      <div class="hero-board" aria-label="Real writing transformation">
+        <div class="mini-card before"><div class="mini-label"><span>Before</span><span>Weekly update</span></div><p>In order to ensure that we are strategically aligned and positioned to deliver <mark>exceptional outcomes</mark>...</p></div>
+        <div class="down">↓</div>
+        <div class="mini-card after"><div class="mini-label"><span>After</span><span>Humanized</span></div><p><mark>Starting next Monday</mark>, we'll use a weekly status update to share progress, flag risks, and keep priorities aligned.</p></div>
+        <div class="scribble">Same meaning.<br>Less machine.</div>
+      </div>
+    </div>
+
+    <section id="proof" class="proof">
+      <div class="shell">
+        <div class="section-head reveal"><div class="section-no">01 / PROOF</div><h2>Read the result.<br>Then read the claim.</h2><div class="section-kicker">One real run<br>Prompt → Before → Output</div></div>
+        <div class="prompt-bar reveal"><strong>Actual prompt</strong><p>Use the Humanizer skill to rewrite the internal announcement below. Keep the tone professional and direct. Preserve every fact, deadline, and requirement, and do not add information that is not in the source. Return the rewrite first, followed by a brief list of the AI-writing patterns you changed.</p></div>
+        <div class="transform reveal">
+          <article class="text-panel"><div class="panel-top"><b>BEFORE / SOURCE</b><span>Real input · 602 characters</span></div><p>Dear Team,
+In order to ensure that we are strategically aligned and positioned to deliver exceptional outcomes, we will be implementing a comprehensive weekly status update process beginning next Monday. This initiative serves as a critical mechanism for enhancing visibility, fostering cross-functional collaboration, and proactively identifying potential roadblocks. Please submit your update by 6:00 p.m. every Friday, highlighting key accomplishments, current challenges, and priorities for the upcoming week. Together, we can create a more transparent, efficient, and high-performing organization.</p></article>
+          <div class="arrow-box" aria-hidden="true">→</div>
+          <article class="text-panel after"><div class="panel-top"><b>AFTER / HUMANIZER OUTPUT</b><span>Actual output · unedited</span></div><p>Dear team,
+
+Starting next Monday, we'll use a weekly status update to share progress, flag risks, and keep priorities aligned. Please send yours by 6:00 p.m. every Friday and include what you completed, any current blockers, and your priorities for the following week.
+
+Thank you.</p></article>
+        </div>
+        <div class="pattern-row reveal"><span class="pattern">CUT FILLER</span><span class="pattern">DIRECT VERBS</span><span class="pattern">DEADLINE PRESERVED</span><span class="pattern">GENERIC CLOSE REMOVED</span></div>
+      </div>
+    </section>
+
+    <div class="fact-strip">
+      <div class="fact"><b>24</b><span>documented writing patterns</span></div>
+      <div class="fact"><b>6</b><span>real runs · two languages</span></div>
+      <div class="fact"><b>0</b><span>invented scores or metrics</span></div>
+    </div>
+
+    <section id="capabilities">
+      <div class="shell">
+        <div class="section-head reveal"><div class="section-no">02 / CAPABILITIES</div><h2>Not a thesaurus.<br>An editing pass.</h2><div class="section-kicker">Every capability comes<br>directly from SKILL.md</div></div>
+        <div class="cap-grid">
+          <article class="cap reveal"><span class="cap-num">01 / SCAN</span><span class="corner">⌁</span><h3>Spot 24 recurring<br>AI patterns</h3><p>From inflated significance and promotional language to vague attribution, em dashes, forced trios, chatbot residue, and excessive hedging.</p></article>
+          <article class="cap reveal"><span class="cap-num">02 / REWRITE</span><span class="corner">✎</span><h3>Rewrite the<br>problem lines</h3><p>Replace formulaic language and repetitive structures with direct verbs, concrete phrasing, and a more natural rhythm.</p></article>
+          <article class="cap reveal"><span class="cap-num">03 / PRESERVE</span><span class="corner">◎</span><h3>Keep the meaning.<br>Match the tone.</h3><p>Hold on to the core message and adapt to formal, casual, technical, or marketing contexts. Human review still matters.</p></article>
+          <article class="cap reveal"><span class="cap-num">04 / VOICE</span><span class="corner">✦</span><h3>Put a person<br>back in the prose</h3><p>When the context allows, vary the rhythm, acknowledge complexity, and use a real point of view instead of sterile neutrality.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <div class="marquee" aria-hidden="true"><div class="marquee-track"><span>LESS HYPE</span><span>MORE SPECIFIC</span><span>SAME MEANING</span><span>BETTER RHYTHM</span><span>LESS HYPE</span><span>MORE SPECIFIC</span><span>SAME MEANING</span><span>BETTER RHYTHM</span></div></div>
+
+    <section id="cases" class="cases">
+      <div class="shell">
+        <div class="section-head reveal"><div class="section-no">03 / REAL CASES</div><h2>Three contexts.<br>Three real runs.</h2><div class="section-kicker">English prompt<br>English source<br>English actual output</div></div>
+
+        <article class="case reveal">
+          <div class="case-header"><div><span class="case-id">CASE 01</span></div><h3>Professional writing<br>Weekly update</h3><p class="case-summary">Goal: retain the start date, deadline, and required contents while removing corporate filler.</p></div>
+          <div class="prompt-card"><span class="label">Actual prompt</span><details><summary>Open the complete actual prompt (source included)</summary><p>Use the Humanizer skill to rewrite the internal announcement below. Keep the tone professional and direct. Preserve every fact, deadline, and requirement, and do not add information that is not in the source. Return the rewrite first, followed by a brief list of the AI-writing patterns you changed.
+
+Dear Team,
+In order to ensure that we are strategically aligned and positioned to deliver exceptional outcomes, we will be implementing a comprehensive weekly status update process beginning next Monday. This initiative serves as a critical mechanism for enhancing visibility, fostering cross-functional collaboration, and proactively identifying potential roadblocks. Please submit your update by 6:00 p.m. every Friday, highlighting key accomplishments, current challenges, and priorities for the upcoming week. Together, we can create a more transparent, efficient, and high-performing organization.</p></details></div>
+          <div class="compare"><div class="copy"><span class="label">Original</span><p>Dear Team,
+In order to ensure that we are strategically aligned and positioned to deliver exceptional outcomes, we will be implementing a comprehensive weekly status update process beginning next Monday. This initiative serves as a critical mechanism for enhancing visibility, fostering cross-functional collaboration, and proactively identifying potential roadblocks. Please submit your update by 6:00 p.m. every Friday, highlighting key accomplishments, current challenges, and priorities for the upcoming week. Together, we can create a more transparent, efficient, and high-performing organization.</p></div><div class="copy result"><span class="label">Humanizer output</span><p>Dear team,
+
+Starting next Monday, we'll use a weekly status update to share progress, flag risks, and keep priorities aligned. Please send yours by 6:00 p.m. every Friday and include what you completed, any current blockers, and your priorities for the following week.
+
+Thank you.</p></div></div>
+          <div class="observations"><span>Filler removed</span><span>Copula avoidance fixed</span><span>Generic conclusion cut</span></div>
+        </article>
+
+        <article class="case reveal">
+          <div class="case-header"><div><span class="case-id">CASE 02</span></div><h3>Marketing copy<br>Feature launch</h3><p class="case-summary">Goal: keep the launch and three use cases, without emojis, inflated claims, or invented features.</p></div>
+          <div class="prompt-card"><span class="label">Actual prompt</span><details><summary>Open the complete actual prompt (source included)</summary><p>Use the Humanizer skill to rewrite the social launch copy below. Keep the facts that Smart Notes is available and that it covers meeting notes, study plans, and quick ideas. Keep some launch energy, but remove hype, emojis, and unsupported claims. Do not invent new features. Return the rewrite first, followed by a brief list of the AI-writing patterns you changed.
+
+🚀 Big news! Our revolutionary Smart Notes feature is finally here! It's not just a note-taking tool—it's your ultimate partner for unlocking ideas, supercharging productivity, and transforming the way you work. From meeting notes to study plans, from quick thoughts to bold visions, Smart Notes delivers a seamless, intelligent, and powerful experience. Start your journey today and turn every idea into limitless possibility! ✨</p></details></div>
+          <div class="compare"><div class="copy"><span class="label">Original</span><p>🚀 Big news! Our revolutionary Smart Notes feature is finally here! It's not just a note-taking tool—it's your ultimate partner for unlocking ideas, supercharging productivity, and transforming the way you work. From meeting notes to study plans, from quick thoughts to bold visions, Smart Notes delivers a seamless, intelligent, and powerful experience. Start your journey today and turn every idea into limitless possibility! ✨</p></div><div class="copy result"><span class="label">Humanizer output</span><p>Smart Notes is now available.
+
+Use it to keep meeting notes, study plans, and quick ideas in one place. Try it today and spend less time sorting through scattered notes.</p></div></div>
+          <div class="observations"><span>Emoji decoration removed</span><span>Promotional language reduced</span><span>Abstract claims made concrete</span></div>
+        </article>
+
+        <article class="case reveal">
+          <div class="case-header"><div><span class="case-id">CASE 03</span></div><h3>Academic prose<br>AI in education</h3><p class="case-summary">Goal: stay formal and cautious, add no evidence, and ground broad claims in functions and limitations.</p></div>
+          <div class="prompt-card"><span class="label">Actual prompt</span><details><summary>Open the complete actual prompt (source included)</summary><p>Use the Humanizer skill to rewrite the academic paragraph below. Keep a formal, cautious tone and preserve its core claims about student data, knowledge gaps, instructional support, privacy, and algorithmic bias. Do not add statistics, citations, or new evidence. Return the rewrite first, followed by a brief list of the AI-writing patterns you changed.
+
+In today's rapidly evolving digital landscape, artificial intelligence plays an increasingly pivotal role in education, marking a significant shift from traditional teaching methods toward intelligent and personalized learning. By delving into student data, AI can effectively identify knowledge gaps, providing valuable insights for educators and fostering substantial improvements in teaching quality. Despite challenges related to privacy and algorithmic bias, the future of AI-powered education remains undeniably bright.</p></details></div>
+          <div class="compare"><div class="copy"><span class="label">Original</span><p>In today's rapidly evolving digital landscape, artificial intelligence plays an increasingly pivotal role in education, marking a significant shift from traditional teaching methods toward intelligent and personalized learning. By delving into student data, AI can effectively identify knowledge gaps, providing valuable insights for educators and fostering substantial improvements in teaching quality. Despite challenges related to privacy and algorithmic bias, the future of AI-powered education remains undeniably bright.</p></div><div class="copy result"><span class="label">Humanizer output</span><p>Artificial intelligence can analyze student data to identify knowledge gaps and help teachers tailor instruction. These systems may support more personalized learning, but they also raise concerns about privacy and algorithmic bias. Their value in education will depend on how well they work in practice.</p></div></div>
+          <div class="observations"><span>Generic opening cut</span><span>Stacked -ing clauses removed</span><span>Formulaic positive close replaced</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="workflow" class="workflow">
+      <div class="shell">
+        <div class="section-head reveal"><div class="section-no">04 / WORKFLOW</div><h2>What actually<br>happens?</h2><div class="section-kicker">No hidden mechanism claims<br>Just the documented flow</div></div>
+        <div class="steps">
+          <article class="step reveal"><b>STEP 01</b><h3>Input</h3><p>Read the supplied text plus the context, intended tone, and facts that must stay.</p></article>
+          <article class="step reveal"><b>STEP 02</b><h3>Analyze</h3><p>Check for the 24 documented content, language, style, communication, and filler patterns.</p></article>
+          <article class="step reveal"><b>STEP 03</b><h3>Humanize</h3><p>Rewrite problem sections, vary rhythm, simplify phrasing, and maintain the requested voice.</p></article>
+          <article class="step reveal"><b>STEP 04</b><h3>Output</h3><p>Return the rewritten text and, when useful, a short summary of what changed.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="audience">
+      <div class="shell">
+        <div class="section-head reveal"><div class="section-no">05 / FOR WHOM</div><h2>Draft with AI.<br>Finish in your voice.</h2><div class="section-kicker">Writing is not one job.<br>It is part of every job.</div></div>
+        <div class="audience-grid">
+          <article class="audience reveal"><i>01</i><div><b>Creators</b><br><small>Articles, scripts, newsletters</small></div></article>
+          <article class="audience reveal"><i>02</i><div><b>Marketers</b><br><small>Product copy and social posts</small></div></article>
+          <article class="audience reveal"><i>03</i><div><b>Students & researchers</b><br><small>Editing where AI assistance is permitted</small></div></article>
+          <article class="audience reveal"><i>04</i><div><b>Professionals</b><br><small>Email, notices, and reports</small></div></article>
+          <article class="audience reveal"><i>05</i><div><b>AI-assisted writers</b><br><small>Bringing a draft back to their voice</small></div></article>
+        </div>
+        <div class="notice reveal"><b>Use boundary:</b> Humanizer is for legitimate editing, not for evading AI-disclosure rules in academic, workplace, legal, publishing, or other settings. Rewrites can shift nuance; review before publishing.</div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="shell cta-box reveal"><div><div class="eyebrow">THE LAST EDIT</div><h2>Write with AI.<br>Sound like yourself.</h2><p>Give Humanizer a draft, a voice, and the facts that cannot move. It will clear the patterns. You decide whether the result sounds like you.</p></div><a class="btn" href="#cases">See all three real runs →</a></div>
+    </section>
+  </main>
+
+  <footer><div class="shell footer-inner"><span>Humanizer Information · English · Standalone static HTML</span><span>Verified against SKILL.md v2.1.1 · Real-run archive saved with the repository</span></div></footer>
+  <script>
+    (()=>{const items=[...document.querySelectorAll('.reveal')];if(!('IntersectionObserver'in window)){items.forEach(x=>x.classList.add('in'));return}const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});items.forEach(x=>io.observe(x))})();
+  </script>
+</body>
+</html>
