@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trap Detector · Promotion Risk Scan</title>
+<style>
+  
+  :root{
+    /* --- surfaces: black / graphite / deep blue --- */
+    --bg:#05070B;
+    --bg-2:#080C13;
+    --bg-3:#0B1220;
+    --panel:rgba(255,255,255,.030);
+    --panel-2:rgba(255,255,255,.048);
+    --solid:#0E1521;
+    --line:rgba(255,255,255,.075);
+    --line-2:rgba(255,255,255,.135);
+
+    /* --- type --- */
+    --txt:#E7EEF9;
+    --txt-2:#93A3B8;
+    --txt-3:#5F7186;
+
+    /* --- accents: electric blue / cyan / violet (sparingly) --- */
+    --blue:#3B82F6;
+    --blue-2:#60A5FA;
+    --cyan:#22D3EE;
+    --violet:#A78BFA;
+    --ok:#34D399;
+    --warn:#FBBF24;
+    --bad:#FB7185;
+
+    --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,"SF Mono",Consolas,"Liberation Mono",monospace;
+    --r:14px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:var(--sans);
+    font-size:15.5px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 30px}
+
+  /* ============ texture primitives ============ */
+  .tex{position:relative;overflow:hidden}
+  .tex .grid{
+    position:absolute;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.032) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.032) 1px,transparent 1px);
+    background-size:34px 34px;
+    -webkit-mask-image:radial-gradient(120% 90% at 50% 0%,#000 20%,transparent 78%);
+    mask-image:radial-gradient(120% 90% at 50% 0%,#000 20%,transparent 78%);
+  }
+  .tex .scan{
+    position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(180deg,rgba(255,255,255,.019) 0 1px,transparent 1px 4px);
+  }
+  .tex .aura{
+    position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(760px 400px at 76% 4%,rgba(59,130,246,.16),transparent 62%),
+      radial-gradient(620px 380px at 8% 96%,rgba(34,211,238,.085),transparent 60%),
+      radial-gradient(520px 300px at 96% 88%,rgba(167,139,250,.055),transparent 62%);
+  }
+  .tex > .inner{position:relative}
+
+  /* ============ nav ============ */
+  .nav{
+    position:sticky;top:0;z-index:60;
+    background:rgba(5,7,11,.72);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-in{
+    max-width:1180px;margin:0 auto;padding:0 30px;
+    height:62px;display:flex;align-items:center;gap:26px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:640;letter-spacing:-.015em;font-size:15.5px}
+  .mark{
+    width:27px;height:27px;border-radius:8px;
+    background:linear-gradient(140deg,var(--blue),var(--cyan));
+    display:grid;place-items:center;
+    font-family:var(--mono);font-size:11.5px;font-weight:700;color:#03101C;
+    box-shadow:0 0 0 1px rgba(255,255,255,.09),0 6px 18px -6px rgba(59,130,246,.7);
+  }
+  .ver{font-family:var(--mono);font-size:10.5px;color:var(--txt-3);border:1px solid var(--line-2);border-radius:20px;padding:1.5px 8px}
+  .nav nav{display:flex;gap:24px;margin-left:auto}
+  .nav nav a{color:var(--txt-2);text-decoration:none;font-size:13.5px;transition:color .18s}
+  .nav nav a:hover{color:var(--txt)}
+  .nav-cta{
+    font-size:13px;font-weight:600;text-decoration:none;
+    color:#03101C;background:linear-gradient(120deg,var(--blue-2),var(--cyan));
+    padding:8px 15px;border-radius:9px;
+    box-shadow:0 8px 22px -10px rgba(59,130,246,.9);
+  }
+
+  /* ============ hero ============ */
+  .hero{padding:92px 0 96px;border-bottom:1px solid var(--line)}
+  .hero-in{display:grid;grid-template-columns:1.04fr 1fr;gap:58px;align-items:center}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;
+    color:var(--cyan);border:1px solid rgba(34,211,238,.28);
+    background:rgba(34,211,238,.07);padding:5px 11px;border-radius:20px;
+  }
+  .eyebrow i{width:5px;height:5px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 3px rgba(34,211,238,.16)}
+  h1{
+    font-size:clamp(40px,4.9vw,62px);line-height:1.1;letter-spacing:-.032em;
+    font-weight:680;margin:22px 0 0;
+  }
+  h1 em{
+    font-style:normal;
+    background:linear-gradient(100deg,var(--blue-2),var(--cyan) 70%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .lede{margin-top:20px;font-size:16.5px;color:var(--txt-2);max-width:520px}
+  .lede b{color:var(--txt);font-weight:560}
+  .chips{list-style:none;display:flex;flex-wrap:wrap;gap:9px;margin-top:26px}
+  .chips li{
+    font-family:var(--mono);font-size:11.5px;color:var(--txt-2);
+    border:1px solid var(--line-2);border-radius:8px;
+    padding:5.5px 11px;background:rgba(255,255,255,.022);
+  }
+  .cta-row{display:flex;gap:12px;margin-top:32px;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;text-decoration:none;
+    font-size:14px;font-weight:600;padding:12px 22px;border-radius:10px;
+    transition:transform .16s,filter .16s,border-color .16s,color .16s;
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn.primary{
+    background:linear-gradient(120deg,var(--blue),var(--cyan));color:#03101C;
+    box-shadow:0 14px 34px -14px rgba(59,130,246,.95);
+  }
+  .btn.primary:hover{filter:brightness(1.1)}
+  .btn.ghost{color:var(--txt);border:1px solid var(--line-2);background:rgba(255,255,255,.024)}
+  .btn.ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+  /* ============ glass card ============ */
+  .glass{
+    background:linear-gradient(180deg,var(--panel-2),var(--panel));
+    border:1px solid var(--line);
+    border-radius:var(--r);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 28px 60px -34px rgba(0,0,0,.95);
+  }
+
+  /* ============ report panel (core interface) ============ */
+  .term{overflow:hidden}
+  .term-bar{
+    display:flex;align-items:center;gap:9px;padding:11px 15px;
+    border-bottom:1px solid var(--line);background:rgba(255,255,255,.02);
+  }
+  .dots{display:flex;gap:6px}
+  .dots i{width:9px;height:9px;border-radius:50%;background:#232C3A}
+  .term-title{font-family:var(--mono);font-size:11px;color:var(--txt-3);margin-left:5px;letter-spacing:.05em}
+  .term-tag{
+    margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.08em;
+    color:var(--ok);border:1px solid rgba(52,211,153,.3);background:rgba(52,211,153,.08);
+    border-radius:5px;padding:2px 7px;
+  }
+  .term-body{
+    font-family:var(--mono);font-size:12.2px;line-height:1.82;
+    padding:17px 19px 19px;overflow-wrap:anywhere;
+  }
+  .rp{color:var(--txt-3);letter-spacing:-.04em;user-select:none}
+  .kv{display:flex;gap:10px}
+  .kv span:first-child{color:var(--txt-3);min-width:88px}
+  .kv span:last-child{color:var(--txt)}
+  .sec{color:var(--cyan);letter-spacing:.06em;margin-top:2px}
+  .flag{color:var(--ok)}
+  .flag .x{color:var(--txt-3)}
+  .lvl{color:var(--ok);font-weight:600}
+  .vrd{color:var(--warn);font-weight:600}
+  .note{color:var(--txt-2)}
+  .note em{font-style:normal;color:var(--warn)}
+  .panel-foot{
+    border-top:1px solid var(--line);background:rgba(255,255,255,.016);
+    padding:10px 19px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:11px;color:var(--txt-3);
+  }
+  .panel-foot .dot{width:5px;height:5px;border-radius:50%;background:var(--blue)}
+  .hash{color:var(--txt-2);word-break:break-all}
+
+  /* ============ section shell ============ */
+  section{padding:82px 0;border-bottom:1px solid var(--line)}
+  .shead{max-width:760px;margin-bottom:38px}
+  .snum{
+    font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--blue-2);display:flex;align-items:center;gap:10px;
+  }
+  .snum::after{content:"";height:1px;width:52px;background:linear-gradient(90deg,rgba(96,165,250,.55),transparent)}
+  h2{font-size:clamp(27px,3.1vw,38px);line-height:1.2;letter-spacing:-.026em;font-weight:640;margin-top:15px}
+  h2 em{font-style:normal;background:linear-gradient(100deg,var(--blue-2),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sdesc{margin-top:14px;font-size:16px;color:var(--txt-2)}
+
+  /* ============ before / after ============ */
+  .ba{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .ba-col{padding:0;overflow:hidden}
+  .ba-head{
+    padding:14px 20px;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:11px;
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;
+  }
+  .ba-head .badge{
+    width:20px;height:20px;border-radius:6px;display:grid;place-items:center;
+    font-size:11px;font-weight:700;
+  }
+  .col-b .ba-head{color:var(--txt-3)}
+  .col-b .badge{background:rgba(255,255,255,.06);color:var(--txt-3)}
+  .col-a .ba-head{color:var(--cyan)}
+  .col-a .badge{background:linear-gradient(140deg,var(--blue),var(--cyan));color:#03101C}
+  .ba-body{padding:18px 20px 20px}
+  .rowline{
+    display:flex;gap:11px;padding:9px 0;border-bottom:1px dashed rgba(255,255,255,.055);
+    font-size:14.2px;color:var(--txt-2);
+  }
+  .rowline:last-child{border-bottom:0}
+  .rowline .ico{flex:0 0 17px;font-size:13px;line-height:1.55}
+  .col-b .rowline .ico{color:var(--txt-3)}
+  .col-a .rowline .ico{color:var(--cyan)}
+  .rowline b{color:var(--txt);font-weight:560}
+  .callout{
+    margin:16px 20px 20px;padding:13px 15px;border-radius:10px;
+    font-size:13.6px;line-height:1.6;
+    border:1px solid rgba(251,191,36,.26);background:rgba(251,191,36,.06);color:#E8D5A6;
+  }
+  .callout b{color:var(--warn)}
+  .callout.ok{border-color:rgba(52,211,153,.24);background:rgba(52,211,153,.055);color:#B7E9D2}
+  .callout.ok b{color:var(--ok)}
+
+  .delta{margin-top:26px;overflow:hidden}
+  .delta table{width:100%;border-collapse:collapse}
+  .delta th{
+    text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--txt-3);font-weight:500;padding:12px 20px;border-bottom:1px solid var(--line);
+    background:rgba(255,255,255,.018);
+  }
+  .delta td{padding:12px 20px;border-bottom:1px solid rgba(255,255,255,.045);font-size:14px;color:var(--txt-2);vertical-align:top}
+  .delta tr:last-child td{border-bottom:0}
+  .delta td:first-child{color:var(--txt);font-weight:540;width:20%}
+  .delta td.no{color:var(--txt-3)}
+  .delta td.yes{color:var(--txt)}
+  .delta .arw{color:var(--txt-3);font-family:var(--mono);padding:0 2px}
+
+  /* ============ capabilities ============ */
+  .caps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .cap{padding:20px 20px 18px;transition:border-color .2s,transform .2s}
+  .cap:hover{border-color:var(--line-2);transform:translateY(-2px)}
+  .cap .n{
+    font-family:var(--mono);font-size:11px;color:var(--blue-2);letter-spacing:.14em;
+  }
+  .cap h4{font-size:16px;font-weight:600;letter-spacing:-.012em;margin:9px 0 8px}
+  .cap p{font-size:14px;color:var(--txt-2);line-height:1.6}
+  .cap .mech{
+    margin-top:13px;padding-top:11px;border-top:1px solid var(--line);
+    font-family:var(--mono);font-size:11.3px;color:var(--txt-3);line-height:1.65;
+  }
+  .cap .mech b{color:var(--cyan);font-weight:500}
+
+  /* ============ kpi ============ */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+  .kpi{padding:20px 20px 18px;text-align:left}
+  .kpi .v{
+    font-family:var(--mono);font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1;
+    background:linear-gradient(120deg,var(--blue-2),var(--cyan));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .kpi .l{font-size:13.6px;color:var(--txt);margin-top:11px;font-weight:540}
+  .kpi .s{font-size:12.3px;color:var(--txt-3);margin-top:4px;font-family:var(--mono)}
+
+  .mgrid{display:grid;grid-template-columns:1.25fr 1fr;gap:16px}
+  .mbox{padding:20px 22px 20px}
+  .mbox h4{
+    font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--blue-2);margin-bottom:14px;
+  }
+  .tier{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+  .tier:last-child{border-bottom:0}
+  .tier .dot{width:9px;height:9px;border-radius:50%;flex:0 0 9px}
+  .tier .nm{font-family:var(--mono);font-size:12.5px;color:var(--txt);width:88px}
+  .tier .ex{font-size:13.4px;color:var(--txt-2)}
+  .tier .ac{margin-left:auto;font-size:12.6px;color:var(--txt-3);font-family:var(--mono);text-align:right}
+  .mini{
+    margin-top:14px;padding:11px 13px;border-radius:9px;
+    border:1px solid var(--line);background:rgba(255,255,255,.018);
+    font-size:12.8px;color:var(--txt-3);line-height:1.62;
+  }
+  .mini b{color:var(--txt-2);font-weight:540}
+
+  /* ============ workflow ============ */
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;position:relative}
+  .fstep{padding:18px 18px 16px;position:relative}
+  .fstep .n{
+    width:26px;height:26px;border-radius:8px;display:grid;place-items:center;
+    font-family:var(--mono);font-size:11.5px;font-weight:600;color:#03101C;
+    background:linear-gradient(140deg,var(--blue),var(--cyan));
+    box-shadow:0 6px 16px -8px rgba(59,130,246,.95);
+  }
+  .fstep h4{font-size:15.4px;font-weight:600;margin:11px 0 7px;letter-spacing:-.01em}
+  .fstep p{font-size:13.5px;color:var(--txt-2);line-height:1.58}
+  .fstep .tip{
+    margin-top:12px;padding-top:10px;border-top:1px solid var(--line);
+    font-family:var(--mono);font-size:11.2px;color:var(--txt-3);line-height:1.6;
+  }
+  .fstep .tip b{color:var(--cyan);font-weight:500}
+  .fstep.mand{border-color:rgba(251,113,133,.3)}
+  .fstep.mand .n{background:linear-gradient(140deg,var(--bad),#F87171)}
+  .fstep.mand::after{
+    content:"MANDATORY";position:absolute;top:14px;right:16px;
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:var(--bad);
+    border:1px solid rgba(251,113,133,.3);background:rgba(251,113,133,.08);
+    border-radius:4px;padding:1.5px 6px;
+  }
+  .nodes{display:flex;justify-content:center;margin:26px 0 0}
+  .boundary{
+    margin-top:26px;padding:17px 20px;border-radius:12px;
+    border:1px solid rgba(251,191,36,.26);background:rgba(251,191,36,.055);
+  }
+  .boundary .t{
+    font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--warn);margin-bottom:8px;
+  }
+  .boundary p{font-size:14.2px;color:#E8D5A6;line-height:1.65}
+  .boundary b{color:var(--warn);font-weight:560}
+
+  /* ============ case ============ */
+  .cs{margin-top:6px;overflow:hidden}
+  .cs-banner{padding:24px 26px 22px;border-bottom:1px solid var(--line);position:relative}
+  .cs-banner::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
+    background:linear-gradient(180deg,var(--blue),var(--cyan));
+  }
+  .cs-tag{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--blue-2);border:1px solid rgba(96,165,250,.28);background:rgba(59,130,246,.07);
+    border-radius:20px;padding:4px 10px;
+  }
+  .cs-chip{
+    display:inline-flex;font-family:var(--mono);font-size:10.5px;color:var(--txt-2);
+    border:1px solid var(--line-2);border-radius:6px;padding:3.5px 9px;background:rgba(255,255,255,.02);
+  }
+  .cs h3{font-size:clamp(21px,2.3vw,27px);font-weight:640;letter-spacing:-.02em;margin:15px 0 10px;line-height:1.24}
+  .cs h3 em{font-style:normal;background:linear-gradient(100deg,var(--blue-2),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .cs .para{font-size:14.6px;color:var(--txt-2);max-width:780px;line-height:1.65}
+
+  .outcome{
+    margin-top:20px;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;
+    padding:16px 18px;border-radius:12px;
+    border:1px solid var(--line);background:rgba(255,255,255,.022);
+  }
+  .outcome .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt-3)}
+  .outcome .val{font-size:19px;font-weight:620;letter-spacing:-.015em;color:var(--ok);margin-top:4px}
+  .outcome .sub{font-size:12.6px;color:var(--txt-3);margin-top:3px}
+  .outcome .rt{font-size:13.6px;color:var(--txt-2);line-height:1.62}
+  .outcome .rt em{font-style:normal;color:var(--warn);font-weight:520}
+
+  .cs-body{padding:0}
+  .cs-sec{padding:22px 26px;border-bottom:1px solid var(--line)}
+  .cs-sec:last-child{border-bottom:0}
+  .cs-h{
+    display:flex;align-items:baseline;gap:11px;margin-bottom:13px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--cyan);
+  }
+  .cs-h .idx{
+    width:22px;height:22px;border-radius:6px;display:grid;place-items:center;flex:0 0 22px;
+    background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);
+    font-size:10.5px;color:var(--cyan);
+  }
+  .cs-desc{font-size:13.8px;color:var(--txt-3);margin-bottom:14px;line-height:1.6}
+
+  .prompt{
+    font-family:var(--mono);font-size:12.6px;line-height:1.75;color:var(--txt);
+    background:rgba(0,0,0,.34);border:1px solid var(--line);border-left:2px solid var(--blue);
+    border-radius:9px;padding:14px 16px;margin-bottom:16px;
+  }
+  .prompt .lbl{display:block;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--txt-3);margin-bottom:7px}
+
+  .idcard{padding:16px 18px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.02)}
+  .idcard .nm{font-size:15.5px;font-weight:600;color:var(--txt)}
+  .idcard .tx{font-size:13.6px;color:var(--txt-2);margin-top:6px;line-height:1.6}
+  .idcard .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
+  .idcard .chips span{font-family:var(--mono);font-size:11px;color:var(--txt-3);border:1px solid var(--line);border-radius:5px;padding:3px 8px}
+
+  .tbl{width:100%;border-collapse:collapse;margin-top:14px}
+  .tbl th{
+    text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--txt-3);font-weight:500;padding:8px 12px;border-bottom:1px solid var(--line);
+  }
+  .tbl td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.045);font-size:13.6px;color:var(--txt-2);vertical-align:top}
+  .tbl tr:last-child td{border-bottom:0}
+  .tbl td:first-child{color:var(--txt);width:32%;font-weight:520}
+
+  .quad{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .q{padding:14px 15px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.02)}
+  .q .t{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue-2)}
+  .q .h{font-size:14.6px;font-weight:600;margin:8px 0 6px;letter-spacing:-.01em}
+  .q .p{font-size:12.9px;color:var(--txt-2);line-height:1.58}
+  .q.caut{border-color:rgba(251,191,36,.28);background:rgba(251,191,36,.05)}
+  .q.caut .t{color:var(--warn)}
+
+  .rep{padding:0;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+  .rep-h{
+    padding:12px 16px;background:rgba(255,255,255,.024);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:11px;
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--txt-2);
+  }
+  .rep-h .b{
+    margin-left:auto;font-size:10px;letter-spacing:.1em;color:var(--ok);
+    border:1px solid rgba(52,211,153,.3);background:rgba(52,211,153,.075);border-radius:5px;padding:2.5px 8px;
+  }
+  .tbl .cls{color:var(--ok);font-weight:600}
+
+  .next{
+    margin-top:14px;padding:13px 16px;border-radius:10px;
+    border:1px solid rgba(52,211,153,.24);background:rgba(52,211,153,.055);
+    font-size:13.8px;color:#B7E9D2;line-height:1.62;
+  }
+  .next b{color:var(--ok);font-weight:560;font-family:var(--mono);font-size:11px;letter-spacing:.12em;display:block;margin-bottom:5px;text-transform:uppercase}
+
+  .figs{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+  .fig{padding:15px 14px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.02);text-align:center}
+  .fig .v{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--txt);letter-spacing:-.02em}
+  .fig .l{font-size:11.4px;color:var(--txt-3);margin-top:6px;line-height:1.45}
+  .fig.hl .v{background:linear-gradient(120deg,var(--blue-2),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  .eviden{
+    margin-top:14px;padding:13px 16px;border-radius:10px;
+    border:1px solid var(--line);background:rgba(0,0,0,.26);
+    font-family:var(--mono);font-size:11.8px;color:var(--txt-3);line-height:1.7;word-break:break-all;
+  }
+  .eviden b{color:var(--txt-2);font-weight:500}
+  .honest{
+    margin-top:14px;padding:14px 16px;border-radius:10px;
+    border:1px solid rgba(251,113,133,.26);background:rgba(251,113,133,.05);
+  }
+  .honest .t{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--bad);margin-bottom:6px}
+  .honest p{font-size:13.5px;color:#F3C9D0;line-height:1.62}
+  .cs-foot{
+    padding:14px 26px;border-top:1px solid var(--line);background:rgba(255,255,255,.016);
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--txt-3);text-align:center;
+  }
+
+  .pending{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+  .pend{
+    padding:18px 20px;border-radius:12px;border:1px dashed rgba(255,255,255,.14);
+    background:rgba(255,255,255,.012);
+  }
+  .pend .t{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--txt-3)}
+  .pend h5{font-size:15.5px;font-weight:600;margin:9px 0 7px;color:var(--txt-2)}
+  .pend p{font-size:13.4px;color:var(--txt-3);line-height:1.6}
+  .pend .st{
+    display:inline-flex;align-items:center;gap:7px;margin-top:12px;
+    font-family:var(--mono);font-size:11px;color:var(--warn);
+    border:1px solid rgba(251,191,36,.26);background:rgba(251,191,36,.05);border-radius:6px;padding:3px 9px;
+  }
+
+  /* ============ security ============ */
+  .secgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .alist{list-style:none}
+  .alist li{
+    display:flex;gap:11px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05);
+    font-size:14px;color:var(--txt-2);line-height:1.55;
+  }
+  .alist li:last-child{border-bottom:0}
+  .alist .k{
+    flex:0 0 17px;font-size:12.5px;line-height:1.6;color:var(--ok);
+  }
+  .alist li b{color:var(--txt);font-weight:540}
+  .alist li .m{font-family:var(--mono);font-size:11.5px;color:var(--txt-3);display:block;margin-top:2px}
+
+  .lims{list-style:none;counter-reset:l}
+  .lims li{
+    counter-increment:l;position:relative;padding:11px 0 11px 38px;
+    border-bottom:1px solid rgba(255,255,255,.05);font-size:14px;color:var(--txt-2);line-height:1.6;
+  }
+  .lims li:last-child{border-bottom:0}
+  .lims li::before{
+    content:counter(l);position:absolute;left:0;top:12px;
+    width:23px;height:23px;border-radius:7px;display:grid;place-items:center;
+    font-family:var(--mono);font-size:11px;font-weight:600;color:var(--warn);
+    border:1px solid rgba(251,191,36,.3);background:rgba(251,191,36,.07);
+  }
+  .lims li b{color:var(--txt);font-weight:540}
+
+  /* ============ audience + cta ============ */
+  .users{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .uc{padding:19px 18px 17px}
+  .uc .n{font-family:var(--mono);font-size:11px;color:var(--blue-2);letter-spacing:.14em}
+  .uc h4{font-size:15.6px;font-weight:600;margin:9px 0 7px;letter-spacing:-.012em}
+  .uc .who{font-size:13.2px;color:var(--txt-3);line-height:1.55}
+  .uc .use{
+    margin-top:12px;padding-top:11px;border-top:1px solid var(--line);
+    font-size:13.4px;color:var(--txt-2);line-height:1.58;
+  }
+  .uc .use b{color:var(--cyan);font-weight:540}
+
+  .cta{margin-top:26px;padding:34px 34px 30px;text-align:center;position:relative;overflow:hidden}
+  .cta h3{font-size:clamp(22px,2.6vw,30px);font-weight:640;letter-spacing:-.022em;margin-bottom:10px}
+  .cta p{font-size:15px;color:var(--txt-2);max-width:620px;margin:0 auto}
+  .triggers{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:20px}
+  .triggers span{
+    font-family:var(--mono);font-size:11.5px;color:var(--txt-2);
+    border:1px solid var(--line-2);border-radius:7px;padding:5px 11px;background:rgba(255,255,255,.022);
+  }
+  .tmpl{
+    margin:22px auto 0;max-width:760px;text-align:left;
+    font-family:var(--mono);font-size:12.6px;line-height:1.78;color:var(--txt);
+    background:rgba(0,0,0,.36);border:1px solid var(--line);border-left:2px solid var(--cyan);
+    border-radius:10px;padding:15px 17px;
+  }
+  .tmpl .lbl{display:block;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--txt-3);margin-bottom:7px}
+  .tmpl .hl{color:var(--warn)}
+
+  /* ============ footer ============ */
+  footer{padding:52px 0 60px;background:var(--bg-2)}
+  .fgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:34px}
+  .fgrid h5{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue-2);margin-bottom:12px}
+  .fgrid p,.fgrid li{font-size:13px;color:var(--txt-3);line-height:1.7}
+  .fgrid ul{list-style:none}
+  .fgrid .brandline{font-size:15px;color:var(--txt);font-weight:600;margin-bottom:10px}
+  .disc{
+    margin-top:34px;padding-top:20px;border-top:1px solid var(--line);
+    font-size:12.4px;color:var(--txt-3);line-height:1.7;
+  }
+  .disc b{color:var(--txt-2);font-weight:540}
+
+  @media (max-width:960px){
+    .hero-in,.ba,.mgrid,.secgrid,.flow,.caps,.users,.pending,.fgrid{grid-template-columns:1fr}
+    .kpis,.quad,.figs{grid-template-columns:1fr 1fr}
+    .nav nav{display:none}
+    section{padding:60px 0}
+  }
+
+  /* --- run-evidence screenshot gallery --- */
+  .shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:14px}
+  .shots figure{margin:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:rgba(0,0,0,.30)}
+  .shots a{display:block;text-decoration:none}
+  .shots img{display:block;width:100%;height:auto;background:#fff}
+  .shots figcaption{font-family:var(--mono);font-size:10.5px;line-height:1.55;color:var(--txt-3);padding:8px 10px;border-top:1px solid var(--line)}
+  .shots figcaption b{color:var(--txt-2);font-weight:600}
+  .shots-lead{margin-top:16px;font-size:12.4px;color:var(--txt-3)}
+  @media(max-width:760px){.shots{grid-template-columns:1fr}}
+
+/* ===== Finch 宿主兼容层：不透明页面容器 + 媒体自适应 ===== */
+.finch-page{background:var(--bg); color:var(--txt); font-family:var(--sans); font-size:15.5px; line-height:1.62; -webkit-font-smoothing:antialiased; overflow-x:hidden;}
+.finch-page img,.finch-page video{max-width:100%;height:auto}
+</style>
+</head>
+<body>
+<div class="finch-page">
+
+<!-- ============ NAV ============ -->
+<div class="nav">
+  <div class="nav-in">
+    <div class="brand"><span class="mark">TD</span> Trap Detector <span class="ver">v3.9.4</span></div>
+    <nav>
+      <a href="#before">Before / After</a>
+      <a href="#capability">Capability</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#cases">Cases</a>
+      <a href="#trust">Limits</a>
+    </nav>
+    <a href="#cta" class="nav-cta">Run a scan</a>
+  </div>
+</div>
+
+<!-- ============ 01 · HERO ============ -->
+<header class="hero tex">
+  <div class="grid"></div><div class="aura"></div><div class="scan"></div>
+  <div class="wrap inner">
+    <div class="hero-in">
+
+      <div>
+        <span class="eyebrow"><i></i> Stock promotion risk scan</span>
+        <h1>It doesn't ask whether a stock is good. It asks <em>who is pushing it at you.</em></h1>
+        <p class="lede">
+          Eight signals, each returning <b>hit, miss, or insufficient</b> — with a source attached.
+          Your own wording is scored as evidence. The result is a fixed JSON report and one of four risk levels,
+          not a paragraph of hedged advice.
+        </p>
+        <ul class="chips">
+          <li>8 signals</li>
+          <li>3-state findings</li>
+          <li>4 risk levels</li>
+          <li>0 lines of code</li>
+        </ul>
+        <div class="cta-row">
+          <a href="#before" class="btn primary">See the difference</a>
+          <a href="#workflow" class="btn ghost">Read the scan</a>
+        </div>
+      </div>
+
+      <!-- core interface: the fixed JSON output -->
+      <div class="glass term">
+        <div class="term-bar">
+          <div class="dots"><i></i><i></i><i></i></div>
+          <span class="term-title">TRAP SCAN RESULT</span>
+          <span class="term-tag">JSON</span>
+        </div>
+        <div class="term-body">
+          <div class="sec">{</div>
+          <div class="kv"><span>"ticker"</span><span>"300XXX · Hengxun AI"</span></div>
+          <div class="kv"><span>"trap_score"</span><span style="color:var(--bad);font-weight:600">1</span></div>
+          <div class="kv"><span>"trap_level"</span><span style="color:var(--bad)">"🔴 HIGHLY SUSPICIOUS"</span></div>
+          <div class="kv"><span>"signals_hit"</span><span>"7 / 8"</span></div>
+          <div class="rp">  ── signal 1 ─────────────────────────</div>
+          <div class="kv"><span> id</span><span>1 · low-quality account amplification</span></div>
+          <div class="kv"><span> evidence</span><span>23 near-identical posts, 30–200 followers each</span></div>
+          <div class="kv"><span> severity</span><span class="vrd">critical</span></div>
+          <div class="rp">  ── signal 3 ─────────────────────────</div>
+          <div class="kv"><span> id</span><span>3 · paid community funnel</span></div>
+          <div class="kv"><span> evidence</span><span>5 accounts pushing the same VIP group QR</span></div>
+          <div class="kv"><span> severity</span><span class="vrd">critical</span></div>
+          <div class="rp">  ─────────────────────────────────────</div>
+          <div class="kv"><span>"user_keyword_boost"</span><span style="color:var(--warn)">+4</span></div>
+          <div class="kv"><span>"recommendation"</span><span class="note">"🔴 Strongly advise avoiding. Any recommendation that asks for a fee first is a prelude to fraud."</span></div>
+          <div class="sec">}</div>
+        </div>
+        <div class="panel-foot">
+          <span class="dot"></span>
+          <span>7 / 8 hit · wording boost +4 · trap_score 1 / 10</span>
+          <span style="margin-left:auto">fictional teaching ticker</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<!-- ============ 02 · BEFORE / AFTER ============ -->
+<section id="before">
+  <div class="wrap">
+    <div class="shead">
+      <div class="snum">02 · Before / After</div>
+      <h2>One question, two answers — <em>from the same search results.</em></h2>
+      <p class="sdesc">
+        Both sides below start from the same prompt and retrieve the same 23 articles. The only variable is whether a framework decides what those articles count as.
+      </p>
+    </div>
+
+    <div class="prompt" style="max-width:100%">
+      <span class="lbl">Shared input · identical on both sides</span>
+      A friend recommended Hengxun AI (300XXX) to me. He said there's inside information, the main force has finished building its position, and the target is a double. Should I get in now?
+    </div>
+
+    <div class="ba">
+      <div class="glass ba-col col-b">
+        <div class="ba-head"><span class="badge">B</span> Without Trap Detector</div>
+        <div class="ba-body">
+          <div class="rowline"><span class="ico">—</span><span>"Inside information is not reliable" — stated, then dropped</span></div>
+          <div class="rowline"><span class="ico">—</span><span>"The stock has recently attracted <b>notable market attention</b>"</span></div>
+          <div class="rowline"><span class="ico">—</span><span>Source quality never examined: 30–200 followers each</span></div>
+          <div class="rowline"><span class="ico">—</span><span>No count of how many posts, or how similar</span></div>
+          <div class="rowline"><span class="ico">—</span><span>Wording treated as tone, not as evidence</span></div>
+          <div class="rowline"><span class="ico">—</span><span>Ends at "decide according to your own risk tolerance"</span></div>
+        </div>
+        <div class="callout">
+          <b>The failure mode</b> — those 23 articles <b>are the promoter's promotional material</b>. Retrieved without a framework, they read as market consensus and get repeated back as such. The search did not inform the answer; it laundered the campaign.
+        </div>
+      </div>
+
+      <div class="glass ba-col col-a">
+        <div class="ba-head"><span class="badge">A</span> With Trap Detector</div>
+        <div class="ba-body">
+          <div class="rowline"><span class="ico">✓</span><span>"inside information" scored as evidence: <b>+2</b></span></div>
+          <div class="rowline"><span class="ico">✓</span><span>Title similarity + account age = <b>signal 1 hit</b></span></div>
+          <div class="rowline"><span class="ico">✓</span><span>Follower counts recorded: <b>30–200, registered &lt;2 months</b></span></div>
+          <div class="rowline"><span class="ico">✓</span><span>23 near-identical posts counted as <b>volume, not consensus</b></span></div>
+          <div class="rowline"><span class="ico">✓</span><span>8 signals each return hit / miss / <b>insufficient</b></span></div>
+          <div class="rowline"><span class="ico">✓</span><span>Ends at a tier: <b>🔴 highly suspicious, avoid</b></span></div>
+        </div>
+        <div class="callout ok">
+          <b>What changed</b> — the same 23 articles were reclassified from sources to <b>exhibits</b>. Noise became evidence; that reframing, not the extra questions, is the actual product.
+        </div>
+      </div>
+    </div>
+
+    <div class="glass delta">
+      <table>
+        <thead>
+          <tr><th>Dimension</th><th>Without</th><th></th><th>With</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Conclusion</td><td class="no">"Consider your own risk tolerance"</td><td class="arw">→</td><td class="yes">🔴 Highly suspicious · avoid</td></tr>
+          <tr><td>Signal coverage</td><td class="no">No scan performed</td><td class="arw">→</td><td class="yes">8 / 8 each given a state</td></tr>
+          <tr><td>Evidence</td><td class="no">0 recorded</td><td class="arw">→</td><td class="yes">23 posts + account age + follower counts</td></tr>
+          <tr><td>Your wording</td><td class="no">Dropped as tone</td><td class="arw">→</td><td class="yes">Scored: +2 inside · +1 friend / double</td></tr>
+          <tr><td>Search results</td><td class="no">Treated as information</td><td class="arw">→</td><td class="yes">Treated as <b>exhibit</b>, turned against the promoter</td></tr>
+          <tr><td>Output shape</td><td class="no">Prose paragraph</td><td class="arw">→</td><td class="yes">Fixed JSON + 8-row state list</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 · CAPABILITY + METRICS ============ -->
+<section id="capability" class="tex">
+  <div class="grid"></div>
+  <div class="wrap inner">
+    <div class="shead">
+      <div class="snum">03 · Capability</div>
+      <h2>Eight signals, three states, <em>and no way to skip one.</em></h2>
+      <p class="sdesc">
+        Every number below is a structural count read from the source. There are no runtime metrics — this skill has no downloads, installs, or telemetry to report.
+      </p>
+    </div>
+
+    <div class="kpis">
+      <div class="glass kpi"><div class="v">8</div><div class="l">Signals scanned</div><div class="s">all 8 must return a state</div></div>
+      <div class="glass kpi"><div class="v">3</div><div class="l">Finding states</div><div class="s">hit · miss · insufficient</div></div>
+      <div class="glass kpi"><div class="v">4</div><div class="l">Risk levels</div><div class="s">🟢 🟡 🟠 🔴</div></div>
+      <div class="glass kpi"><div class="v">0</div><div class="l">Lines of code</div><div class="s">pure instruction · no deps</div></div>
+    </div>
+
+    <div class="caps">
+      <div class="glass cap">
+        <div class="n">01</div>
+        <h4>Mandatory full scan</h4>
+        <p>All eight signals must produce a result. None can be silently dropped because search came back thin.</p>
+        <div class="mech">8 / 8 · <b>required</b> · a skipped signal invalidates the run</div>
+      </div>
+      <div class="glass cap">
+        <div class="n">02</div>
+        <h4>Three-state findings</h4>
+        <p>Insufficient is a legal answer. It gives the model a way to say "I don't know" instead of defaulting to safe.</p>
+        <div class="mech">hit / miss / <b>insufficient</b> · no silent default</div>
+      </div>
+      <div class="glass cap">
+        <div class="n">03</div>
+        <h4>Your wording is evidence</h4>
+        <p>How you heard about the stock is itself a signal. "Inside information" and "guaranteed" score +2; "friend recommended", "must rise", "double" score +1.</p>
+        <div class="mech">+2 tier · <b>+1</b> tier · summed into the level</div>
+      </div>
+      <div class="glass cap">
+        <div class="n">04</div>
+        <h4>Evidence binding</h4>
+        <p>At least one concrete source URL is required, and the recommendation field cannot be left empty.</p>
+        <div class="mech">≥1 source · <b>recommendation mandatory</b></div>
+      </div>
+      <div class="glass cap">
+        <div class="n">05</div>
+        <h4>Four risk levels</h4>
+        <p>Hit counts map to tiers, and at four or more hits the opening words of the recommendation are forced.</p>
+        <div class="mech">0–1 🟢 · 2–3 🟡 · 4–5 🟠 · <b>6+ 🔴</b></div>
+      </div>
+      <div class="glass cap">
+        <div class="n">06</div>
+        <h4>Structured JSON output</h4>
+        <p>Ticker, score, level, hit array with severity, boost, recommendation, warning phrases — machine-readable downstream.</p>
+        <div class="mech">7 fields · <b>parsable</b> · pairs with deep-analysis</div>
+      </div>
+    </div>
+
+    <div class="mgrid" style="margin-top:16px">
+      <div class="glass mbox">
+        <h4>Risk mapping · four tiers</h4>
+        <div class="tier"><span class="dot" style="background:#34D399"></span><span class="nm">🟢 SAFE</span><span class="ex">0–1 signals hit</span><span class="ac">no organised promotion found</span></div>
+        <div class="tier"><span class="dot" style="background:#FBBF24"></span><span class="nm">🟡 NOTE</span><span class="ex">2–3 signals hit</span><span class="ac">verify the source</span></div>
+        <div class="tier"><span class="dot" style="background:#FB923C"></span><span class="nm">🟠 ALERT</span><span class="ex">4–5 signals hit</span><span class="ac">caution, wording forced</span></div>
+        <div class="tier"><span class="dot" style="background:#FB7185"></span><span class="nm">🔴 SUSPICIOUS</span><span class="ex">6+ signals hit</span><span class="ac">strongly advise avoiding</span></div>
+        <div class="mini">
+          Two things read backwards on first contact: <b>trap_score is reversed</b> — 10 is safest, 1 is worst — and <b>signals_hit only carries hits</b>. Missed signals live in the prose state list, not in the JSON array.
+        </div>
+      </div>
+      <div class="glass mbox">
+        <h4>Signal composition · 6 : 2</h4>
+        <div class="tier"><span class="dot" style="background:#3B82F6"></span><span class="nm">Promotion side</span><span class="ex">1 · 2 · 3 · 6 · 7 · 8 — how it is being sold</span><span class="ac">6</span></div>
+        <div class="tier"><span class="dot" style="background:#22D3EE"></span><span class="nm">Asset side</span><span class="ex">4 · 5 — fundamentals and price action</span><span class="ac">2</span></div>
+        <div class="mini">
+          <b>This ratio is the capability boundary, stated as a number.</b> Six of eight signals inspect the promotion, not the company — so what it detects is the <b>organisation of a sales campaign</b>, not manipulation itself. A corner no one is pushing to you will not appear.
+        </div>
+        <div class="mini">
+          <b>Execution note.</b> The two asset-side signals depend on data-fetch scripts from a companion skill that is not installed here. In this environment the honest state for them is <b>insufficient</b> — real coverage is <b>6 / 8</b>.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 · WORKFLOW ============ -->
+<section id="workflow">
+  <div class="wrap">
+    <div class="shead">
+      <div class="snum">04 · Workflow</div>
+      <h2>Say what you heard, <em>then let it be scanned.</em></h2>
+      <p class="sdesc">Four steps. The first one is where most of the evidence is either preserved or destroyed.</p>
+    </div>
+
+    <div class="flow">
+      <div class="glass fstep">
+        <div class="n">01</div>
+        <h4>Repeat what you heard</h4>
+        <p>Paste the promoter's words verbatim. Do not tidy them into polite language.</p>
+        <div class="tip"><b>Why</b> — only "inside information" scores +2; "exclusive research channel" scores 0</div>
+      </div>
+      <div class="glass fstep mand">
+        <div class="n">02</div>
+        <h4>Scan all eight signals</h4>
+        <p>Each returns hit, miss, or insufficient, with a source. Promotional content is read as an exhibit, not as information.</p>
+        <div class="tip"><b>Trap</b> — no data means <b>insufficient</b>, never "miss"</div>
+      </div>
+      <div class="glass fstep">
+        <div class="n">03</div>
+        <h4>Weight and classify</h4>
+        <p>Keyword boost is added, hits are counted, and the total is mapped to one of four risk levels.</p>
+        <div class="tip"><b>Read carefully</b> — trap_score runs backwards: 10 safe → 1 worst</div>
+      </div>
+      <div class="glass fstep">
+        <div class="n">04</div>
+        <h4>Emit report and next step</h4>
+        <p>Fixed JSON plus the eight-row state list, a recommendation that cannot be blank, and forced warning phrases.</p>
+        <div class="tip"><b>Only hits</b> appear in <b>signals_hit</b>; misses live in the list</div>
+      </div>
+    </div>
+
+    <div class="nodes">
+      <svg width="880" height="70" viewBox="0 0 880 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="lg" x1="0" y1="0" x2="880" y2="0" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#3B82F6" stop-opacity="0.15"/>
+            <stop offset="0.5" stop-color="#22D3EE" stop-opacity="0.5"/>
+            <stop offset="1" stop-color="#A78BFA" stop-opacity="0.15"/>
+          </linearGradient>
+        </defs>
+        <line x1="0" y1="35" x2="880" y2="35" stroke="url(#lg)" stroke-width="1"/>
+        <line x1="0" y1="35" x2="880" y2="35" stroke="rgba(255,255,255,.05)" stroke-width="1" stroke-dasharray="3 5"/>
+        <circle cx="110" cy="35" r="4" fill="#3B82F6"/><circle cx="110" cy="35" r="9" stroke="rgba(59,130,246,.35)" fill="none"/>
+        <circle cx="330" cy="35" r="4" fill="#FB7185"/><circle cx="330" cy="35" r="9" stroke="rgba(251,113,133,.35)" fill="none"/>
+        <circle cx="550" cy="35" r="4" fill="#22D3EE"/><circle cx="550" cy="35" r="9" stroke="rgba(34,211,238,.3)" fill="none"/>
+        <circle cx="770" cy="35" r="4" fill="#A78BFA"/><circle cx="770" cy="35" r="9" stroke="rgba(167,139,250,.3)" fill="none"/>
+        <text x="110" y="60" fill="#5F7186" font-family="JetBrains Mono, monospace" font-size="9" text-anchor="middle">INPUT</text>
+        <text x="330" y="60" fill="#5F7186" font-family="JetBrains Mono, monospace" font-size="9" text-anchor="middle">SCAN</text>
+        <text x="550" y="60" fill="#5F7186" font-family="JetBrains Mono, monospace" font-size="9" text-anchor="middle">WEIGH</text>
+        <text x="770" y="60" fill="#5F7186" font-family="JetBrains Mono, monospace" font-size="9" text-anchor="middle">REPORT</text>
+      </svg>
+    </div>
+
+    <div class="boundary">
+      <div class="t">Important boundary</div>
+      <p>
+        This answers <b>"is this being pushed at me in an organised way?"</b> — not <b>"is it worth buying?"</b>
+        A manipulated stock that nobody is promoting to you will scan clean. A genuinely bad company with no campaign behind it will also scan clean. The detection target is the <b>sales operation</b>, not market manipulation in general.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 · CASES ============ -->
+<section id="cases">
+  <div class="wrap">
+    <div class="shead">
+      <div class="snum">05 · Real cases</div>
+      <h2>Three runs, <em>on real tickers.</em></h2>
+      <p class="sdesc">
+        Designed as a control set rather than three variations of one demo: a negative control, a grey-zone case, and a historical replay. A negative control, a live small cap, and a replay of a case the regulator has since ruled on. All three were run in English; the ticker, the date and the retrieval count are recorded under each one.
+      </p>
+    </div>
+
+          <div class="glass cs">
+        <div class="cs-banner">
+          <span class="cs-tag">Case 01 · Negative control</span>
+          <span class="cs-chip">Kweichow Moutai · 600519</span>
+          <span class="cs-chip">2026-09-15 19:34 GMT+8</span>
+          <span class="cs-chip">English prompt → English report</span>
+          <h3>"A friend said it's a guaranteed win." <em>The scan disagreed.</em></h3>
+          <p class="para">
+            The control case. The prompt is loaded with trigger phrases — <b>"a friend recommended"</b> (+1) and <b>"guaranteed win"</b> (+2) — and the ticker is the most heavily covered large cap in the market. If the scan flagged this, it would flag everything. It returned 0 / 8.
+          </p>
+          <div class="outcome">
+            <div>
+              <div class="lbl">Result</div>
+              <div class="val">0 / 8 · 🟢 LOW RISK</div>
+              <div class="sub">trap_score 10 · wording boost +3 unused</div>
+            </div>
+            <div class="rt">
+              Eight misses, zero hits, zero insufficient. The +3 wording boost had nowhere to land — with no hits, the score stays at 10. <em>The scan measures promotion, not quality: a company can post its first-ever annual revenue and profit decline and still come back clean.</em>
+            </div>
+          </div>
+        </div>
+
+        <div class="cs-body">
+          <div class="cs-sec">
+            <div class="cs-h"><span class="idx">01</span> Input</div>
+            <p class="cs-desc">Verbatim prompt, exactly as submitted.</p>
+            <div class="prompt">
+              <span class="lbl">Prompt</span>
+              @skill:trap-detector A friend recommended I buy Kweichow Moutai (600519) and said it's a guaranteed win, told me to just hold it long term. Check whether this is a pump-and-dump. Scan all eight signals one by one — for each one tell me whether it's a hit, a miss, or insufficient data, and give me the source behind every conclusion. Finish with the risk level and your recommendation.
+            </div>
+            <div class="idcard" style="margin-top:14px">
+              <div class="nm">Kweichow Moutai · 600519</div>
+              <div class="tx">Large-cap baijiu. 2025 revenue ¥168.838bn (−1.21%), net profit ¥82.32bn (−4.53%) — the first annual double decline since listing. 2026H1 revenue +1.47%, but Q2 net profit −6.9%.</div>
+              <div class="chips"><span>¥1,272.75</span><span>−0.41%</span><span>PE TTM 19.54</span><span>turnover 0.11%</span><span>YTD −5.66%</span><span>institutional visits 0</span></div>
+            </div>
+          </div>
+
+          <div class="cs-sec">
+            <div class="cs-h"><span class="idx">02</span> Scan · eight signals</div>
+            <p class="cs-desc">Every signal returned MISS. The basis for each one:</p>
+            <table class="tbl">
+              <tr><th>Signal</th><th>State</th><th>Basis</th></tr>
+              <tr><td>1 · Low-quality accounts pushing in unison</td><td class="cls">MISS</td><td>All coverage from licensed institutions (25 houses, 92% positive). Institutional visits 0 (rank 116/126). Fund holding 1.18%, −0.69pp over 573 funds.</td></tr>
+              <tr><td>2 · Templated pitch language</td><td class="cls">MISS</td><td>No phrasing matrix found. One borderline post (2026-09-13) carried a disclaimer and invalidation conditions — logged as an edge observation, not a hit.</td></tr>
+              <tr><td>3 · Paid VIP group / livestream funnel</td><td class="cls">MISS</td><td>Only generic regulator material surfaced (CSRC 2018 warning,Beijing Stock Exchange case studies). None of it points at 600519.</td></tr>
+              <tr><td>4 · Fundamentals detached from attention</td><td class="cls">MISS</td><td>Falling earnings, flat-to-neutral sentiment, no institutional following. Both sides move in the same direction — there is no divergence to detect.</td></tr>
+              <tr><td>5 · Abnormal price action</td><td class="cls">MISS</td><td>Amplitude 1.03%, turnover 0.11%, YTD −5.66%. Low-volume base building, no pump-then-distribute shape.</td></tr>
+              <tr><td>6 · "Teacher" persona promotion</td><td class="cls">MISS</td><td>Hits were signed analyst reports with SAC numbers, and post-hoc investor commentary. No lead-generation persona.</td></tr>
+              <tr><td>7 · Cross-platform coordinated push</td><td class="cls">MISS</td><td>All social heat was consumer-level (counterfeit-baijiu controversy, app launch, packaging typo). No ticker campaign.</td></tr>
+              <tr><td>8 · Fake research / fabricated news</td><td class="cls">MISS</td><td>Fake material exists — franchise-recruitment scams,a debunked wholesale-price rumour — but every instance targets the product, not the share price.</td></tr>
+            </table>
+          </div>
+
+          <div class="cs-sec">
+            <div class="cs-h"><span class="idx">03</span> Output</div>
+            <div class="rep">
+              <div class="rep-h"><span>TRAP SCAN REPORT</span><span class="b">600519</span></div>
+              <table class="tbl">
+                <tr><td>signals_hit</td><td>0 / 8</td></tr>
+                <tr><td>signals_breakdown</td><td>hit 0 · miss 8 · insufficient 0</td></tr>
+                <tr><td>user_keyword_boost</td><td>+3 (friend recommended +1 · guaranteed win +2)</td></tr>
+                <tr><td>trap_score</td><td>10 / 10</td></tr>
+                <tr><td>risk_level</td><td class="cls">🟢 LOW RISK</td></tr>
+              </table>
+            </div>
+            <div class="next"><b>Safe next step</b>No organised promotion detected. The recommendation wording is the risk here, not the stock — treat "guaranteed win" as a signal about the person saying it. Note the company is facing its first annual decline in revenue and profit; that is a valuation question, outside this scan's scope.</div>
+          </div>
+
+          <div class="cs-sec">
+            <div class="cs-h"><span class="idx">04</span> Evidence</div>
+            <div class="figs">
+              <div class="fig hl"><div class="v">0/8</div><div class="l">signals hit</div></div>
+              <div class="fig"><div class="v">10</div><div class="l">trap_score</div></div>
+              <div class="fig"><div class="v">+3</div><div class="l">wording boost</div></div>
+              <div class="fig"><div class="v">25</div><div class="l">covering houses</div></div>
+              <div class="fig"><div class="v">0</div><div class="l">institutional visits</div></div>
+              <div class="fig"><div class="v">5</div><div class="l">retrievals</div></div>
+            </div>
+            <div class="eviden"><b>Run record ·</b> 案例素材/trap-detector/01基础-英文/运行记录.md · screenshots shot-a-en-对话-01…05.png · 5 retrievals, all English-keyword</div>
+                    <p class="cs-desc shots-lead">Screenshots captured from the live scan — click any frame to open it at full size.</p>
+        <div class="shots">
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-en/shot-a-en-01.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-en/shot-a-en-01.png" width="1044" height="1120" alt="Run · 01 — English prompt verbatim, app-reported 3m17s, the report header, the weighting table and the start o"></a><figcaption><b>Run · 01</b> — English prompt verbatim, app-reported 3m17s, the report header, the weighting table and the start of the signal table.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-en/shot-a-en-02.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-en/shot-a-en-02.png" width="1074" height="1080" alt="Run · 02 — the full 8-signal three-state table, 0/8 hits, 🟢 LOW RISK, trap_score 10, and the Chinese/English d"></a><figcaption><b>Run · 02</b> — the full 8-signal three-state table, 0/8 hits, 🟢 LOW RISK, trap_score 10, and the Chinese/English divergence section opening.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-en/shot-a-en-03.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-en/shot-a-en-03.png" width="1018" height="1162" alt="Run · 03 — the divergence analysis, including the AI content-farm edge case, and the start of the structured J"></a><figcaption><b>Run · 03</b> — the divergence analysis, including the AI content-farm edge case, and the start of the structured JSON output.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-en/shot-a-en-04.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-en/shot-a-en-04.png" width="1006" height="1128" alt="Run · 04 — the JSON body: trap_score 10, boost_detail, warning_phrases, and the 14 sources."></a><figcaption><b>Run · 04</b> — the JSON body: trap_score 10, boost_detail, warning_phrases, and the 14 sources.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-en/shot-a-en-05.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-en/shot-a-en-05.png" width="1059" height="1125" alt="Run · 05 — the four-item completion check and all honest boundaries."></a><figcaption><b>Run · 05</b> — the four-item completion check and all honest boundaries.</figcaption></figure>
+        </div>
+<div class="honest">
+              <div class="t">Honesty boundary</div>
+              <p>The Chinese run on the same ticker surfaced a fraud-exposure article naming an "Moutai VIP group" with livestream call-outs. The English run surfaced none of it. English search has almost no coverage of Chinese private-domain exposure content — the false-positive risk disappeared here, and so did the recall. The clean result is partly a property of the language the search ran in.</p>
+            </div>
+          </div>
+        </div>
+        <div class="cs-foot">CASE 01 · BASELINE · 0 / 8 · 🟢 LOW RISK · trap_score 10 · RUN 2026-09-15 19:34</div>
+      </div>
+
+      <div class="glass cs" style="margin-top:16px">
+        <div class="cs-banner">
+          <span class="cs-tag">Case 02 · Core value</span>
+          <span class="cs-chip">Jinniu Chemical · 600722</span>
+          <span class="cs-chip">2026-09-15 19:41 GMT+8</span>
+          <span class="cs-chip">English report · Chinese sources</span>
+          <h3>Six signals fired. <em>Two of them were the ones that matter.</em></h3>
+          <p class="para">
+            A small cap whose attention came from a film-title pun. Six of eight signals hit — but four of those six were the same thing counted four times. This is the case that shows both what the scan catches and how its counting inflates one finding into four.
+          </p>
+          <div class="outcome">
+            <div>
+              <div class="lbl">Result</div>
+              <div class="val" style="color:var(--bad)">6 / 8 · 🔴 HIGH RISK</div>
+              <div class="sub">trap_score 4 · wording boost +1</div>
+            </div>
+            <div class="rt">
+              Six hits, two misses. The two that actually cost money — a 190× multiple against ¥47.93m of profit, and a distribution structure where institutions sold ¥136.7m to retail on the day — are <em>weighted the same as four signals that all describe "people are talking about this stock"</em>.
+            </div>
+          </div>
+        </div>
+
+        <div class="cs-body">
+          <div class="cs-sec">
+            <div class="cs-h"><span class="idx">01</span> Input</div>
+            <p class="cs-desc">Verbatim prompt, exactly as submitted.</p>
+            <div class="prompt">
+              <span class="lbl">Prompt</span>
+              @skill:trap-detector Lately my Douyin feed and the stock forums are full of Jinniu Chemical (600722) — the attention on it is unusually high. Check it for pump-and-dump risk. I want to know whether this is organised promotion or just organic market attention. Scan all eight signals, give me hit / miss / insufficient for each with sources attached, then the risk level and your recommendation.
+            </div>
+            <div class="idcard" style="margin-top:14px">
+              <div class="nm">Jinniu Chemical · 600722</div>
+              <div class="tx">Small-cap chemical. Market cap ¥10.756bn against 2025 net profit of ¥47.93m. Company's own 2026-03-17 filing puts static PE at 237.88× versus an industry 35.97×.</div>
+              <div class="chips"><span>YTD +166.16%</span><span>5d −20.03%</span><span>turnover 17.51%</span><span>PE TTM 190.98</span><span>dividend yield 0.00%</span><span>20–21 dragon-tiger listings</span></div>
+            </div>
+          </div>
+
+          <div class="cs-sec">
+            <div class="cs-h"><span class="idx">02</span> Scan · six hits</div>
+            <p class="cs-desc">Signals 1, 2, 4, 5, 6, 7 hit. Signals 3 and 8 missed.</p>
+            <div class="quad">
+              <div class="q"><div class="t">Signal 1 · hit</div><div class="h">Three accounts, same copy</div><div class="p">2026-09-08/09: near-identical posts from three accounts. A 2026-08-29 forum post describes the mechanism itself — teams running hundreds of accounts on shared templates.</div></div>
+              <div class="q"><div class="t">Signal 2 · hit</div><div class="h">Shared phrase book</div><div class="p">"Scooped up from deep water", "the main force believes this logic", "wash-and-consolidate" — plus one reused support/resistance ladder (15.8 / 17.0 / 20.0 / 21.2).</div></div>
+              <div class="q"><div class="t">Signal 4 · hit</div><div class="h">190× for ¥47.93m</div><div class="p">2025 revenue ¥469.77m (−5.92%), net profit ¥47.93m (−8.92%). 2026H1 profit +31.42% — to ¥35.10m. Zero institutional visits, 100% neutral ratings.</div></div>
+              <div class="q"><div class="t">Signal 5 · hit</div><div class="h">Distribution, mirrored</div><div class="p">On 2026-09-15: institutions net −¥136.7m, retail net +¥136.7m. On the 2026-09-02 limit-down: institutions net −¥299m. Seats include 拉萨天团 / 温州帮 alongside 沪股通 and Goldman.</div></div>
+            </div>
+            <div class="quad" style="margin-top:12px">
+              <div class="q"><div class="t">Signal 6 · hit</div><div class="h">Self-styled "dragon" personas</div><div class="p">Accounts giving daily levels and direction ("target ¥23, not leaving until it hits"). Direction without a fee — the promotion is the persona, not a paywall.</div></div>
+              <div class="q caut"><div class="t">Signal 7 · weak hit</div><div class="h">A pun, not a campaign</div><div class="p">The <i>Niu Lai</i> wordplay spread across Douyin / Bilibili / forums and topped East Money's trending list on 2026-08-16 — on a day the stock was limit-down. Organic, with no evidence of paid placement.</div></div>
+              <div class="q"><div class="t">Signal 3 · miss</div><div class="h">No funnel found</div><div class="p">No paid group or livestream entry for this ticker. The one forum post describing such gangs is descriptive — a warning about the pattern, not evidence it operates here.</div></div>
+              <div class="q"><div class="t">Signal 8 · miss</div><div class="h">Company denies rumours</div><div class="p">2026-03-17 and 2025-06-18 filings both state no undisclosed material information. The circulating "inquiry letter" was a satirical post about the film.</div></div>
+            </div>
+          </div>
+
+          <div class="cs-sec">
+            <div class="cs-h"><span class="idx">03</span> Output</div>
+            <div class="rep">
+              <div class="rep-h"><span>TRAP SCAN REPORT</span><span class="b">600722</span></div>
+              <table class="tbl">
+                <tr><td>signals_hit</td><td>6 / 8</td></tr>
+                <tr><td>signals_breakdown</td><td>hit 6 · miss 2 · insufficient 0</td></tr>
+                <tr><td>user_keyword_boost</td><td>+1 (Douyin / forums "full of it", analogised to 群里有人说)</td></tr>
+                <tr><td>trap_score</td><td>4 / 10</td></tr>
+                <tr><td>risk_level</td><td style="color:var(--bad);font-weight:600">🔴 HIGH RISK</td></tr>
+              </table>
+            </div>
+            <div class="next"><b>Safe next step</b>Do not act on the attention. The position to avoid is buying into a 190× multiple while institutions are net sellers. If already holding, note that the distribution pattern — not the chatter — is the part that has historically preceded the loss.</div>
+          </div>
+
+          <div class="cs-sec">
+            <div class="cs-h"><span class="idx">04</span> Evidence</div>
+            <div class="figs">
+              <div class="fig hl"><div class="v">6/8</div><div class="l">signals hit</div></div>
+              <div class="fig"><div class="v">190.98</div><div class="l">PE (TTM)</div></div>
+              <div class="fig"><div class="v">−¥136.7m</div><div class="l">institutional net flow</div></div>
+              <div class="fig"><div class="v">+166%</div><div class="l">year to date</div></div>
+              <div class="fig"><div class="v">20–21</div><div class="l">dragon-tiger appearances</div></div>
+              <div class="fig"><div class="v">6</div><div class="l">screenshots archived</div></div>
+            </div>
+            <div class="eviden"><b>Run record ·</b> 案例素材/trap-detector/02核心价值-英文/运行记录.md · screenshots shot-b-en-对话-01…06.png · 6 retrievals, 5 Chinese</div>
+                    <p class="cs-desc shots-lead">Screenshots captured from the live scan — click any frame to open it at full size.</p>
+        <div class="shots">
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-en/shot-b-en-01.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-en/shot-b-en-01.png" width="1063" height="1156" alt="Run · 01 — English prompt verbatim, app-reported 4m1s, the report header (ticker / scan time / trigger) and th"></a><figcaption><b>Run · 01</b> — English prompt verbatim, app-reported 4m1s, the report header (ticker / scan time / trigger) and the first two signal rows.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-en/shot-b-en-02.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-en/shot-b-en-02.png" width="1057" height="1111" alt="Run · 02 — the full 8-signal table: 6/8 hits → 🔴 HIGH RISK, trap_score 4."></a><figcaption><b>Run · 02</b> — the full 8-signal table: 6/8 hits → 🔴 HIGH RISK, trap_score 4.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-en/shot-b-en-03.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-en/shot-b-en-03.png" width="1047" height="1135" alt="Run · 03 — why this is not a textbook case (signals missed), the money-side and content-side read, and where t"></a><figcaption><b>Run · 03</b> — why this is not a textbook case (signals missed), the money-side and content-side read, and where the 6/8 count inflates.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-en/shot-b-en-04.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-en/shot-b-en-04.png" width="1017" height="1122" alt="Run · 04 — the JSON body: signals_hit, breakdown, boost_detail, recommendation, warning_phrases."></a><figcaption><b>Run · 04</b> — the JSON body: signals_hit, breakdown, boost_detail, recommendation, warning_phrases.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-en/shot-b-en-05.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-en/shot-b-en-05.png" width="1030" height="1155" alt="Run · 05 — the 14 sources in full, the completion check, and the first honest boundary."></a><figcaption><b>Run · 05</b> — the 14 sources in full, the completion check, and the first honest boundary.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-en/shot-b-en-06.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-en/shot-b-en-06.png" width="1092" height="1003" alt="Run · 06 — all six honest boundaries and the archiving note."></a><figcaption><b>Run · 06</b> — all six honest boundaries and the archiving note.</figcaption></figure>
+        </div>
+<div class="honest">
+              <div class="t">Honesty boundary</div>
+              <p>Two things this run cannot claim. First: the report is in English, but every piece of evidence behind it is Chinese — an eight-signal scan of an A-share small cap run purely in English returns close to zero. Second: signals 1, 2, 6 and 7 are four views of one fact — people are posting about the stock — counted as four separate hits. 6/8 overstates how organised the promotion is and understates the capital risk.</p>
+            </div>
+          </div>
+        </div>
+        <div class="cs-foot">CASE 02 · CORE VALUE · 6 / 8 · 🔴 HIGH RISK · trap_score 4 · RUN 2026-09-15 19:41</div>
+      </div>
+
+      <div class="glass cs" style="margin-top:16px">
+        <div class="cs-banner">
+          <span class="cs-tag">Case 03 · Historical replay</span>
+          <span class="cs-chip">Rendong Holdings · 002647</span>
+          <span class="cs-chip">Scanned as at 2020</span>
+          <span class="cs-chip">Retrieved 2026-09-15 19:52</span>
+          <h3>A stock the CSRC later called manipulation. <em>The scan said 🟡.</em></h3>
+          <p class="para">
+            Run against 2020 material only, with 2021-and-later sources excluded. The operator controlled 83 accounts, drove the price up 380% and lost ¥2.69bn doing it. The scan returned 3 / 8 — 🟡 CAUTION. This is the case that defines the boundary of what the tool can see.
+          </p>
+          <div class="outcome">
+            <div>
+              <div class="lbl">Result</div>
+              <div class="val" style="color:var(--warn)">3 / 8 · 🟡 CAUTION</div>
+              <div class="sub">trap_score 7 · wording boost 0</div>
+            </div>
+            <div class="rt">
+              Hits on fundamentals, price action and one persona post. Five of the six misses ask the same question: <em>is anyone promoting this? </em>The answer was no — the operator had 83 accounts and no need for an audience. He raised the price and waited for retail to follow the chart in.
+            </div>
+          </div>
+        </div>
+
+        <div class="cs-body">
+          <div class="cs-sec">
+            <div class="cs-h"><span class="idx">01</span> Input</div>
+            <p class="cs-desc">Verbatim prompt, with the time constraint stated explicitly.</p>
+            <div class="prompt">
+              <span class="lbl">Prompt</span>
+              @skill:trap-detector Using publicly available material from 2020 only, check Rendong Holdings (002647) for pump-and-dump risk as it stood in 2020. Ignore anything published after 2021 — I want the 2020 picture, not today's. Scan all eight signals against that period: hit, miss, or insufficient for each, with sources. Then give me the risk level and recommendation you would have given in 2020. Finally, in a separate paragraph, tell me what the same scan would return today, and why the two differ.
+            </div>
+            <div class="idcard" style="margin-top:14px">
+              <div class="nm">Rendong Holdings · 002647</div>
+              <div class="tx">2019 close ¥16.72 → 2020-11-20 high ¥64.72. Nine-month 2020 revenue ¥1.754bn (+89.77%) with net profit −¥21.92m (−144.50%); ¥2.142bn of current liabilities due within three months against ¥51m of unrestricted cash.</div>
+              <div class="chips"><span>as at 2020</span><span>post-2021 excluded</span><span>boost 0</span><span>5 retrievals</span></div>
+            </div>
+          </div>
+
+          <div class="cs-sec">
+            <div class="cs-h"><span class="idx">02</span> Scan · three hits, five misses</div>
+            <table class="tbl">
+              <tr><th>Signal</th><th>State</th><th>Basis as at 2020</th></tr>
+              <tr><td>1 · Low-quality accounts in unison</td><td>MISS</td><td>Zero dragon-tiger appearances in the run-up; daily turnover pinned near 1%. Holder count still doubled mid-year (6,638 → 13,090) — retail arrived on their own.</td></tr>
+              <tr><td>2 · Templated pitch language</td><td>MISS</td><td>Forum vocabulary (庄股 / 主力 / 杀猪盘) clusters after the 11-25 crash — spectators, not promoters.</td></tr>
+              <tr><td>3 · Paid VIP group funnel</td><td>MISS</td><td>No paid group for this ticker. Adjacent, different: an illegal margin-financing ring involving 002647 was detained on 2020-12-10, after the collapse.</td></tr>
+              <tr><td>4 · Fundamentals detached</td><td style="color:var(--bad);font-weight:600">HIT</td><td>Three consecutive loss-making quarters; ¥2.142bn due within three months vs ¥51m unrestricted cash; a ¥350m loan in default (filed 2020-10-29). Price +278.73% year to date.</td></tr>
+              <tr><td>5 · Abnormal price action</td><td style="color:var(--bad);font-weight:600">HIT</td><td>CSRC later measured a 380.48% rise and 400.77% amplitude over the manipulation window. Turnover locked near 1%, minimal intraday movement, uncorrelated to the index — textbook control.</td></tr>
+              <tr><td>6 · "Teacher" persona</td><td style="color:var(--bad);font-weight:600">HIT</td><td>A 2020-12-11 open letter urging holders to defend their positions, with replies alleging payment. Weak and post-crash — the Chinese run on the same ticker did not surface it.</td></tr>
+              <tr><td>7 · Cross-platform push</td><td>MISS</td><td>No coordination during the advance. The nine limit-ups in eight sessions came in 2021-03, outside the window.</td></tr>
+              <tr><td>8 · Fake research / news</td><td>MISS</td><td>The core narrative was real (state-controlled entry 2019-07-29, exit 2020-11-18). One genuinely misleading disclosure was flagged by the Zhejiang regulator — logged as a strong edge observation.</td></tr>
+            </table>
+          </div>
+
+          <div class="cs-sec">
+            <div class="cs-h"><span class="idx">03</span> Output · then and now</div>
+            <div class="rep">
+              <div class="rep-h"><span>TRAP SCAN REPORT · 2020 AS AT 2020</span><span class="b">002647</span></div>
+              <table class="tbl">
+                <tr><td>signals_hit</td><td>3 / 8</td></tr>
+                <tr><td>user_keyword_boost</td><td>0 — neutral phrasing, no trigger words</td></tr>
+                <tr><td>trap_score</td><td>7 / 10</td></tr>
+                <tr><td>risk_level</td><td style="color:var(--warn);font-weight:600">🟡 CAUTION</td></tr>
+                <tr><td>recommendation as at 2020</td><td>Some promotion signals present. Verify the source of the information.</td></tr>
+              </table>
+            </div>
+            <div class="honest" style="margin-top:14px">
+              <div class="t">What the same scan returns today</div>
+              <p>Run against current material, the scan is cleaner still — the promotion layer never existed, and by now it has also receded. The divergence is the point: the scan measures a moment, not a company. A 🟡 issued in 2020 and a 🟢 issued today describe the same event from two distances, and neither one is the CSRC's finding of manipulation.</p>
+            </div>
+          </div>
+
+          <div class="cs-sec">
+            <div class="cs-h"><span class="idx">04</span> Evidence</div>
+            <div class="figs">
+              <div class="fig hl"><div class="v">3/8</div><div class="l">signals hit</div></div>
+              <div class="fig"><div class="v">83</div><div class="l">accounts (CSRC)</div></div>
+              <div class="fig"><div class="v">380.48%</div><div class="l">rise, manipulation window</div></div>
+              <div class="fig"><div class="v">13,090</div><div class="l">holders at Q3 2020</div></div>
+              <div class="fig"><div class="v">−¥2.69bn</div><div class="l">operator's realised loss</div></div>
+              <div class="fig"><div class="v">9</div><div class="l">screenshots archived</div></div>
+            </div>
+            <div class="eviden"><b>Run record ·</b> 案例素材/trap-detector/03差异化-英文/运行记录.md · screenshots shot-c-en-对话-01…09.png · 5 retrievals, 2 English-keyword (both returned Chinese sources)</div>
+                    <p class="cs-desc shots-lead">Screenshots captured from the live scan — click any frame to open it at full size.</p>
+        <div class="shots">
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-01.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-01.png" width="1066" height="1026" alt="Run · 01 — English prompt verbatim, app-reported 8m57s, the report header (scan mode / scan time / trigger) an"></a><figcaption><b>Run · 01</b> — English prompt verbatim, app-reported 8m57s, the report header (scan mode / scan time / trigger) and the keyword-boost note.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-02.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-02.png" width="1089" height="1098" alt="Run · 02 — the 8-signal three-state table, rows 1–5."></a><figcaption><b>Run · 02</b> — the 8-signal three-state table, rows 1–5.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-03.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-03.png" width="1057" height="1129" alt="Run · 03 — signal rows 6–8, 3/8 → 🟡 CAUTION, trap_score 7, the 2020-era recommendation, and the divergence not"></a><figcaption><b>Run · 03</b> — signal rows 6–8, 3/8 → 🟡 CAUTION, trap_score 7, the 2020-era recommendation, and the divergence note.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-04.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-04.png" width="1060" height="1108" alt="Run · 04 — the Chinese/English comparison table (2/8 vs 3/8 · 🟡 vs 🟡 · 8 vs 7) and the “not linguistic” argume"></a><figcaption><b>Run · 04</b> — the Chinese/English comparison table (2/8 vs 3/8 · 🟡 vs 🟡 · 8 vs 7) and the “not linguistic” argument.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-05.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-05.png" width="1045" height="1048" alt="Run · 05 — “the miss is structural”: the regulator’s findings (83 accounts, 218 trading days, 91.63% of trades"></a><figcaption><b>Run · 05</b> — “the miss is structural”: the regulator’s findings (83 accounts, 218 trading days, 91.63% of trades suppressed, a ¥2.69bn loss) against a 🟡 rating.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-06.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-06.png" width="1032" height="1057" alt="Run · 06 — the 2020 retail warning that the eight signals never look for, and the first half of the JSON outpu"></a><figcaption><b>Run · 06</b> — the 2020 retail warning that the eight signals never look for, and the first half of the JSON output.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-07.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-07.png" width="1108" height="1113" alt="Run · 07 — the JSON tail, the completion check, and “what the same scan returns today”."></a><figcaption><b>Run · 07</b> — the JSON tail, the completion check, and “what the same scan returns today”.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-08.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-08.png" width="1059" height="1170" alt="Run · 08 — the 2020 vs 2026 table and why an adjudicated manipulation scores better today."></a><figcaption><b>Run · 08</b> — the 2020 vs 2026 table and why an adjudicated manipulation scores better today.</figcaption></figure>
+          <figure><a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-09.png" target="_blank" rel="noopener"><img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-en/shot-c-en-09.png" width="1020" height="1074" alt="Run · 09 — all six honest boundaries and the archiving path."></a><figcaption><b>Run · 09</b> — all six honest boundaries and the archiving path.</figcaption></figure>
+        </div>
+<div class="honest">
+              <div class="t">Honesty boundary · two</div>
+              <p>One: the Chinese run on the same ticker and the same date returned 2 / 8, this one returned 3 / 8 — signal 6 was retrieved by one and not the other. Retrieval is not deterministic; the hit count carries a run-to-run variance the framework does not account for. Two: both runs graded a CSRC-confirmed manipulation as 🟡 CAUTION. Six of the eight signals ask whether someone is selling you the stock. Capital-driven manipulation does not need to sell.</p>
+            </div>
+          </div>
+        </div>
+        <div class="cs-foot">CASE 03 · HISTORICAL REPLAY · 3 / 8 · 🟡 CAUTION · trap_score 7 · SCANNED AS AT 2020 · RETRIEVED 2026-09-15 19:52</div>
+      </div>
+
+
+    <div class="glass mbox" style="margin-top:16px">
+      <h4>Case structure · fixed five-part record</h4>
+      <p style="font-size:13.8px;color:var(--txt-2);line-height:1.65">
+        Each run is recorded in the same shape, so results can be compared rather than admired:
+      </p>
+      <div class="tier"><span class="dot" style="background:#22D3EE"></span><span class="nm">01 Input</span><span class="ex">the verbatim prompt, the ticker card, the observed market data</span></div>
+      <div class="tier"><span class="dot" style="background:#3B82F6"></span><span class="nm">02 Scan</span><span class="ex">eight signals, each with its hit state and the source behind it</span></div>
+      <div class="tier"><span class="dot" style="background:#22D3EE"></span><span class="nm">03 Output</span><span class="ex">the JSON report, the assigned level, the safe next step</span></div>
+      <div class="tier"><span class="dot" style="background:#3B82F6"></span><span class="nm">04 Evidence</span><span class="ex">retrieved figures, sources, and an honesty boundary for what was not checked</span></div>
+      <div class="tier"><span class="dot" style="background:#FBBF24"></span><span class="nm">05 Verdict</span><span class="ex">what the run got right, and where the framework was weak</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 · TRUST ============ -->
+<section id="trust">
+  <div class="wrap">
+    <div class="shead">
+      <div class="snum">06 · Security · Compatibility · Reliability</div>
+      <h2>The scanner itself <em>has no attack surface.</em></h2>
+      <p class="sdesc">What follows is what the package actually contains — including the parts that limit it.</p>
+    </div>
+
+    <div class="secgrid">
+      <div class="glass mbox">
+        <h4>Security audit · 7 checks</h4>
+        <ul class="alist">
+          <li><span class="k">✓</span><span><b>0 lines of executable code</b><span class="m">pure Markdown instructions</span></span></li>
+          <li><span class="k">✓</span><span><b>No scripts, hooks, or install actions</b><span class="m">nothing runs on setup</span></span></li>
+          <li><span class="k">✓</span><span><b>No dependencies to install</b><span class="m">no pip / npm / requirements</span></span></li>
+          <li><span class="k">✓</span><span><b>No outbound network calls</b><span class="m">search is performed by the host agent</span></span></li>
+          <li><span class="k">✓</span><span><b>No file, credential, or key access</b><span class="m">reads nothing from the machine</span></span></li>
+          <li><span class="k">✓</span><span><b>2 files total</b><span class="m">SKILL.md · references/eight-signals.md</span></span></li>
+          <li><span class="k">✓</span><span><b>MIT · v3.9.4</b><span class="m">source readable end to end</span></span></li>
+        </ul>
+      </div>
+
+      <div class="glass mbox">
+        <h4>Compatibility · 5 dependencies</h4>
+        <ul class="alist">
+          <li><span class="k">✓</span><span><b>Host agent with live search</b><span class="m">hard requirement — without it, 6 of 8 signals fail</span></span></li>
+          <li><span class="k">✓</span><span><b>Chinese-language sources</b><span class="m">A-share verified; other markets untested</span></span></li>
+          <li><span class="k">✓</span><span><b>Companion skill for signals 4–5</b><span class="m">not installed here → coverage 6 / 8</span></span></li>
+          <li><span class="k">✓</span><span><b>JSON consumer optional</b><span class="m">pairs with deep-analysis downstream</span></span></li>
+          <li><span class="k">✓</span><span><b>Trigger by keyword or explicit request</b><span class="m">no parameters, no configuration</span></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="glass mbox" style="margin-top:16px">
+      <h4>Known limitations · 6</h4>
+      <ol class="lims">
+        <li><b>Equal weighting.</b> "Paid VIP funnel" and "templated phrasing" each count as one hit, though the first is far more serious. No weights, no confidence scores.</li>
+        <li><b>Promotion-biased by construction.</b> Six of eight signals inspect the sales operation. Capital-driven or accounting-fraud manipulation produces little for them to find.</li>
+        <li><b>The data-source knot.</b> Signal 4 judges fundamentals from published financials — and the point of a well-built fraud is to make those financials look good. The better the packaging, the weaker the signal.</li>
+        <li><b>Result quality tracks the host model's retrieval.</b> The same instruction run on a model that cannot search produces eight "insufficient" rows.</li>
+        <li><b>No reference corpus.</b> There is no blacklist or historical case library to compare against, so every run starts from scratch.</li>
+        <li><b>Results are momentary.</b> The scan measures whether promotion is happening now. A clean result expires; a re-run is required, not optional.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 · AUDIENCE + CTA ============ -->
+<section id="cta">
+  <div class="wrap">
+    <div class="shead">
+      <div class="snum">07 · Who it's for</div>
+      <h2>For the moment <em>before you start researching it.</em></h2>
+      <p class="sdesc">The scan is a gate, placed upstream of analysis — not a substitute for it.</p>
+    </div>
+
+    <div class="users">
+      <div class="glass uc">
+        <div class="n">01</div>
+        <h4>Retail investors</h4>
+        <div class="who">A-share holders whose information arrives through groups and short video.</div>
+        <div class="use">Run it on <b>any</b> recommendation before spending an hour on the fundamentals.</div>
+      </div>
+      <div class="glass uc">
+        <div class="n">02</div>
+        <h4>New investors</h4>
+        <div class="who">People still calibrating what a legitimate pitch sounds like.</div>
+        <div class="use">Paste the promoter's message <b>unchanged</b> — let the weighting judge the source.</div>
+      </div>
+      <div class="glass uc">
+        <div class="n">03</div>
+        <h4>Checking for someone else</h4>
+        <div class="who">Adult children verifying what a parent was told in a group.</div>
+        <div class="use">The people these campaigns target and the people who run this tool <b>are usually not the same person</b>.</div>
+      </div>
+      <div class="glass uc">
+        <div class="n">04</div>
+        <h4>Advisers</h4>
+        <div class="who">Anyone who needs a first-pass risk note before a human conversation.</div>
+        <div class="use">Use the JSON as <b>triage material</b>, then apply judgment on top.</div>
+      </div>
+    </div>
+
+    <div class="glass cta">
+      <div class="aura" style="position:absolute;inset:0;background:radial-gradient(600px 260px at 50% 0%,rgba(59,130,246,.14),transparent 65%);pointer-events:none"></div>
+      <div style="position:relative">
+        <h3>Scan the next tip before you look into it.</h3>
+        <p>Quote the message exactly. Paraphrasing it into polite language destroys the strongest signal in the whole framework.</p>
+        <div class="triggers">
+          <span>"a friend recommended this to me"</span>
+          <span>"the group says…"</span>
+          <span>"the teacher is leading us into…"</span>
+          <span>"is this a pump and dump?"</span>
+        </div>
+        <div class="tmpl">
+          <span class="lbl">Copy-ready prompt</span>
+          Check <span class="hl">[ticker or name]</span> for pump-and-dump risk. Here is what I was told,
+          <span class="hl">quoted word for word, not rewritten</span>:
+          "<span class="hl">[paste the exact message]</span>".
+          Scan all eight signals and give me a risk level, the evidence behind each hit, and a recommendation.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <div class="brandline">Trap Detector</div>
+        <p>
+          A promotion-risk scan for stock tips. Eight signals, three finding states, four risk levels,
+          and a fixed JSON report — so "does this feel off?" becomes something checkable.
+        </p>
+      </div>
+      <div>
+        <h5>Sources</h5>
+        <ul>
+          <li>Eastmoney — quotes, heat ranking, fundamentals</li>
+          <li>Futu — price and turnover data</li>
+          <li>Gelonghui · International Finance News</li>
+          <li>CSRC enforcement announcements</li>
+          <li>Municipal government investor-education portals</li>
+        </ul>
+      </div>
+      <div>
+        <h5>Spec</h5>
+        <ul>
+          <li>Version 3.9.4 · MIT</li>
+          <li>2 files · 0 lines of code</li>
+          <li>0 dependencies · 0 network calls</li>
+          <li>Scan type: live retrieval, per-ticker</li>
+          <li>Companion skill for signals 4–5 not installed</li>
+        </ul>
+      </div>
+    </div>
+    <div class="disc">
+      <b>On the numbers.</b> Every figure on this page is a structural count, not a performance metric — this skill collects no runtime data.
+      Counts can be checked line by line against the source.
+      <br><br>
+      <b>On the demo ticker.</b> Hengxun AI (300XXX) in sections 01–02 is a <b>fictional teaching example</b>. It exists to show the output shape without putting a red rating on a real company.
+      Section 05 cases are real tickers, to be recorded from actual English runs before publication.
+      <br><br>
+      <b>Scope.</b> This page describes a pre-research gate. It is not investment advice, not a manipulation detector in general,
+      and not a substitute for reading the filings. Scan results are subject to the limitations listed in section 06, and they expire.
+    </div>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trap Detector · 杀猪盘检测器</title>
+<style>
+  :root{
+    --bg:#0B0F16;
+    --bg2:#0E141D;
+    --panel:#121A24;
+    --panel2:#0F1620;
+    --line:#1E2836;
+    --line2:#2A3646;
+    --tx:#E8EEF6;
+    --tx2:#93A3B8;
+    --tx3:#5F7186;
+    --cy:#22D3EE;
+    --cy-dim:#0E7490;
+    --red:#F87171;
+    --amb:#FBBF24;
+    --grn:#4ADE80;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--tx);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+
+  /* ---------- ambient background ---------- */
+  .stage{position:relative;overflow:hidden}
+  .stage::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(680px 420px at 72% 18%, rgba(34,211,238,.10), transparent 62%),
+      radial-gradient(520px 380px at 12% 82%, rgba(59,130,246,.07), transparent 60%);
+  }
+  .stage::after{
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:
+      linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px);
+    background-size:56px 56px;
+    mask-image:radial-gradient(circle at 50% 30%, #000 0%, transparent 78%);
+    -webkit-mask-image:radial-gradient(circle at 50% 30%, #000 0%, transparent 78%);
+  }
+  .inner{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 32px}
+
+  /* ---------- nav ---------- */
+  nav{display:flex;align-items:center;justify-content:space-between;padding:26px 0}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:.2px}
+  .mark{
+    width:26px;height:26px;border-radius:7px;flex:0 0 26px;
+    background:linear-gradient(150deg,#22D3EE,#3B82F6);
+    display:flex;align-items:center;justify-content:center;
+    color:#04121A;font-size:13px;font-weight:700;
+  }
+  nav .meta{font-size:12px;color:var(--tx3)}
+
+  /* ---------- hero ---------- */
+  .hero{display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);
+        gap:56px;align-items:center;padding:44px 0 76px}
+  @media(max-width:980px){.hero{grid-template-columns:1fr;gap:40px;padding:28px 0 56px}}
+
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    border:1px solid var(--line2);border-radius:999px;
+    padding:4px 12px 4px 6px;font-size:12px;color:var(--tx2);
+    background:rgba(255,255,255,.02);
+  }
+  .badge b{
+    background:rgba(34,211,238,.12);color:var(--cy);
+    border-radius:999px;padding:1px 8px;font-size:11px;font-weight:600;letter-spacing:.4px;
+  }
+
+  h1{
+    font-size:44px;line-height:1.12;margin:20px 0 6px;font-weight:600;letter-spacing:-.5px;
+  }
+  @media(max-width:600px){h1{font-size:34px}}
+  .cn{font-size:17px;color:var(--tx2);margin:0 0 22px;font-weight:400}
+
+  .value{
+    font-size:19px;line-height:1.65;margin:0 0 18px;color:var(--tx);font-weight:500;
+    border-left:2px solid var(--cy);padding-left:16px;
+  }
+  .value em{font-style:normal;color:var(--cy)}
+  .desc{font-size:14.5px;color:var(--tx2);margin:0 0 28px;max-width:47ch}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{
+    font-size:12.5px;color:var(--tx2);border:1px solid var(--line);
+    border-radius:8px;padding:5px 11px;background:var(--panel2);
+  }
+  .chip i{font-style:normal;color:var(--cy);margin-right:6px}
+
+  /* ---------- console ---------- */
+  .console{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;box-shadow:0 24px 60px -22px rgba(0,0,0,.85);
+  }
+  .bar{
+    display:flex;align-items:center;gap:10px;
+    padding:11px 14px;background:var(--panel2);border-bottom:1px solid var(--line);
+  }
+  .dots{display:flex;gap:6px;margin-right:4px}
+  .dots span{width:9px;height:9px;border-radius:50%;background:#2C3A4C}
+  .dots span:first-child{background:#3E4C5E}
+  .bar .title{font-size:12px;color:var(--tx3)}
+  .bar .live{
+    margin-left:auto;font-size:11px;color:var(--cy);
+    border:1px solid var(--cy-dim);border-radius:999px;padding:1px 9px;
+    background:rgba(34,211,238,.07);
+  }
+
+  .prompt{
+    padding:14px 16px;border-bottom:1px solid var(--line);
+    background:rgba(34,211,238,.028);
+  }
+  .prompt .lbl{font-size:11px;color:var(--tx3);margin-bottom:6px;letter-spacing:.5px}
+  .prompt .txt{font-size:13.5px;color:var(--tx);line-height:1.6}
+  .prompt .txt .hl{
+    color:#FCA5A5;background:rgba(248,113,113,.12);
+    border-radius:3px;padding:0 4px;
+  }
+
+  pre{
+    margin:0;padding:16px;font-size:12.2px;line-height:1.72;
+    overflow-wrap:anywhere;color:var(--tx);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  .k{color:#7DD3FC}
+  .s{color:#86EFAC}
+  .n{color:#FCD34D}
+  .p{color:#5F7186}
+  .sev-h{color:#F87171}
+  .sev-c{color:#FCA5A5;background:rgba(248,113,113,.14);border-radius:3px;padding:0 5px}
+
+  .verdict-line{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 16px;border-top:1px solid var(--line);
+    background:rgba(248,113,113,.05);
+  }
+  .v-tag{
+    font-size:12.5px;font-weight:600;color:#FCA5A5;
+    border:1px solid rgba(248,113,113,.35);border-radius:7px;padding:3px 10px;
+    background:rgba(248,113,113,.08);white-space:nowrap;
+  }
+  .v-txt{font-size:12.5px;color:var(--tx2)}
+
+  .mock-note{
+    margin-top:10px;font-size:11.5px;color:var(--tx3);text-align:right;
+  }
+
+  /* ---------- 02 before / after ---------- */
+  .ba{padding:56px 0 8px;border-top:1px solid var(--line)}
+  .sec-head{margin-bottom:26px}
+  .sec-num{
+    font-size:11.5px;letter-spacing:1.6px;color:var(--cy);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .sec-head h2{font-size:27px;margin:8px 0 8px;font-weight:600;letter-spacing:-.2px}
+  .sec-head p{margin:0;font-size:14.5px;color:var(--tx2);max-width:62ch}
+
+  /* shared input strip */
+  .q-strip{
+    border:1px solid var(--line2);border-radius:12px;background:var(--panel2);
+    padding:13px 16px;margin-bottom:20px;
+    display:flex;gap:12px;align-items:flex-start;
+  }
+  .q-strip .tag{
+    flex:0 0 auto;font-size:11px;letter-spacing:.8px;color:var(--tx3);
+    border:1px solid var(--line);border-radius:6px;padding:2px 8px;margin-top:2px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .q-strip .q{font-size:14px;color:var(--tx);line-height:1.65}
+  .q-strip .q .hl{color:#FCA5A5;background:rgba(248,113,113,.12);border-radius:3px;padding:0 4px}
+
+  .ba-grid{
+    display:grid;grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr);
+    gap:0;align-items:stretch;
+  }
+  @media(max-width:980px){.ba-grid{grid-template-columns:1fr;gap:18px}}
+
+  .pane{border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden;display:flex;flex-direction:column}
+  .pane.after{
+    border-color:rgba(34,211,238,.32);
+    box-shadow:0 0 0 1px rgba(34,211,238,.06), 0 26px 60px -30px rgba(34,211,238,.35);
+  }
+  .pane-hd{
+    display:flex;align-items:center;gap:9px;
+    padding:11px 15px;border-bottom:1px solid var(--line);background:var(--panel2);
+  }
+  .pane-hd .lab{font-size:12.5px;font-weight:600;letter-spacing:.4px}
+  .pane.before .pane-hd .lab{color:var(--tx3)}
+  .pane.after .pane-hd .lab{color:var(--cy)}
+  .pane-hd .sub{font-size:11.5px;color:var(--tx3);margin-left:auto}
+  .pane-bd{padding:16px;flex:1}
+
+  /* before: chat style */
+  .answer{font-size:13.6px;line-height:1.78;color:var(--tx2)}
+  .answer p{margin:0 0 11px}
+  .answer p:last-child{margin-bottom:0}
+  .answer .num{color:var(--tx3);margin-right:6px}
+  .answer .bad{
+    color:#FCA5A5;background:rgba(248,113,113,.10);
+    border-bottom:1px dashed rgba(248,113,113,.5);padding:0 2px;
+  }
+  .flaw{
+    margin-top:15px;border:1px solid rgba(251,191,36,.28);border-radius:10px;
+    background:rgba(251,191,36,.05);padding:11px 13px;
+  }
+  .flaw .t{font-size:12px;color:#FBBF24;font-weight:600;margin-bottom:5px}
+  .flaw .d{font-size:12.6px;color:var(--tx2);line-height:1.65}
+
+  /* after: signal grid */
+  .sig-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:14px}
+  .sig{
+    border:1px solid var(--line);border-radius:9px;padding:8px 10px;
+    background:var(--panel2);display:flex;align-items:flex-start;gap:8px;
+  }
+  .sig .dot{
+    flex:0 0 7px;width:7px;height:7px;border-radius:50%;margin-top:7px;background:#2C3A4C;
+  }
+  .sig.hit{border-color:rgba(248,113,113,.30);background:rgba(248,113,113,.05)}
+  .sig.hit .dot{background:#F87171;box-shadow:0 0 0 3px rgba(248,113,113,.14)}
+  .sig.miss{border-color:var(--line);opacity:.72}
+  .sig .n{font-size:12.2px;color:var(--tx);line-height:1.45}
+  .sig.miss .n{color:var(--tx3)}
+  .sig .st{
+    font-size:10.5px;color:var(--tx3);margin-top:2px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .sig.hit .st{color:#FCA5A5}
+
+  .vbar{
+    display:flex;align-items:center;gap:10px;
+    border:1px solid rgba(248,113,113,.32);border-radius:10px;
+    background:rgba(248,113,113,.07);padding:11px 13px;margin-bottom:12px;
+  }
+  .vbar .lv{font-size:13px;font-weight:600;color:#FCA5A5;white-space:nowrap}
+  .vbar .sc{
+    font-size:11.5px;color:var(--tx2);margin-left:auto;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .rec{font-size:13px;color:var(--tx);line-height:1.7;border-left:2px solid var(--cy);padding-left:12px}
+  .rec .k{color:var(--cy)}
+
+  /* center arrow */
+  .arrow{display:flex;align-items:center;justify-content:center}
+  .arrow i{
+    width:34px;height:34px;border-radius:50%;
+    border:1px solid rgba(34,211,238,.35);background:rgba(34,211,238,.08);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--cy);font-size:14px;font-style:normal;
+  }
+  @media(max-width:980px){.arrow{display:none}}
+
+  /* delta metrics */
+  .delta{
+    margin-top:22px;border:1px solid var(--line);border-radius:13px;
+    background:var(--panel2);overflow:hidden;
+  }
+  .delta .hd{
+    padding:10px 16px;border-bottom:1px solid var(--line);
+    font-size:11.5px;letter-spacing:.8px;color:var(--tx3);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .delta table{width:100%;border-collapse:collapse}
+  .delta th,.delta td{padding:11px 16px;text-align:left;font-size:13px;border-bottom:1px solid var(--line)}
+  .delta tr:last-child td{border-bottom:none}
+  .delta th{font-size:12px;color:var(--tx3);font-weight:500;background:var(--panel)}
+  .delta td.dim{color:var(--tx2)}
+  .delta td.b{color:var(--tx3)}
+  .delta td.a{color:var(--tx)}
+  .delta td.a b{color:var(--cy);font-weight:600}
+  .delta td.dim{width:23%}
+  .arrowcell{color:var(--tx3);padding:0 2px}
+
+  /* ---------- 03 capabilities + metrics ---------- */
+  .s3{padding:56px 0 8px;border-top:1px solid var(--line)}
+  .s3 + .s3{border-top:none;padding-top:8px}
+
+  /* capability cards */
+  .caps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  @media(max-width:980px){.caps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:640px){.caps{grid-template-columns:1fr}}
+  .cap{
+    border:1px solid var(--line);border-radius:12px;background:var(--panel);
+    padding:15px 16px 16px;position:relative;overflow:hidden;
+  }
+  .cap::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--line2);
+  }
+  .cap.c1::before{background:var(--cy)}
+  .cap:hover{border-color:var(--line2)}
+  .cap .idx{
+    font-size:11px;letter-spacing:1.2px;color:var(--tx3);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .cap h3{font-size:15px;margin:7px 0 7px;font-weight:600;color:var(--tx)}
+  .cap p{margin:0 0 11px;font-size:12.8px;line-height:1.68;color:var(--tx2)}
+  .cap .mech{
+    font-size:11px;color:var(--tx3);line-height:1.55;
+    border-top:1px dashed var(--line);padding-top:9px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .cap .mech b{color:var(--cy);font-weight:500}
+
+  /* kpi */
+  .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:12px}
+  @media(max-width:820px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  .kpi{
+    border:1px solid var(--line);border-radius:12px;background:var(--panel);
+    padding:16px 17px;
+  }
+  .kpi .num{
+    font-size:34px;line-height:1;font-weight:600;color:var(--tx);letter-spacing:-1px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .kpi .num em{font-style:normal;font-size:15px;color:var(--tx3);margin-left:3px;letter-spacing:0}
+  .kpi .lb{font-size:13px;color:var(--tx);margin-top:9px;font-weight:500}
+  .kpi .sub{font-size:11.5px;color:var(--tx3);margin-top:3px;line-height:1.5}
+
+  .metbox{
+    border:1px solid var(--line);border-radius:13px;background:var(--panel2);
+    padding:18px 18px 16px;margin-bottom:12px;
+  }
+  .metbox .mt{
+    font-size:11.5px;letter-spacing:.9px;color:var(--tx3);margin-bottom:14px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+
+  /* rating scale */
+  .scale{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:12px}
+  @media(max-width:640px){.scale{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  .sv{
+    border-radius:9px;padding:10px 11px;border:1px solid var(--line);background:var(--panel);
+  }
+  .sv .rng{
+    font-size:11px;color:var(--tx3);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .sv .lv{font-size:13.5px;font-weight:600;margin:5px 0 5px}
+  .sv .ac{font-size:11.8px;color:var(--tx2);line-height:1.5}
+  .sv.g{border-color:rgba(74,222,128,.26);background:rgba(74,222,128,.05)}
+  .sv.g .lv{color:#4ADE80}
+  .sv.y{border-color:rgba(251,191,36,.26);background:rgba(251,191,36,.05)}
+  .sv.y .lv{color:#FBBF24}
+  .sv.o{border-color:rgba(251,146,60,.26);background:rgba(251,146,60,.05)}
+  .sv.o .lv{color:#FB923C}
+  .sv.r{border-color:rgba(248,113,113,.30);background:rgba(248,113,113,.06)}
+  .sv.r .lv{color:#F87171}
+  .scale-note{font-size:11.8px;color:var(--tx3);line-height:1.6}
+  .scale-note b{color:var(--tx2);font-weight:500}
+
+  /* composition bar */
+  .comp{display:flex;height:30px;border-radius:8px;overflow:hidden;margin-bottom:11px}
+  .comp .seg{
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;color:#04121A;font-weight:600;white-space:nowrap;
+  }
+  .comp .s-prom{background:linear-gradient(90deg,#22D3EE,#38BDF8);flex:0 0 75%}
+  .comp .s-tick{background:#2A3646;color:var(--tx2);flex:0 0 25%}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 22px;margin-bottom:13px}
+  .lg{display:flex;align-items:flex-start;gap:8px;font-size:12.2px;color:var(--tx2);flex:1 1 260px}
+  .lg i{flex:0 0 9px;width:9px;height:9px;border-radius:2px;margin-top:6px}
+  .lg.p i{background:#22D3EE}
+  .lg.t i{background:#2A3646}
+  .lg b{color:var(--tx);font-weight:500}
+
+  /* mini measured table */
+  .mini{width:100%;border-collapse:collapse;margin-bottom:12px}
+  .mini th,.mini td{padding:9px 10px;text-align:left;font-size:12.4px;border-bottom:1px solid var(--line)}
+  .mini tr:last-child td{border-bottom:none}
+  .mini th{font-size:11.5px;color:var(--tx3);font-weight:500}
+  .mini td.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--tx2)}
+  .ok{color:#4ADE80}
+  .warn{color:#FBBF24}
+  .err{color:#F87171}
+  .mini-note{font-size:11.8px;color:var(--tx3);line-height:1.6}
+
+  /* ---------- 04 workflow ---------- */
+  .fw{padding:56px 0 8px;border-top:1px solid var(--line)}
+  .steps{margin-top:4px}
+  .fstep{
+    display:grid;grid-template-columns:38px minmax(0,1fr);gap:16px;
+    padding-bottom:24px;position:relative;
+  }
+  .fstep:not(:last-child)::before{
+    content:"";position:absolute;left:18px;top:42px;bottom:2px;width:1px;background:var(--line);
+  }
+  .fnum{
+    width:38px;height:38px;border-radius:10px;flex:0 0 38px;
+    border:1px solid var(--line2);background:var(--panel);
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;color:var(--cy);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .fbody{padding-top:5px}
+  .fbody h4{font-size:16px;margin:0 0 7px;font-weight:600;color:var(--tx)}
+  .fbody h4 em{font-style:normal;color:var(--tx3);font-weight:400;font-size:13px;margin-left:8px}
+  .fbody p{margin:0 0 8px;font-size:13.6px;line-height:1.75;color:var(--tx2);max-width:76ch}
+  .fbody p:last-child{margin-bottom:0}
+  .fbody b{color:var(--tx);font-weight:500}
+  .ftip{
+    font-size:12.6px;line-height:1.68;color:var(--tx2);
+    border-left:2px solid rgba(34,211,238,.5);padding-left:11px;margin-top:10px;
+  }
+  .ftip b{color:var(--cy);font-weight:500}
+
+  .fbox{
+    border:1px solid var(--line);border-radius:13px;background:var(--panel2);
+    padding:18px 18px 16px;margin-top:22px;
+  }
+  .fbox .mt{
+    font-size:11.5px;letter-spacing:.9px;color:var(--tx3);margin-bottom:13px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .fbox table{width:100%;border-collapse:collapse}
+  .fbox th,.fbox td{padding:9px 10px;text-align:left;font-size:12.5px;border-bottom:1px solid var(--line);vertical-align:top}
+  .fbox tr:last-child td{border-bottom:none}
+  .fbox th{font-size:11.5px;color:var(--tx3);font-weight:500}
+  .fbox td:first-child{color:var(--tx);width:14%}
+  .fbox td.warn2{color:#FBBF24}
+
+  .edge{
+    margin-top:12px;border:1px solid rgba(251,146,60,.28);border-radius:11px;
+    background:rgba(251,146,60,.05);padding:12px 14px;
+  }
+  .edge .t{font-size:12.2px;color:#FB923C;font-weight:600;margin-bottom:5px}
+  .edge .d{font-size:12.8px;color:var(--tx2);line-height:1.66}
+
+  /* ---------- 05 cases ---------- */
+  .cs{padding:56px 0 8px;border-top:1px solid var(--line)}
+  .slegend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-bottom:18px}
+  .slegend span{display:flex;align-items:center;gap:6px;font-size:11.8px;color:var(--tx3)}
+  .slegend i{width:16px;height:14px;border-radius:4px;border:1px solid var(--line)}
+
+  .cases{display:flex;flex-direction:column;gap:14px}
+  .case{border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden}
+  .case-hd{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel2);
+  }
+  .case-no{
+    font-size:11px;letter-spacing:1.2px;color:var(--tx3);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .case-tag{
+    font-size:11.5px;color:var(--cy);border:1px solid rgba(34,211,238,.3);
+    border-radius:6px;padding:1px 8px;background:rgba(34,211,238,.06);
+  }
+  .case-name{font-size:14.5px;font-weight:600;color:var(--tx)}
+  .case-code{
+    font-size:12.5px;color:var(--tx3);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .case-time{
+    margin-left:auto;font-size:11.5px;color:var(--tx3);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .case-bd{display:grid;grid-template-columns:206px minmax(0,1fr)}
+  @media(max-width:820px){.case-bd{grid-template-columns:1fr}}
+  /* 案例运行截图（05 段新增） */
+  .case-shots{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:10px;
+    padding:2px 14px 14px;
+  }
+  @media(max-width:820px){.case-shots{grid-template-columns:1fr}}
+  .case-shots a{
+    display:block;border:1px solid var(--line);border-radius:10px;
+    overflow:hidden;background:var(--panel2);text-decoration:none;
+    transition:border-color .15s;
+  }
+  .case-shots a:hover{border-color:var(--cy)}
+  .case-shots img{display:block;width:100%;height:auto}
+  .case-shots span{
+    display:block;padding:8px 11px;border-top:1px solid var(--line);
+    font-family:ui-monospace,Consolas,monospace;font-size:11px;color:var(--tx3);line-height:1.6;
+  }
+  .case-shots-note{
+    padding:0 14px 14px;font-size:12px;color:var(--tx3);line-height:1.7;
+  }
+  .case-l{padding:16px;border-right:1px solid var(--line);background:var(--panel2)}
+  @media(max-width:820px){.case-l{border-right:none;border-bottom:1px solid var(--line)}}
+  .v-lv{font-size:19px;font-weight:600;line-height:1.3}
+  .v-lv.g{color:#4ADE80}
+  .v-lv.o{color:#FB923C}
+  .v-lv.y{color:var(--amb)}
+  .v-lv.r{color:#F87171}
+  .v-hits{font-size:12.5px;color:var(--tx2);margin-top:7px}
+  .v-sub{font-size:11.5px;color:var(--tx3);margin-top:3px}
+
+  .sigrow{display:flex;flex-wrap:wrap;gap:5px;margin-top:14px}
+  .sigc{
+    font-size:10.8px;border-radius:5px;padding:2px 6px;
+    border:1px solid var(--line);color:var(--tx3);background:var(--panel);
+  }
+  .sigc.h{color:#FCA5A5;border-color:rgba(248,113,113,.32);background:rgba(248,113,113,.07)}
+  .sigc.i{color:#FBBF24;border-color:rgba(251,191,36,.28);background:rgba(251,191,36,.05)}
+
+  .case-r{padding:16px}
+  .inp{
+    font-size:13px;color:var(--tx);line-height:1.7;
+    border-left:2px solid var(--line2);padding-left:11px;margin-bottom:14px;
+  }
+  .inp .lbl{
+    display:block;font-size:10.5px;color:var(--tx3);letter-spacing:.7px;margin-bottom:4px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .evi{list-style:none;margin:0 0 13px;padding:0}
+  .evi li{
+    font-size:12.6px;color:var(--tx2);line-height:1.66;
+    padding-left:14px;position:relative;margin-bottom:6px;
+  }
+  .evi li:last-child{margin-bottom:0}
+  .evi li::before{
+    content:"";position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:var(--line2);
+  }
+  .evi li b{color:var(--tx);font-weight:500}
+  .evi li .src{color:var(--tx3);font-size:11.3px}
+  .note{font-size:12.6px;color:var(--tx2);line-height:1.72;border-top:1px dashed var(--line);padding-top:11px}
+  .note b{color:var(--cy);font-weight:500}
+
+  /* ---------- 06 safety ---------- */
+  .sf{padding:56px 0 8px;border-top:1px solid var(--line)}
+  .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:12px}
+  @media(max-width:860px){.two{grid-template-columns:1fr}}
+
+  .audit{list-style:none;margin:0;padding:0}
+  .audit li{
+    display:flex;gap:10px;align-items:flex-start;
+    padding:8px 0;border-bottom:1px solid var(--line);font-size:12.9px;line-height:1.6;
+  }
+  .audit li:first-child{padding-top:0}
+  .audit li:last-child{border-bottom:none;padding-bottom:0}
+  .audit .k{color:var(--tx3);flex:0 0 30%}
+  .audit .v{color:var(--tx)}
+  .audit .v span{color:var(--tx2)}
+
+  .rel{list-style:none;margin:0;padding:0}
+  .rel li{
+    position:relative;padding-left:24px;margin-bottom:11px;
+    font-size:12.9px;line-height:1.7;color:var(--tx2);
+  }
+  .rel li:last-child{margin-bottom:0}
+  .rel li::before{content:"✓";position:absolute;left:0;top:-1px;color:#4ADE80;font-size:12.5px}
+  .rel li b{color:var(--tx);font-weight:500}
+
+  .lim{list-style:none;margin:0;padding:0}
+  .lim li{
+    position:relative;padding-left:28px;margin-bottom:12px;
+    font-size:12.9px;line-height:1.72;color:var(--tx2);
+  }
+  .lim li:last-child{margin-bottom:0}
+  .lim li .n{
+    position:absolute;left:0;top:1px;width:19px;height:19px;border-radius:5px;
+    background:rgba(251,146,60,.10);border:1px solid rgba(251,146,60,.30);
+    color:#FB923C;font-size:10.5px;display:flex;align-items:center;justify-content:center;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .lim li b{color:var(--tx);font-weight:500}
+  .st-ok{color:#4ADE80}
+  .st-warn{color:#FBBF24}
+  .st-no{color:#F87171}
+
+  /* ---------- 07 users + cta + footer ---------- */
+  .tf{padding:56px 0 8px;border-top:1px solid var(--line)}
+  .users{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  @media(max-width:980px){.users{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:560px){.users{grid-template-columns:1fr}}
+  .uc{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:15px 16px}
+  .uc .idx{
+    font-size:11px;letter-spacing:1.2px;color:var(--tx3);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .uc h4{font-size:14.5px;margin:7px 0 8px;font-weight:600;color:var(--tx)}
+  .uc .who{font-size:12.6px;color:var(--tx2);line-height:1.68;margin:0 0 11px}
+  .uc .use{
+    font-size:12px;color:var(--tx3);line-height:1.62;
+    border-top:1px dashed var(--line);padding-top:9px;
+  }
+  .uc .use b{color:var(--cy);font-weight:500}
+
+  .ctabox{
+    margin-top:14px;border:1px solid rgba(34,211,238,.30);border-radius:14px;
+    background:linear-gradient(160deg, rgba(34,211,238,.07), rgba(34,211,238,.02));
+    padding:20px 20px 18px;
+  }
+  .ctabox h3{font-size:18px;margin:0 0 8px;font-weight:600;color:var(--tx)}
+  .ctabox p{margin:0 0 14px;font-size:13.2px;color:var(--tx2);line-height:1.7;max-width:72ch}
+  .ctabox p b{color:var(--tx);font-weight:500}
+  .trig{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:15px}
+  .trig span{
+    font-size:12.2px;color:var(--tx2);border:1px solid var(--line2);
+    border-radius:8px;padding:5px 11px;background:var(--panel);
+  }
+  .trig span b{color:var(--cy);font-weight:500;margin-right:5px}
+
+  .codebox{border:1px solid var(--line);border-radius:11px;background:var(--bg2);overflow:hidden}
+  .codebox .hd{
+    display:flex;align-items:center;gap:8px;padding:9px 13px;
+    border-bottom:1px solid var(--line);background:var(--panel);
+  }
+  .codebox .hd .t{font-size:11px;letter-spacing:.6px;color:var(--tx3)}
+  .codebox .hd .cp{margin-left:auto;font-size:11px;color:var(--cy)}
+  .codebox pre{
+    margin:0;padding:14px;font-size:12.3px;line-height:1.78;color:var(--tx);
+    white-space:pre-wrap;word-break:break-word;
+  }
+  .codebox .cm{color:var(--tx3)}
+
+  .foot{margin-top:30px;padding:24px 0 44px;border-top:1px solid var(--line)}
+  .foot .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+  @media(max-width:820px){.foot .cols{grid-template-columns:1fr}}
+  .foot h5{
+    font-size:11.5px;letter-spacing:.8px;color:var(--tx3);margin:0 0 9px;font-weight:500;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .foot p,.foot li{font-size:12px;color:var(--tx3);line-height:1.7;margin:0}
+  .foot ul{margin:0;padding-left:15px}
+  .foot li{margin-bottom:2px}
+  .foot p b{color:var(--tx2);font-weight:500}
+  .foot .disc{
+    margin-top:20px;font-size:11.8px;color:var(--tx3);line-height:1.72;
+    border-top:1px dashed var(--line);padding-top:13px;max-width:100ch;
+  }
+  .foot .disc b{color:var(--tx2);font-weight:500}
+
+  /* ---------- roadmap ---------- */
+  .road{
+    border-top:1px solid var(--line);padding:22px 0 40px;
+    display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center;
+  }
+  .road .lead{font-size:12px;color:var(--tx3);letter-spacing:.5px}
+  .road .step{font-size:12.5px;color:var(--tx3)}
+  .road .step b{color:var(--tx2);font-weight:500}
+  .road .step.now{color:var(--cy)}
+  .road .step.now b{color:var(--cy)}
+
+/* ===== Finch 宿主兼容层：不透明页面容器 + 媒体自适应 ===== */
+.finch-page{background:var(--bg);color:var(--tx); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased;}
+.finch-page img,.finch-page video{max-width:100%;height:auto}
+</style>
+</head>
+<body>
+<div class="finch-page">
+<div class="stage">
+<div class="inner">
+
+  <nav>
+    <div class="brand"><span class="mark">T</span>Trap Detector</div>
+    <div class="meta mono">skill · v3.9.4</div>
+  </nav>
+
+  <section class="hero">
+
+    <div>
+      <span class="badge"><b>A 股风控</b> 8 信号强制扫描</span>
+      <h1>Trap Detector</h1>
+      <p class="cn">杀猪盘检测器</p>
+
+      <p class="value">
+        它不判断一只票好不好，<br>
+        只回答一件事——<em>是不是有人在组织化地推给你</em>。
+      </p>
+
+      <p class="desc">
+        把"感觉不太对"拆成 8 条可查证的证据。每条命中都附具体来源，每个信号必须给出命中、未命中或数据不足，不留给模型含糊其辞的空间。
+      </p>
+
+      <div class="chips">
+        <span class="chip"><i>01</i>推广行为识别</span>
+        <span class="chip"><i>02</i>用户措辞加权</span>
+        <span class="chip"><i>03</i>结构化输出</span>
+        <span class="chip"><i>04</i>四级风险评级</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="console">
+        <div class="bar">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <div class="title mono">scan-trap · 300XXX</div>
+          <div class="live mono">completed</div>
+        </div>
+
+        <div class="prompt">
+          <div class="lbl mono">INPUT</div>
+          <div class="txt">
+            我<span class="hl">朋友推荐</span>我买恒讯智能（300XXX），说有<span class="hl">内幕消息</span>，主力已经建仓完毕，<span class="hl">目标翻倍</span>，让我赶紧上车。这票能买吗？
+          </div>
+        </div>
+
+<pre><span class="p">{</span>
+  <span class="k">"ticker"</span><span class="p">:</span> <span class="s">"300XXX 恒讯智能"</span><span class="p">,</span>
+  <span class="k">"trap_score"</span><span class="p">:</span> <span class="n">1</span><span class="p">,</span>
+  <span class="k">"trap_level"</span><span class="p">:</span> <span class="s">"🔴 高度可疑"</span><span class="p">,</span>
+  <span class="k">"signals_hit_count"</span><span class="p">:</span> <span class="n">7</span><span class="p">,</span>
+  <span class="k">"user_keyword_boost"</span><span class="p">:</span> <span class="n">4</span><span class="p">,</span>
+  <span class="k">"signals_hit"</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span><span class="k">"id"</span><span class="p">:</span><span class="n">1</span><span class="p">,</span><span class="k">"name"</span><span class="p">:</span><span class="s">"大量低质量账号同时推荐"</span><span class="p">,</span>
+     <span class="k">"severity"</span><span class="p">:</span><span class="s">"high"</span><span class="p">,</span>
+     <span class="k">"evidence"</span><span class="p">:</span><span class="s">"近 14 天检索到 23 篇标题高度相似内容，发布账号粉丝 30–200，注册集中在近两个月"</span><span class="p">},</span>
+    <span class="p">{</span><span class="k">"id"</span><span class="p">:</span><span class="n">3</span><span class="p">,</span><span class="k">"name"</span><span class="p">:</span><span class="s">"付费社群 / VIP 直播间引流"</span><span class="p">,</span>
+     <span class="k">"severity"</span><span class="p">:</span><span class="sev-c">"critical"</span><span class="p">,</span>
+     <span class="k">"evidence"</span><span class="p">:</span><span class="s">"5 个公众号文末附「进 VIP 群」二维码；抖音 2 个直播间正在讲解该股"</span><span class="p">},</span>
+    <span class="p">{</span><span class="k">"id"</span><span class="p">:</span><span class="n">5</span><span class="p">,</span><span class="k">"name"</span><span class="p">:</span><span class="s">"K 线异常配合"</span><span class="p">,</span>
+     <span class="k">"severity"</span><span class="p">:</span><span class="s">"high"</span><span class="p">,</span>
+     <span class="k">"evidence"</span><span class="p">:</span><span class="s">"推荐密集期前 45 个交易日已上涨 87%；期间 3 笔大宗交易折价 8–10%"</span><span class="p">}</span>
+  <span class="p">],</span>
+  <span class="k">"recommendation"</span><span class="p">:</span> <span class="s">"🔴 强烈建议回避。"</span>
+<span class="p">}</span></pre>
+
+        <div class="verdict-line">
+          <span class="v-tag">🔴 高度可疑</span>
+          <span class="v-txt">命中 7 / 8 信号 · 措辞加权 +4 · trap_score 1 / 10</span>
+        </div>
+      </div>
+      <div class="mock-note">示例输出 · 标的「恒讯智能 300XXX」为虚构教学标的，非真实检测结果</div>
+    </div>
+
+  </section>
+
+  <section class="ba">
+    <div class="sec-head">
+      <div class="sec-num">02 · BEFORE / AFTER</div>
+      <h2>同一个问题，两种答案</h2>
+      <p>两侧使用完全相同的输入、相同的公开信息。差别不在模型聪不聪明，而在有没有一套强制扫描的框架——通用助手把搜到的内容当信息源，本 skill 把它当物证。</p>
+    </div>
+
+    <div class="q-strip">
+      <span class="tag">INPUT</span>
+      <div class="q">
+        我<span class="hl">朋友推荐</span>我买恒讯智能（300XXX），说有<span class="hl">内幕消息</span>，主力已经建仓完毕，<span class="hl">目标翻倍</span>，让我赶紧上车。这票能买吗？
+      </div>
+    </div>
+
+    <div class="ba-grid">
+
+      <!-- BEFORE -->
+      <div class="pane before">
+        <div class="pane-hd">
+          <span class="lab">BEFORE</span>
+          <span style="font-size:12px;color:var(--tx3)">未调用 skill · 通用 AI 助手</span>
+          <span class="sub mono">无扫描框架</span>
+        </div>
+        <div class="pane-bd">
+          <div class="answer">
+            <p><span class="num">1.</span>需要提醒您，<b style="color:var(--tx);font-weight:500">内幕消息不可信</b>。我国《证券法》禁止利用内幕信息交易，任何声称掌握内幕消息的行为都涉嫌违法。</p>
+            <p><span class="num">2.</span>从公开信息看，该股近期<span class="bad">确实受到一定市场关注</span>，网络讨论度有所上升，说明市场对其存在一定预期。</p>
+            <p><span class="num">3.</span>建议您进一步核实公司基本面与财务状况，关注主营业务、盈利能力、估值水平等指标，也可参考券商研报。</p>
+            <p><span class="num">4.</span>投资有风险，请您<span class="bad">结合自身风险承受能力，谨慎决策</span>。</p>
+          </div>
+          <div class="flaw">
+            <div class="t">⚠ 关键失败点：被动二次传播</div>
+            <div class="d">第 2 条里"市场关注"的依据，正是检索到的那 23 篇推广文章——它们本身就是庄家的投放物料。助手把推广热度当成市场共识复述出来，等于替对方完成了又一次传播。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arrow"><i>→</i></div>
+
+      <!-- AFTER -->
+      <div class="pane after">
+        <div class="pane-hd">
+          <span class="lab">AFTER</span>
+          <span style="font-size:12px;color:var(--tx2)">调用 trap-detector</span>
+          <span class="sub mono">8 信号强制扫描</span>
+        </div>
+        <div class="pane-bd">
+          <div class="sig-grid">
+            <div class="sig hit"><span class="dot"></span><div><div class="n">低质账号集中推荐</div><div class="st">命中 · 23 篇 / 粉丝 30–200</div></div></div>
+            <div class="sig hit"><span class="dot"></span><div><div class="n">话术高度模板化</div><div class="st">命中 · 6 篇共用同一句式</div></div></div>
+            <div class="sig hit"><span class="dot"></span><div><div class="n">付费群 / 直播间引流</div><div class="st">命中 · critical</div></div></div>
+            <div class="sig hit"><span class="dot"></span><div><div class="n">基本面与热度脱节</div><div class="st">命中 · 净利同比 −32%</div></div></div>
+            <div class="sig hit"><span class="dot"></span><div><div class="n">K 线异常配合</div><div class="st">命中 · 45 日 +87%</div></div></div>
+            <div class="sig hit"><span class="dot"></span><div><div class="n">"老师"人设背书</div><div class="st">命中 · 2 个直播间</div></div></div>
+            <div class="sig hit"><span class="dot"></span><div><div class="n">跨平台同步联动</div><div class="st">命中 · 4 平台同日</div></div></div>
+            <div class="sig miss"><span class="dot"></span><div><div class="n">伪造研报 / 假新闻</div><div class="st">未命中</div></div></div>
+          </div>
+
+          <div class="vbar">
+            <span class="lv">🔴 高度可疑</span>
+            <span style="font-size:12px;color:var(--tx2)">命中 7 / 8 · 措辞加权 +4</span>
+            <span class="sc">trap_score 1 / 10</span>
+          </div>
+
+          <div class="rec">
+            <span class="k">强烈建议回避。</span>推广侧已出现组织化特征（同批新注册账号 + 付费群入口 + 直播间讲解），且你获知该股的唯一渠道是"内幕消息"。任何要求先交费再荐股的，一律视为诈骗前奏。
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="delta">
+      <div class="hd">VALUE DELTA</div>
+      <table>
+        <thead><tr>
+          <th style="width:22%">维度</th>
+          <th style="width:39%">调用前</th>
+          <th style="width:39%">调用后</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="dim">结论</td>
+            <td class="b">"结合自身风险承受能力谨慎决策"</td>
+            <td class="a"><b>🔴 高度可疑，强烈建议回避</b></td>
+          </tr>
+          <tr>
+            <td class="dim">信号覆盖</td>
+            <td class="b">无扫描动作</td>
+            <td class="a">8 项全覆盖，7 命中 / 1 未命中</td>
+          </tr>
+          <tr>
+            <td class="dim">证据</td>
+            <td class="b">0 条</td>
+            <td class="a"><b>23 条</b>（含账号粉丝数、注册时间、K 线区间）</td>
+          </tr>
+          <tr>
+            <td class="dim">用户措辞</td>
+            <td class="b">三个高危词被一句"不要轻信内幕消息"带过</td>
+            <td class="a">量化为加权 <b>+4</b>，直接计入评级</td>
+          </tr>
+          <tr>
+            <td class="dim">检索结果处理</td>
+            <td class="b">当作信息源引用 → 二次传播</td>
+            <td class="a">当作<b>物证</b>反查 → 坐实信号 1</td>
+          </tr>
+          <tr>
+            <td class="dim">输出形态</td>
+            <td class="b">自然语言段落，不可复用</td>
+            <td class="a">结构化 JSON，可接下游流程</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mock-note">示例输出 · 标的「恒讯智能 300XXX」为虚构教学标的，非真实检测结果</div>
+  </section>
+
+  <section class="s3">
+    <div class="sec-head">
+      <div class="sec-num">03 · CAPABILITIES &amp; METRICS</div>
+      <h2>关键能力与数据指标</h2>
+      <p>六项能力其实指向同一件事——把"有没有人在推"变成可勾选、可溯源、可复现的检查项，而不是一句泛泛的风险提示。</p>
+    </div>
+
+    <div class="caps">
+      <div class="cap c1">
+        <div class="idx">01</div>
+        <h3>8 信号强制扫描</h3>
+        <p>8 项逐一给结论，不允许跳过、合并或挑着查。每条都有明确判定标准，例如"近 14 天 ≥10 篇标题相似内容"。</p>
+        <div class="mech">完成检查 · <b>8 / 8 项必须出结论</b></div>
+      </div>
+
+      <div class="cap">
+        <div class="idx">02</div>
+        <h3>三态判定，拒绝假阴性</h3>
+        <p>"数据不足"是合法出口。搜不到不等于安全——给模型一个说不知道的位置，避免用沉默掩盖没查到。</p>
+        <div class="mech">hit / miss / <b>insufficient</b></div>
+      </div>
+
+      <div class="cap">
+        <div class="idx">03</div>
+        <h3>用户措辞加权</h3>
+        <p>你怎么知道这只票的，本身就是证据。"内幕消息"直接抬两级严重度，"朋友推荐""翻倍"抬一级。</p>
+        <div class="mech">内幕 / 稳赚 <b>+2</b> · 朋友推荐 / 翻倍 <b>+1</b></div>
+      </div>
+
+      <div class="cap">
+        <div class="idx">04</div>
+        <h3>证据强制绑定</h3>
+        <p>每条命中都要附具体来源，不得空口判断；结论栏必填。没有证据的怀疑进不了输出。</p>
+        <div class="mech">≥ 1 条来源 URL · <b>recommendation 不可为空</b></div>
+      </div>
+
+      <div class="cap">
+        <div class="idx">05</div>
+        <h3>四级风险评级</h3>
+        <p>按命中信号数映射 🟢🟡🟠🔴，同时给出 1–10 的 trap_score 供程序判断。命中越多，措辞越硬。</p>
+        <div class="mech">命中 0-1 / 2-3 / 4-5 / <b>6+</b></div>
+      </div>
+
+      <div class="cap">
+        <div class="idx">06</div>
+        <h3>结构化 JSON 输出</h3>
+        <p>固定 schema：ticker / trap_score / signals_hit / evidence / sources / recommendation，可直接作为下游分析流程的输入。</p>
+        <div class="mech">related_skills · <b>deep-analysis</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="s3">
+    <div class="sec-head" style="margin-top:34px">
+      <div class="sec-num">03 · METRICS</div>
+      <h2 style="font-size:22px">数据指标</h2>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="num">8</div>
+        <div class="lb">扫描信号</div>
+        <div class="sub">覆盖推广链路与量价异常</div>
+      </div>
+      <div class="kpi">
+        <div class="num">3</div>
+        <div class="lb">判定状态</div>
+        <div class="sub">命中 / 未命中 / 数据不足</div>
+      </div>
+      <div class="kpi">
+        <div class="num">4</div>
+        <div class="lb">风险等级</div>
+        <div class="sub">🟢 安全 → 🔴 高度可疑</div>
+      </div>
+      <div class="kpi">
+        <div class="num">0<em>行</em></div>
+        <div class="lb">执行代码</div>
+        <div class="sub">纯提示词，无脚本、无依赖、无外发请求</div>
+      </div>
+    </div>
+
+    <div class="metbox">
+      <div class="mt">风险评级映射 · 按命中信号数</div>
+      <div class="scale">
+        <div class="sv g">
+          <div class="rng">命中 0 – 1</div>
+          <div class="lv">🟢 安全</div>
+          <div class="ac">数据正常，未发现被异常推广迹象</div>
+        </div>
+        <div class="sv y">
+          <div class="rng">命中 2 – 3</div>
+          <div class="lv">🟡 注意</div>
+          <div class="ac">有少量推广，建议核实信息源</div>
+        </div>
+        <div class="sv o">
+          <div class="rng">命中 4 – 5</div>
+          <div class="lv">🟠 警惕</div>
+          <div class="ac">多个推广信号，强烈建议谨慎</div>
+        </div>
+        <div class="sv r">
+          <div class="rng">命中 6+</div>
+          <div class="lv">🔴 高度可疑</div>
+          <div class="ac">强烈建议回避，疑似杀猪盘特征</div>
+        </div>
+      </div>
+      <div class="scale-note">
+        另输出 <b>trap_score（1–10，反向标尺）</b>：10 分最安全，1 分最危险，第一次看容易读反。命中 ≥ 4 个信号时，<b>recommendation 必须以"强烈建议谨慎"或"强烈建议回避"开头</b>。
+      </div>
+    </div>
+
+    <div class="metbox">
+      <div class="mt">8 个信号的构成 · 按检测对象划分</div>
+      <div class="comp">
+        <div class="seg s-prom">推广侧 6 个 · 75%</div>
+        <div class="seg s-tick">标的侧 2 个 · 25%</div>
+      </div>
+      <div class="legend">
+        <div class="lg p"><i></i><div><b>推广侧 6 个</b>：低质账号刷量 · 话术模板化 · 付费群引流 · 老师人设 · 跨平台联动 · 假研报<br>查的是"这只票<b>正在怎么被推销</b>"</div></div>
+        <div class="lg t"><i></i><div><b>标的侧 2 个</b>：基本面与热度脱节 · K 线异常配合<br>查的是"这家公司本身怎么样"</div></div>
+      </div>
+      <div class="scale-note">
+        这个分布解释了它的能力边界：<b>它检测的是推广行为的组织度，不是操纵行为本身</b>。推广侧 6 个信号只需检索即可执行；标的侧 2 个依赖 <b>deep-analysis</b> 的取数脚本（<span class="mono">fetch_financials / fetch_kline</span>），当前未安装 → 实际可执行 <b>6 / 8</b>。
+      </div>
+    </div>
+
+    <div class="metbox">
+      <div class="mt">实测扫描结果 · n = 3 · 2026-09-15 实跑</div>
+      <table class="mini">
+        <thead><tr>
+          <th style="width:22%">标的</th><th style="width:15%">对照定位</th><th style="width:10%">命中</th>
+          <th style="width:15%">评级</th><th style="width:20%">标准答案</th><th style="width:18%">判定</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td>贵州茅台 <span class="mono">600519</span></td>
+            <td>阴性对照</td><td class="mono">0 / 8</td>
+            <td>🟢 安全</td><td>无推广操纵</td><td class="ok">✅ 判定正确</td>
+          </tr>
+          <tr>
+            <td>金牛化工 <span class="mono">600722</span></td>
+            <td>灰色地带</td>            <td class="mono">4 / 8</td>
+            <td>🟠 警惕</td><td>情绪炒作（谐音梗）</td><td class="warn">⚠️ 对热度敏感，需人工判语境</td>
+          </tr>
+          <tr>
+            <td>仁东控股 <span class="mono">002647</span></td>
+            <td>回溯验证</td><td class="mono">6 / 8</td>
+            <td>🔴 高度可疑</td><td>已认定操纵 + 杀猪盘</td><td class="ok">✅ 检出</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="mini-note">
+        样本仅 3 例，<b>不构成召回率统计</b>。案例 03 为 2020 年公开材料的<b>回溯验证</b>，不代表当下结果——它测的是"此刻是否正在被推广"，不是给公司贴永久标签。三例完整过程见第 05 部分。
+      </div>
+    </div>
+  </section>
+
+  <section class="fw">
+    <div class="sec-head">
+      <div class="sec-num">04 · WORKFLOW</div>
+      <h2>工作流程</h2>
+      <p>四步走完一次完整检测。你真正需要做的只有第一步——剩下的由 skill 按固定顺序执行，不可跳步。</p>
+    </div>
+
+    <div class="steps">
+
+      <div class="fstep">
+        <div class="fnum">01</div>
+        <div class="fbody">
+          <h4>说出你听到的话<em>触发</em></h4>
+          <p>三种方式任一即可触发：你的描述里出现<b>朋友推荐、群里、老师带、内幕、必涨、翻倍、暴涨、稳赚、跟单</b>；或直接说"检测一下""是不是杀猪盘""这只票安全吗"；或输入 <span class="mono">/scan-trap</span>。</p>
+          <p>这一步你该做的只有一件事：<b>原样转述对方的话</b>。至少给出标的代码，说清你是从哪儿听说它的。</p>
+          <div class="ftip">
+            别帮对方"翻译"成体面的说法。说<b>"他说有内幕消息"</b>比说"他说有独家信息源"有用得多——只有"内幕"这两个字会触发 +2 加权。你替对方措辞越客气，能拿到的证据越少。
+          </div>
+        </div>
+      </div>
+
+      <div class="fstep">
+        <div class="fnum">02</div>
+        <div class="fbody">
+          <h4>逐项扫描 8 个信号<em>强制 · 不可跳过</em></h4>
+          <p>skill 按固定清单逐项检索，每一项都必须给出<b>命中 / 未命中 / 数据不足</b>三选一，不允许合并、挑查或留空。完成检查里明确要求 8 项全覆盖。</p>
+          <p>其中 6 个信号只靠公开检索就能跑（低质账号刷量、话术模板、付费群引流、老师人设、跨平台联动、假研报）；信号 4「基本面与热度脱节」和信号 5「K 线异常配合」需要调用 <span class="mono">deep-analysis</span> 的取数脚本，未安装时应标为<b>数据不足</b>，而不是当作未命中。</p>
+          <div class="ftip">
+            这一步最关键的取向：检索到的推广内容<b>不当信息源，当物证</b>。不看它写了什么，看谁在发——账号粉丝数、注册时间、标题雷同度、发布集中度。同一批 23 篇文章，在通用助手那里是"市场关注"，在这里是信号 1 的实证。
+          </div>
+        </div>
+      </div>
+
+      <div class="fstep">
+        <div class="fnum">03</div>
+        <div class="fbody">
+          <h4>措辞加权与风险定级<em>加权 → 映射</em></h4>
+          <p>先按你的措辞抬升严重度：<b>内幕消息、稳赚不赔 +2</b>；<b>朋友推荐、必涨、翻倍、暴涨 +1</b>。再按命中信号数映射四级评级：0–1 🟢 安全、2–3 🟡 注意、4–5 🟠 警惕、6+ 🔴 高度可疑。</p>
+          <p>同时输出 <span class="mono">trap_score</span>（1–10，反向标尺）供下游判断。命中 ≥ 4 个信号时，结论措辞被强制为"强烈建议谨慎"或"强烈建议回避"开头。</p>
+          <div class="ftip">
+            注意 <b>trap_score 是反的</b>：10 分最安全，1 分最危险。第一次看很容易读反。
+          </div>
+        </div>
+      </div>
+
+      <div class="fstep">
+        <div class="fnum">04</div>
+        <div class="fbody">
+          <h4>输出结论与下一步<em>结构化交付</em></h4>
+          <p>产出一份固定 schema 的 JSON（<span class="mono">ticker / trap_score / trap_level / signals_hit / user_keyword_boost / recommendation / warning_phrases</span>），外加一份 8 信号三态清单，每条命中附具体来源。</p>
+          <p>结论为 🟢 / 🟡 时，可继续交给 <span class="mono">deep-analysis</span> 做基本面分析；结论为 🟠 / 🔴 时，流程到此为止——不要再往下分析值不值得买。</p>
+          <div class="ftip">
+            <span class="mono">signals_hit</span> 数组只装<b>命中</b>的项。要看未命中和数据不足，得读正文的三态清单——只盯着 JSON 会以为它漏查了。
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="fbox">
+      <div class="mt">每一步的输入与产出</div>
+      <table>
+        <thead><tr>
+          <th style="width:12%">步骤</th><th style="width:26%">你提供</th>
+          <th style="width:30%">skill 产出</th><th style="width:32%">常见问题</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td>01 触发</td>
+            <td>原话 + 标的代码</td>
+            <td>触发判定、加权基线</td>
+            <td class="warn2">把对方的话"翻译"得体面 → 丢失加权词</td>
+          </tr>
+          <tr>
+            <td>02 扫描</td>
+            <td>无需额外输入</td>
+            <td>8 项三态 + 每条证据来源</td>
+            <td class="warn2">检索不到就当安全 → 应标"数据不足"</td>
+          </tr>
+          <tr>
+            <td>03 定级</td>
+            <td>无需额外输入</td>
+            <td>四级评级 + trap_score</td>
+            <td class="warn2">反向标尺读反；8 信号等权，弱信号与强信号同分</td>
+          </tr>
+          <tr>
+            <td>04 输出</td>
+            <td>—</td>
+            <td>JSON + 三态清单 + recommendation</td>
+            <td class="warn2">只看 signals_hit，漏掉未命中与数据不足</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="edge">
+      <div class="t">重要边界</div>
+      <div class="d">这套流程只回答"这只票是不是在被组织化地推给你"，<b>不回答它值不值得买</b>。一只没人推给你的庄股，扫不出来；一家基本面很差的冷门公司，它也报不出来。它的检测对象是推广行为，不是操纵行为本身。</div>
+    </div>
+  </section>
+
+  <section class="cs">
+    <div class="sec-head">
+      <div class="sec-num">05 · CASE STUDIES</div>
+      <h2>三个真实案例</h2>
+      <p>按「基础 / 核心价值 / 差异化」分档，均为实际运行，检索来源可逐条复核。案例 01、02 为 2026-09-15 实时检索，案例 03 为公开材料回溯验证。</p>
+    </div>
+
+    <div class="slegend">
+      <span><i style="background:rgba(248,113,113,.10);border-color:rgba(248,113,113,.35)"></i>命中</span>
+      <span><i style="background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3)"></i>数据不足</span>
+      <span><i style="background:var(--panel);border-color:var(--line)"></i>未命中</span>
+    </div>
+
+    <div class="cases">
+
+      <!-- case 01 -->
+      <div class="case">
+        <div class="case-hd">
+          <span class="case-no">CASE 01</span>
+          <span class="case-tag">基础 · 阴性对照</span>
+          <span class="case-name">贵州茅台</span>
+          <span class="case-code">600519</span>
+          <span class="case-time">2026-09-15 实跑</span>
+        </div>
+        <div class="case-bd">
+          <div class="case-l">
+            <div class="v-lv g">🟢 安全</div>
+            <div class="v-hits">命中 0 / 8</div>
+            <div class="v-sub">未发现被异常推广迹象</div>
+            <div class="sigrow">
+              <span class="sigc">1 低质账号</span><span class="sigc">2 话术模板</span>
+              <span class="sigc">3 付费群引流</span><span class="sigc">4 基本面脱节</span>
+              <span class="sigc">5 K 线异常</span><span class="sigc">6 老师人设</span>
+              <span class="sigc">7 跨平台联动</span><span class="sigc">8 假研报</span>
+            </div>
+          </div>
+          <div class="case-r">
+            <div class="inp"><span class="lbl">INPUT</span>帮我看看 600519 是不是杀猪盘，这只票安全吗？</div>
+            <ul class="evi">
+              <li>检索未见集中推荐该股的低质账号，讨论以长期持有、分红为主，<b>无"老师""股神"人设</b>介入</li>
+              <li>未发现付费群、VIP 直播间等引流入口</li>
+              <li>热度与基本面未出现显著背离，无配合拉升的话术痕迹</li>
+              <li><span class="src">来源：公开检索（股吧、财经媒体） · 2026-09-15</span></li>
+            </ul>
+            <div class="note">
+              <b>为什么第一个案例是阴性。</b>一个只会报红的工具没有价值。这条用蓝筹股验证它不会无差别预警——8 项全部给出"未命中"，而不是因为名气大就默认安全。
+            </div>
+          </div>
+        </div>
+        <div class="case-shots">
+          <a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-zh/shot-a-01.png" target="_blank" rel="noopener">
+            <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-zh/shot-a-01.png" width="1080" height="1132" alt="案例 01 运行截图 1：Prompt 与报告头">
+            <span>01 · skill 标签 + Prompt + 已完成 3m33s + 报告头与加权明细</span>
+          </a>
+          <a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-zh/shot-a-02.png" target="_blank" rel="noopener">
+            <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-zh/shot-a-02.png" width="1086" height="1096" alt="案例 01 运行截图 2：8 信号三态表">
+            <span>02 · 8 信号三态表 + 名称混淆陷阱全文</span>
+          </a>
+          <a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-zh/shot-a-03.png" target="_blank" rel="noopener">
+            <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-zh/shot-a-03.png" width="1053" height="1111" alt="案例 01 运行截图 3：结构化 JSON">
+            <span>03 · 结构化 JSON（trap_score / signals_breakdown / boost_detail / recommendation）</span>
+          </a>
+          <a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-zh/shot-a-04.png" target="_blank" rel="noopener">
+            <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/01-basic-zh/shot-a-04.png" width="1059" height="1125" alt="案例 01 运行截图 4：来源与诚实边界">
+            <span>04 · sources 8 条 URL + 完成检查 4 项 + 诚实边界</span>
+          </a>
+        </div>
+        <div class="case-shots-note">
+          截图按连续滚动分 4 张拍摄，无缺口（归档于 <span style="font-family:ui-monospace,Consolas,monospace">案例素材/trap-detector/01基础-中文/</span>，可逐张点开原图）。已知瑕疵：截图宽度仅约 1030px，低于交付规格，不影响证据效力。
+        </div>
+      </div>
+
+      <!-- case 02 -->
+      <div class="case">
+        <div class="case-hd">
+          <span class="case-no">CASE 02</span>
+          <span class="case-tag">核心价值 · 热度异常捕获</span>
+          <span class="case-name">金牛化工</span>
+          <span class="case-code">600722</span>
+          <span class="case-time">2026-09-15 实跑</span>
+        </div>
+        <div class="case-bd">
+          <div class="case-l">
+            <div class="v-lv r">🔴 高度可疑</div>
+            <div class="v-hits">命中 6 / 8</div>
+            <div class="v-sub">资金侧派发 + 内容侧蹭热度，但不是教科书杀猪盘</div>
+            <div class="sigrow">
+              <span class="sigc h">1 低质账号</span><span class="sigc h">2 话术模板</span>
+              <span class="sigc">3 付费群引流</span><span class="sigc h">4 基本面脱节</span>
+              <span class="sigc h">5 K 线异常</span><span class="sigc h">6 老师人设</span>
+              <span class="sigc h">7 跨平台联动</span><span class="sigc">8 假研报</span>
+            </div>
+          </div>
+          <div class="case-r">
+            <div class="inp"><span class="lbl">INPUT</span>最近刷抖音和股吧，全都在说金牛化工（600722），热度特别高。帮我查一下这是不是杀猪盘——我想知道这到底是有组织地在推，还是只是市场自发的关注。八个信号逐项扫，每一项给命中/未命中/数据不足并附来源，然后给风险等级和建议。</div>
+            <ul class="evi">
+              <li><b>话术模板化（命中 · 强）</b>：财富号「姜山观市」「途说」两账号 9/8 收评的开场白与"大盘总结"段落<b>逐字相同</b>，点位也完全一致（支撑 18.08 / 17.65，压力 20.02），共用"主升浪完全确立""主力锁仓蓄势待发"话术库</li>
+              <li><b>基本面与热度脱节（命中 · 强）</b>：市值 107.56 亿 vs 2025 全年归母净利 <b>4792.79 万</b>；静态 PE 224.42 vs 中证行业 27.25–35.90；连续 25 年不分红；机构调研 0 次</li>
+              <li><b>K 线异常配合（命中 · 强）</b>：8/14–9/15 区间振幅 <b>79.39%</b>；9/15 主力净流出 <b>1.367 亿</b>、小单（散户）净流入 <b>2.323 亿</b>；股东户数 3 个月 +200.78% 后又 −45.42%</li>
+              <li><b>老师人设 / 跨平台（命中 · 中 / 弱）</b>：微博「东哥」"看透朱力意图、果断牵手"；抖音 / B 站 / 微博《牛来》谐音梗跨平台扩散，推其登顶热榜</li>
+              <li><b>两项未命中是真实的</b>：3 付费群引流、8 虚假研报均未检索到，公司三份异动公告也确认无相关传闻</li>
+              <li><span class="src">来源：东方财富股吧 / 财富号 / 行情数据中心 · 巨潮资讯 · 新浪 · 证券时报 · 2026-09-15 收盘后</span></li>
+            </ul>
+            <div class="note">
+              <b>既不是教科书杀猪盘，也不是无害的自发关注——是第三种情况。</b>没有付费群、没有 VIP 直播间、没有伪造研报，所以信号 3、8 的未命中是真的；但<b>资金侧</b>是一轮完整的高位派发（主力净流出 1.367 亿 vs 小单净流入 2.323 亿，户数 3 个月 +200.78% 后 −45.42%，年内 27 次龙虎榜），<b>内容侧</b>是自媒体批量蹭热度变现代工（两账号文本逐字雷同，但不收费 → 信号 3 抓不到、信号 2 抓得到）。<br>
+              <b>本案最有价值的发现，是它暴露了 skill 的计数缺陷。</b>6 个命中里 1、2、6、7 其实是同一件事（自媒体蹭热度）的四个切面，被拆成 4 个信号各计 1 分；真正致命的 4（估值脱节）与 5（派发结构）只有 2 分。等权计数把"很多人在蹭热度"和"有人在组织化派发筹码"算成了同等权重——<b>而后者才是让人亏钱的东西</b>。
+            </div>
+          </div>
+        </div>
+        <div class="case-shots">
+          <a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-zh/shot-b-01.png" target="_blank" rel="noopener">
+            <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-zh/shot-b-01.png" width="1086" height="1150" alt="案例 02 运行截图 1：Prompt 与报告头">
+            <span>01 · skill 标签 + Prompt + 已完成 4m44s + 报告头与信号 1–3</span>
+          </a>
+          <a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-zh/shot-b-02.png" target="_blank" rel="noopener">
+            <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-zh/shot-b-02.png" width="1033" height="1072" alt="案例 02 运行截图 2：信号 4–8 与评级">
+            <span>02 · 信号 4–8 + 命中计数与评级 + 「第三种情况」结论</span>
+          </a>
+          <a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-zh/shot-b-03.png" target="_blank" rel="noopener">
+            <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-zh/shot-b-03.png" width="1060" height="1122" alt="案例 02 运行截图 3：计数缺陷与 JSON">
+            <span>03 · 等权计数的缺陷分析 + 结构化 JSON 前半</span>
+          </a>
+          <a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-zh/shot-b-04.png" target="_blank" rel="noopener">
+            <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/02-core-zh/shot-b-04.png" width="1018" height="1126" alt="案例 02 运行截图 4：JSON 与诚实边界">
+            <span>04 · JSON 后半 + 完成检查 4 项全勾 + 诚实边界</span>
+          </a>
+        </div>
+        <div class="case-shots-note">
+          <b>归档 6 张，本页选用前 4 张。</b>第 5、6 张含内部过程措辞与总结段，属过程留痕，保留在 <span style="font-family:ui-monospace,Consolas,monospace">案例素材/trap-detector/02核心价值-中文/</span> 未上页。执行时长 4m44s（案例 01 为 3m33s）。
+        </div>
+      </div>
+
+      <!-- case 03 -->
+      <div class="case">
+        <div class="case-hd">
+          <span class="case-no">CASE 03</span>
+          <span class="case-tag">差异化 · 历史案例回溯</span>
+          <span class="case-name">仁东控股</span>
+          <span class="case-code">002647</span>
+          <span class="case-time">2020 时点回溯 · 2026-09-15 检索</span>
+        </div>
+        <div class="case-bd">
+          <div class="case-l">
+            <div class="v-lv y">🟡 注意</div>
+            <div class="v-hits">命中 2 / 8</div>
+            <div class="v-sub">这是漏检——只命中 2 项强信号，被等权计数稀释</div>
+            <div class="sigrow">
+              <span class="sigc">1 低质账号</span><span class="sigc">2 话术模板</span>
+              <span class="sigc">3 付费群引流</span><span class="sigc h">4 基本面脱节</span>
+              <span class="sigc h">5 K 线异常</span><span class="sigc">6 老师人设</span>
+              <span class="sigc">7 跨平台联动</span><span class="sigc">8 假研报</span>
+            </div>
+          </div>
+          <div class="case-r">
+            <div class="inp"><span class="lbl">INPUT</span>只用 2020 年及以前的公开资料，站在 2020 年的时点，检测一下仁东控股（002647）当时是否存在杀猪盘风险。2021 年之后发布的内容一律不要采用——我要的是 2020 年的画面，不是今天的。八个信号都按那个时期来判：命中、未命中还是数据不足，每条附来源。然后给出你在 2020 年当时会给出的风险等级和建议。最后另起一段，告诉我同样的扫描放到今天会返回什么结果，以及两者为什么不同。</div>
+            <ul class="evi">
+              <li><b>基本面与热度脱节（命中 · critical）</b>：2020 前三季归母净利 <b>−2192.30 万</b>（−144.50%），全年 −3.736 亿；最高静态 PE <b>1280 倍</b>；十大流通股东<b>无基金机构</b>；未受限货币资金仅 0.51 亿</li>
+              <li><b>K 线异常配合（命中 · critical）</b>：2019 年末 16.72 → 2020/11/20 最高 64.72；证监会认定操纵期间最高上涨 <b>380.48%</b>、振幅 <b>400.77%</b>；日跌幅不超 3%、换手约 1%</li>
+              <li><b>六项未命中，原因是一致的</b>：信号 1 / 2 / 3 / 6 查的都是"有没有人在推"——而仁东根本没人在推。崩盘前"年内未曾登上一次交易龙虎榜"，股吧热词全在 11/25 崩盘<b>之后</b>，属围观</li>
+              <li><b>另一个盲区</b>：2020-09-12（崩盘前两个多月）已有网友发帖预警"典型的庄家，崩盘时间不远了，散户别当接盘侠"——而 8 个信号里<b>没有"检索社区预警"这一项</b>，它只找"谁在推"，不找"谁在提醒"</li>
+              <li><span class="src">来源：证监会处罚公告 · 格隆汇 · 21 世纪经济报道 · 广州市海珠区人民政府门户网站 · 巨潮资讯 · 2020</span></li>
+            </ul>
+            <div class="note">
+              <b>结论是漏检：2 / 8 → 🟡 注意。</b>而 002647 是证监会已定性的操纵案（景华控制 83 个账户、罚款 500 万、本人亏损 26.9 亿）。<b>6 个未命中里有 4 个（1/2/3/6）问的是同一件事——有没有人在推，而庄家根本不需要推广</b>：左手卖右手接，把股价抬高 380%，等散户自己看 K 线走进来。这套手法只对应信号 4、5 两项，而这 2 项恰好命中了，却被等权计数稀释成 🟡。<br>
+              <b>与案例 02 恰成反向对照，暴露的是同一个缺陷的两端</b>：案例 02 是 4 个弱信号把分数<b>虚高</b>到 6/8，本案是 2 个强信号被<b>稀释</b>到 2/8。<br>
+              <b>时点性提醒</b>：同一套扫描放到 2026-09-15 会返回 🟢——该股已摘帽、2025 年扭亏 3.6 亿、华鑫证券给予"买入"评级。它测的是"此刻是否正在被推广"，不是给公司贴永久标签。
+            </div>
+          </div>
+        </div>
+        <div class="case-shots">
+          <a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-zh/shot-c-01.png" target="_blank" rel="noopener">
+            <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-zh/shot-c-01.png" width="1114" height="1122" alt="案例 03 运行截图 1：Prompt 与报告头">
+            <span>01 · skill 标签 + Prompt + 已完成 5m20s + 报告头与加权说明</span>
+          </a>
+          <a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-zh/shot-c-02.png" target="_blank" rel="noopener">
+            <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-zh/shot-c-02.png" width="1029" height="1134" alt="案例 03 运行截图 2：8 信号三态清单">
+            <span>02 · 8 信号三态清单全文 + 命中计数 + 评级</span>
+          </a>
+          <a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-zh/shot-c-03.png" target="_blank" rel="noopener">
+            <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-zh/shot-c-03.png" width="1048" height="1126" alt="案例 03 运行截图 3：漏检原因与反向对照">
+            <span>03 · 漏检的结构性原因 + 与案例 02 的反向对照表</span>
+          </a>
+          <a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-zh/shot-c-04.png" target="_blank" rel="noopener">
+            <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-zh/shot-c-04.png" width="1051" height="1110" alt="案例 03 运行截图 4：社区预警盲区">
+            <span>04 · 「社区预警盲区」段 + 2020 vs 今天对比开头</span>
+          </a>
+          <a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-zh/shot-c-05.png" target="_blank" rel="noopener">
+            <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-zh/shot-c-05.png" width="1042" height="1156" alt="案例 03 运行截图 5：JSON 尾部与完成检查">
+            <span>05 · JSON 尾部（warning_phrases）+ 完成检查 4 项 + 对比表上半</span>
+          </a>
+          <a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-zh/shot-c-06.png" target="_blank" rel="noopener">
+            <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-zh/shot-c-06.png" width="1053" height="1198" alt="案例 03 运行截图 6：六维对比表">
+            <span>06 · 2020 / 2026 六维对比表 + 「为什么六年后反而更绿」</span>
+          </a>
+          <a href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-zh/shot-c-07.png" target="_blank" rel="noopener">
+            <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/trap-detector/cases/03-diff-zh/shot-c-07.png" width="1027" height="1092" alt="案例 03 运行截图 7：推导与换手率对比">
+            <span>07 · 评级从 🟡 到 🟢 的推导 + 换手率对比</span>
+          </a>
+        </div>
+        <div class="case-shots-note">
+          <b>归档 9 张，本页选用前 7 张。</b>第 8、9 张为对话末尾总结段的重复覆盖，属过程留痕，保留在 <span style="font-family:ui-monospace,Consolas,monospace">案例素材/trap-detector/03差异化-中文/</span> 未上页。执行时长 5m20s——三案时长 3m33s / 4m44s / 5m20s 构成真实耗时序列。
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="sf">
+    <div class="sec-head">
+      <div class="sec-num">06 · SAFETY · COMPATIBILITY · RELIABILITY</div>
+      <h2>安全性、兼容性与可靠性</h2>
+      <p>这一节讲它做不到什么。对一个纯提示词实现的风控工具来说，边界比能力清单更值得先读。</p>
+    </div>
+
+    <div class="two">
+      <div class="metbox" style="margin-bottom:0">
+        <div class="mt">SECURITY AUDIT · 安全性审计</div>
+        <ul class="audit">
+          <li><span class="k">可执行代码</span><span class="v"><span class="st-ok">0 行</span> · 纯 Markdown 说明文本</span></li>
+          <li><span class="k">脚本 / hook</span><span class="v"><span class="st-ok">无</span> · 不含任何可执行附件</span></li>
+          <li><span class="k">依赖安装</span><span class="v"><span class="st-ok">无</span> · 不需要 pip / npm / 环境配置</span></li>
+          <li><span class="k">外发网络请求</span><span class="v"><span class="st-ok">无</span> · 检索由宿主模型自身能力完成</span></li>
+          <li><span class="k">文件读写 / 凭据</span><span class="v"><span class="st-ok">无</span> · 不触碰本地文件与密钥</span></li>
+          <li><span class="k">文件构成</span><span class="v">2 个 · <span>SKILL.md + references/eight-signals.md</span></span></li>
+          <li><span class="k">授权与版本</span><span class="v">MIT · v3.9.4 · 作者 FloatFu-true</span></li>
+        </ul>
+      </div>
+
+      <div class="metbox" style="margin-bottom:0">
+        <div class="mt">RELIABILITY BY DESIGN · 设计上的防错</div>
+        <ul class="rel">
+          <li><b>三态判定</b>——给模型一个"数据不足"的合法出口，避免检索不到就默认安全。这是整套设计里最关键的一条。</li>
+          <li><b>证据强制绑定</b>——每条命中至少附 1 条具体来源，<span class="mono">recommendation</span> 不可为空，没有证据的怀疑进不了输出。</li>
+          <li><b>完成检查 4 条</b>——8 项全覆盖、至少 1 条来源、结论必填、命中 ≥ 4 时措辞被强制为"强烈建议谨慎 / 回避"。</li>
+          <li><b>输出结构化</b>——固定 schema 的 JSON，可被下游程序读取，不依赖自然语言理解的稳定性。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="fbox">
+      <div class="mt">COMPATIBILITY · 兼容性与依赖</div>
+      <table>
+        <thead><tr>
+          <th style="width:18%">项目</th><th style="width:40%">要求</th><th style="width:42%">当前状态</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td>运行环境</td>
+            <td>支持 SKILL.md 的 Agent（Codex / Claude Code / WorkBuddy 等）</td>
+            <td class="st-ok">可用</td>
+          </tr>
+          <tr>
+            <td>联网检索</td>
+            <td>宿主模型需具备 web search 能力</td>
+            <td class="st-warn">强依赖 —— 无检索能力则 6 个推广侧信号直接失效</td>
+          </tr>
+          <tr>
+            <td>取数脚本</td>
+            <td><span class="mono">deep-analysis</span> 的 <span class="mono">fetch_financials / fetch_sentiment / fetch_kline / fetch_capital_flow</span></td>
+            <td class="st-no">未安装 —— 信号 4、5 只能标"数据不足"，实际覆盖 6 / 8</td>
+          </tr>
+          <tr>
+            <td>适用市场</td>
+            <td>A 股：代码格式、股吧 / 东方财富等中文信息源</td>
+            <td class="st-ok">已验证；美股、港股等其他市场未验证</td>
+          </tr>
+          <tr>
+            <td>下游对接</td>
+            <td>输出为 JSON，可接 <span class="mono">deep-analysis</span> 等分析流程</td>
+            <td class="st-ok">可用</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="metbox">
+      <div class="mt">KNOWN LIMITS · 已知局限</div>
+      <ul class="lim">
+        <li><span class="n">1</span><b>8 个信号等权计数。</b>命中"付费 VIP 群引流"和命中"话术模板化"加一样的分，不区分强弱信号，也没有置信度。案例 02 里"讨论量大"与"组织化推广"被算成了同一件事。</li>
+        <li><span class="n">2</span><b>适用边界是推广侧。</b>8 个信号里 6 个查"这只票正在怎么被推销"。对资金型、造假型操纵召回力弱——它不含股东户数突变、账户组关联、龙虎榜席位这类信号。</li>
+        <li><span class="n">3</span><b>数据源死结。</b>信号 4 用财报判断基本面是否脱节，而财务造假的目的恰恰就是让财报好看。越精心包装的骗局，这个信号越容易失效。</li>
+        <li><span class="n">4</span><b>效果高度依赖执行模型。</b>纯提示词实现，8 个信号本质都是"去检索一下"的指令。模型的搜索质量差异会直接放大到最终结论，不同模型跑同一只票可能给出不同评级。</li>
+        <li><span class="n">5</span><b>没有历史对照。</b>不接黑名单、不接历史案例库，无法判断"这只票以前是不是被推过"。每一次扫描都是孤立的。</li>
+        <li><span class="n">6</span><b>结论有时点性。</b>它测的是"此刻是否正在被推广"，不是给公司贴永久标签。推广是动态的，隔一段时间需要重新扫描。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="tf">
+    <div class="sec-head">
+      <div class="sec-num">07 · WHO IT'S FOR</div>
+      <h2>目标用户</h2>
+      <p>四类人用得上它。注意第三类——真正被杀猪盘瞄准的人和真正会用这个工具的人，往往不是同一个。</p>
+    </div>
+
+    <div class="users">
+      <div class="uc">
+        <div class="idx">01</div>
+        <h4>A 股个人投资者</h4>
+        <p class="who">信息源主要来自社群、短视频、公众号，自己没有交叉验证的习惯。</p>
+        <div class="use">怎么用：<b>听到任何推荐，先扫一遍再决定看不看</b>，把排雷放在研究之前。</div>
+      </div>
+      <div class="uc">
+        <div class="idx">02</div>
+        <h4>投资新手</h4>
+        <p class="who">容易被"必涨""翻倍""内幕"这类话术影响，还不太会看财报和 K 线。</p>
+        <div class="use">怎么用：<b>把对方原话整段粘进来</b>，让措辞加权替你判断这个信息源本身有多可疑。</div>
+      </div>
+      <div class="uc">
+        <div class="idx">03</div>
+        <h4>代为核查的子女 / 晚辈</h4>
+        <p class="who">杀猪盘的主力受害者是中老年人，但他们通常不会自己去用 AI 工具。</p>
+        <div class="use">怎么用：<b>替父母把"群里老师说的话"原样跑一遍</b>，十分钟出一份能讲给他们听的结论。</div>
+      </div>
+      <div class="uc">
+        <div class="idx">04</div>
+        <h4>投顾 / 理财从业者</h4>
+        <p class="who">客户经常拿着社群推荐的标的来问，需要一个快速的初步判断。</p>
+        <div class="use">怎么用：<b>作为人工判断的前置材料</b>，先出风险提示，再进入正式分析。</div>
+      </div>
+    </div>
+
+    <div class="ctabox">
+      <h3>现在就试一次</h3>
+      <p>三种方式任一即可触发。最省事的做法是直接把别人推荐这只票的<b>原话</b>粘进来——不要改写、不要润色，越接近原话，加权越准。</p>
+
+      <div class="trig">
+        <span><b>关键词</b>朋友推荐 / 群里 / 老师带 / 内幕 / 翻倍</span>
+        <span><b>显式要求</b>检测一下 / 是不是杀猪盘 / 安全吗</span>
+        <span><b>命令</b>/scan-trap</span>
+      </div>
+
+      <div class="codebox">
+        <div class="hd">
+          <span class="t mono">PROMPT TEMPLATE</span>
+          <span class="cp mono">可直接复制</span>
+        </div>
+<pre>请用 trap-detector 扫描这只票。
+
+我获知它的渠道和对方原话是：
+「<span class="cm">（原样粘贴对方说的话，不要改写、不要润色）</span>」
+
+补充信息：
+- 标的代码 / 名称：
+- 是谁推荐给我的：
+- 是否被要求交费、加群或下载 App：
+
+请按 8 个信号逐项给出「命中 / 未命中 / 数据不足」，
+每条命中附上具体来源，并输出结构化结论。</pre>
+      </div>
+
+      <p style="margin:13px 0 0;font-size:12.6px;color:var(--tx3)">
+        建议顺序：<b style="color:var(--tx2);font-weight:500">先排雷，再分析</b>。判定为 🟢 / 🟡 再交给 deep-analysis 做基本面；判定为 🟠 / 🔴 就到此为止，不要再往下分析值不值得买。
+      </p>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="cols">
+      <div>
+        <h5>DATA SOURCES</h5>
+        <ul>
+          <li>东方财富股吧 / 财富号</li>
+          <li>东方财富数据中心</li>
+          <li>富途牛牛（行情与评级）</li>
+          <li>格隆汇 · 国际金融报</li>
+          <li>广州市海珠区人民政府门户网站</li>
+          <li>证监会行政处罚公告</li>
+        </ul>
+      </div>
+      <div>
+        <h5>RUN TIME</h5>
+        <p>案例 01、02：2026-09-15 实时检索<br>
+        案例 03：仁东控股 2020 年公开材料回溯验证，不代表该标的当下状态。<br>
+        Hero 与 Before / After 中的「恒讯智能 300XXX」为<b>虚构教学标的</b>，用于演示输出结构，非真实检测结果。</p>
+      </div>
+      <div>
+        <h5>SPEC</h5>
+        <p>trap-detector v3.9.4 · MIT<br>
+        作者 FloatFu-true<br>
+        文件：SKILL.md + references/eight-signals.md<br>
+        关联 skill：deep-analysis</p>
+      </div>
+    </div>
+    <div class="disc">
+      本页为 skill 功能说明与教学演示，<b>不构成任何投资建议</b>。所有评级与结论均来自 trap-detector 依据公开信息的检索输出，存在第 06 节所列的已知局限，请结合人工判断与其他信源交叉复核。市场有风险，决策需谨慎。
+    </div>
+  </footer>
+
+
+</div>
+</div>
+</div>
+</body>
+</html>
