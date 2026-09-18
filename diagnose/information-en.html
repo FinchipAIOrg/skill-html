@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>diagnose | AI workflow diagnostic Skill: five dimensions, a report out of 25</title>
+<meta name="description" content="diagnose is a diagnostic Skill. Hand it a workflow description, prompt text, tool inventory, or agent config, and it returns a 1 to 5 score on prompt quality, context efficiency, tool health, architecture fitness, and safety, plus critical findings and fixes ordered by severity.">
+<meta name="theme-color" content="#05070B">
+<link rel="canonical" href="https://github.com/github/awesome-copilot/tree/main/skills/diagnose">
+<link rel="alternate" hreflang="zh-CN" href="information-zh.html">
+<link rel="alternate" hreflang="en" href="information-en.html">
+<link rel="alternate" hreflang="x-default" href="information-zh.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="It runs, so you ship it? This Skill catches the flaws that only surface after launch.">
+<meta property="og:description" content="Five dimensions scored 1 to 5, a scorecard out of 25, and fixes ordered by severity.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="It runs, so you ship it? This Skill catches the flaws that only surface after launch.">
+<meta name="twitter:description" content="Five dimensions scored 1 to 5, a scorecard out of 25, and fixes ordered by severity.">
+<style>
+:root{
+  --bg:#05070B; --bg2:#080B12; --bg3:#0B0F18;
+  --panel:rgba(255,255,255,.028); --panel2:rgba(255,255,255,.05);
+  --line:rgba(255,255,255,.085); --line2:rgba(255,255,255,.16);
+  --txt:#E7EEF9; --dim:#94A3BB; --dim2:#66748E;
+  --blue:#3B82F6; --cyan:#22D3EE; --violet:#A78BFA;
+  --amber:#F0A93B; --green:#34D399; --red:#F0757B;
+  --sans:"Inter","Segoe UI",system-ui,-apple-system,ui-sans-serif,sans-serif;
+  --mono:"JetBrains Mono","Cascadia Mono",Consolas,"SFMono-Regular",monospace;
+  --max:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--txt);
+  font-family:var(--sans); font-size:16.5px; line-height:1.72;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+/* precision grid + glow field */
+body::before{
+  content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+  background-size:64px 64px,64px 64px;
+  mask-image:radial-gradient(ellipse 90% 65% at 50% 0%,#000 25%,transparent 78%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 65% at 50% 0%,#000 25%,transparent 78%);
+}
+body::after{
+  content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(720px 420px at 78% -6%,rgba(34,211,238,.10),transparent 62%),
+    radial-gradient(680px 400px at 12% 4%,rgba(59,130,246,.11),transparent 60%),
+    radial-gradient(900px 620px at 50% 104%,rgba(167,139,250,.07),transparent 66%);
+}
+.wrap{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:0 26px}
+section{scroll-margin-top:78px}
+
+/* ---------- header ---------- */
+header.top{
+  position:sticky; top:0; z-index:50;
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  background:rgba(5,7,11,.78); border-bottom:1px solid var(--line);
+}
+.top-in{max-width:var(--max);margin:0 auto;padding:12px 26px;display:flex;align-items:center;gap:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:650;letter-spacing:.01em}
+.brand svg{flex:none}
+.brand small{color:var(--dim2);font-weight:450;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase}
+nav.toc{margin-left:auto;display:flex;gap:18px;flex-wrap:wrap}
+nav.toc a{color:var(--dim);text-decoration:none;font-size:13px;display:inline-block;padding:5px 2px;line-height:1.6;transition:color .18s}
+nav.toc a:hover{color:var(--cyan)}
+a.lang{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--dim);
+  border:1px solid var(--line);border-radius:6px;padding:7px 11px;line-height:1;
+  text-decoration:none;display:inline-flex;align-items:center;
+  transition:color .18s,border-color .18s;
+}
+a.lang:hover{color:var(--cyan);border-color:rgba(34,211,238,.4)}
+@media(max-width:1060px){nav.toc{display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding:82px 0 72px}
+.hero-grid{display:grid;grid-template-columns:1.22fr .78fr;gap:42px;align-items:center}
+@media(max-width:1000px){.hero-grid{grid-template-columns:1fr;gap:40px}}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:9px;padding:5px 13px 5px 10px;
+  border:1px solid var(--line2);border-radius:99px;font-family:var(--mono);
+  font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--cyan);
+  background:rgba(34,211,238,.06);
+}
+.eyebrow i{width:5px;height:5px;border-radius:99px;background:var(--cyan);box-shadow:0 0 9px var(--cyan)}
+h1{
+  margin:22px 0 0;font-size:clamp(29px,3.5vw,40px);line-height:1.17;
+  letter-spacing:-.026em;font-weight:680;
+}
+h1 em{font-style:normal;color:var(--cyan)}
+.sub{
+  margin:20px 0 0;font-size:18px;line-height:1.66;color:#BFD0E4;font-weight:420;
+  border-left:2px solid var(--cyan);padding-left:18px;
+}
+.hero-p{margin:22px 0 0;color:var(--dim);font-size:15.6px;line-height:1.78}
+.hero-p b{color:var(--txt);font-weight:560}
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin:26px 0 0}
+.chip{
+  font-family:var(--mono);font-size:11.5px;color:var(--dim);
+  border:1px solid var(--line);border-radius:6px;padding:5px 10px;
+  background:var(--panel);letter-spacing:.02em;
+}
+.chip b{color:var(--cyan);font-weight:560}
+@media(max-width:720px){h1 br{display:none}}
+
+/* ---------- scorecard (core interface) ---------- */
+.report{
+  border:1px solid var(--line2);border-radius:14px;overflow:hidden;
+  background:linear-gradient(180deg,rgba(12,17,26,.94),rgba(7,10,16,.94));
+  box-shadow:0 26px 70px -30px rgba(0,0,0,.9),0 0 0 1px rgba(34,211,238,.06),
+             inset 0 1px 0 rgba(255,255,255,.05);
+}
+.report-bar{
+  display:flex;align-items:center;gap:10px;padding:11px 15px;
+  border-bottom:1px solid var(--line);background:rgba(255,255,255,.022);
+}
+.report-bar .dots{display:flex;gap:6px}
+.report-bar .dots i{width:8px;height:8px;border-radius:99px;background:var(--line2)}
+.report-bar .ttl{
+  font-family:var(--mono);font-size:11px;letter-spacing:.17em;
+  color:var(--dim);text-transform:uppercase;margin-left:4px;
+}
+.report-bar .st{
+  margin-left:auto;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+  color:var(--cyan);border:1px solid rgba(34,211,238,.3);border-radius:5px;padding:2px 8px;
+  background:rgba(34,211,238,.07);white-space:nowrap;
+}
+.report-body{padding:19px 17px 17px}
+.rrow{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-bottom:13px}
+.rrow:last-of-type{margin-bottom:0}
+.rlabel{font-size:13.4px;color:#C9D7E8}
+.rlabel span{display:block;font-family:var(--mono);font-size:10px;color:var(--dim2);letter-spacing:.07em;margin-top:2px}
+.rbar{display:flex;align-items:center;gap:9px}
+.track{display:flex;gap:3px}
+.track i{width:15px;height:6px;border-radius:2px;background:rgba(255,255,255,.10)}
+.track i.on{background:var(--cyan);box-shadow:0 0 9px rgba(34,211,238,.5)}
+.track i.low{background:var(--amber);box-shadow:0 0 9px rgba(240,169,59,.5)}
+.rnum{font-family:var(--mono);font-size:12.5px;color:var(--txt);min-width:32px;text-align:right}
+.report-total{
+  margin-top:16px;padding-top:14px;border-top:1px dashed var(--line2);
+  display:flex;align-items:baseline;gap:10px;
+}
+.report-total .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--dim2);text-transform:uppercase}
+.report-total .v{font-family:var(--mono);font-size:22px;color:var(--txt);font-weight:600;letter-spacing:-.01em}
+.report-total .v s{text-decoration:none;color:var(--dim2);font-size:14px}
+.report-note{
+  margin-top:13px;font-size:12px;color:var(--dim2);line-height:1.7;
+  border-top:1px solid var(--line);padding-top:11px;
+}
+.report-note b{color:var(--amber);font-weight:520}
+
+/* ---------- generic section ---------- */
+.sec{padding:68px 0}
+.sec-line{border-top:1px solid var(--line)}
+.snum{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;color:var(--dim2);
+  text-transform:uppercase;display:block;margin-bottom:14px;
+}
+h2{
+  margin:0;font-size:clamp(23px,2.6vw,33px);line-height:1.26;
+  letter-spacing:-.022em;font-weight:660;
+}
+.lead{margin:16px 0 0;color:var(--dim);font-size:15.8px;line-height:1.78;max-width:820px}
+.lead b{color:var(--txt);font-weight:540}
+
+/* ---------- 02 before/after ---------- */
+.ba{margin-top:38px;display:flex;flex-direction:column;gap:20px}
+.ba-item{
+  border:1px solid var(--line);border-radius:12px;background:var(--panel);
+  padding:20px 21px 17px;
+}
+.ba-head{display:flex;align-items:center;gap:11px;margin-bottom:16px}
+.ba-head .n{
+  font-family:var(--mono);font-size:11px;color:var(--cyan);
+  border:1px solid rgba(34,211,238,.28);border-radius:5px;padding:2px 8px;
+  background:rgba(34,211,238,.06);letter-spacing:.08em;
+}
+.ba-head h3{margin:0;font-size:16.5px;font-weight:600;letter-spacing:-.005em}
+.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:780px){.ba-grid{grid-template-columns:1fr}}
+.ba-cell{border-left:2px solid var(--line2);padding-left:15px}
+.ba-cell.after{border-left-color:var(--cyan)}
+.ba-tag{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--dim2);display:block;margin-bottom:7px;
+}
+.ba-cell.after .ba-tag{color:var(--cyan)}
+.ba-cell p{margin:0;font-size:14.6px;line-height:1.75;color:#B6C6DA}
+.ba-cell.after p{color:#D6E3F2}
+.ba-change{
+  margin:17px 0 0;padding-top:14px;border-top:1px dashed var(--line);
+  font-size:14.8px;color:var(--txt);font-weight:500;
+}
+.ba-change b{color:var(--cyan);font-weight:600}
+.artifact{
+  margin-top:15px;border:1px solid var(--line2);border-radius:10px;
+  background:rgba(255,255,255,.02);overflow:hidden;
+}
+.artifact-h{
+  display:flex;align-items:center;gap:9px;padding:9px 14px;
+  border-bottom:1px solid var(--line);background:rgba(255,255,255,.022);
+  font-family:var(--mono);font-size:10.6px;letter-spacing:.12em;
+  color:var(--dim2);text-transform:uppercase;
+}
+.artifact-h i{width:7px;height:7px;border-radius:99px;background:var(--line2);flex:none}
+.artifact-h b{margin-left:auto;color:var(--cyan);font-weight:500;letter-spacing:.08em;white-space:nowrap}
+.artifact-note{
+  padding:9px 14px;border-top:1px dashed var(--line);
+  font-size:11.8px;color:var(--dim2);line-height:1.7;
+}
+/* 评分卡 */
+.sc{padding:3px 14px 11px}
+.sc-row{
+  display:grid;grid-template-columns:124px 62px 1fr 20px;gap:11px;align-items:center;
+  padding:9px 0;border-bottom:1px dashed var(--line);
+}
+.sc-row:last-child{border-bottom:0}
+.sc-row .sn{font-size:13px;color:#C3D2E4;line-height:1.5}
+.sc-row .sbar{display:flex;gap:3px}
+.sc-row .sbar i{width:10px;height:5px;border-radius:1.5px;background:var(--line2)}
+.sc-row .sbar i.on{background:var(--cyan)}
+.sc-row .sbar i.low{background:var(--amber)}
+.sc-row .sr{font-size:12.5px;color:var(--dim);line-height:1.62}
+.sc-row .sv{font-family:var(--mono);font-size:12.5px;color:var(--txt);text-align:right}
+.sc-row.low .sn,.sc-row.low .sv{color:var(--amber)}
+/* 关键发现 */
+.fnd{padding:2px 14px 10px}
+.fnd-item{display:grid;grid-template-columns:40px 1fr;gap:12px;padding:11px 0;border-bottom:1px dashed var(--line)}
+.fnd-item:last-child{border-bottom:0}
+.fnd-item .sev{
+  font-family:var(--mono);font-size:10.2px;height:19px;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;letter-spacing:.04em;
+  color:var(--amber);border:1px solid rgba(240,169,59,.45);
+}
+.fnd-item.hi .sev{color:var(--red);border-color:rgba(240,117,123,.5)}
+.fnd-t{font-size:13.2px;color:#D6E1F0;line-height:1.7;font-weight:550}
+.fnd-d{font-size:12.6px;color:var(--dim);line-height:1.68;margin-top:4px}
+.fnd-f{font-size:12.6px;color:#9FD8E8;line-height:1.68;margin-top:5px}
+.fnd-f::before{content:"\2192  ";font-family:var(--mono);color:var(--cyan)}
+/* 横比表 */
+.cmp{padding:12px 14px 4px}
+.cmp table{width:100%;border-collapse:collapse;font-size:12.6px}
+.cmp th,.cmp td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.cmp thead th{
+  font-family:var(--mono);font-size:10.4px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim2);font-weight:500;border-bottom:1px solid var(--line2);
+}
+.cmp td:first-child{color:var(--dim);white-space:nowrap}
+.cmp thead th:first-child{letter-spacing:0}
+.cmp tbody tr:last-child td{border-bottom:0}
+.cmp td.n{font-family:var(--mono);color:#CBD9EA}
+.cmp tr.low td.n{color:var(--amber)}
+.cmp tr.tot td{border-top:1px solid var(--line2);border-bottom:0;color:var(--txt);font-weight:600}
+.cmp tr.tot td.n{color:var(--cyan);font-weight:500}
+.cmp-hint{display:none}
+@media(max-width:720px){
+  .artifact-h{flex-wrap:wrap;font-size:10.2px;letter-spacing:.04em}
+  .sc-row{grid-template-columns:1fr 20px;gap:5px 10px}
+  .sc-row .sn{grid-column:1;grid-row:1}
+  .sc-row .sv{grid-column:2;grid-row:1}
+  .sc-row .sbar{grid-column:1/-1;grid-row:2}
+  .sc-row .sr{grid-column:1/-1;grid-row:3}
+  .cmp table{font-size:11.7px}
+  .cmp th,.cmp td{padding:7px 8px}
+  .cmp-hint{display:none}
+}
+
+/* ---------- 03 pain ---------- */
+.pains{margin-top:38px;display:grid;grid-template-columns:repeat(3,1fr);gap:17px}
+@media(max-width:920px){.pains{grid-template-columns:1fr}}
+.pain{
+  border:1px solid var(--line);border-radius:12px;padding:20px 19px;
+  background:var(--panel);position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.pain::before{content:"";position:absolute;inset:0 auto 0 0;width:2px;background:var(--amber);opacity:.75}
+.pain .who{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:12px;display:block;
+}
+.pain h3{margin:0 0 11px;font-size:16px;font-weight:600;line-height:1.45}
+.pain p{margin:0 0 12px;font-size:14.4px;line-height:1.75;color:#AFBFD3}
+.pain p:last-child{margin-bottom:0}
+.pain .punch{
+  font-size:14.4px;color:#E3EBF6;border-top:1px dashed var(--line);
+  padding-top:12px;margin-top:auto;line-height:1.72;
+}
+.pain .punch b{color:var(--amber);font-weight:600}
+.kv-inline{font-family:var(--mono);font-size:12.4px;color:var(--cyan)}
+
+.notbug{
+  margin-top:26px;border:1px solid var(--line2);border-radius:12px;
+  background:linear-gradient(180deg,rgba(59,130,246,.055),rgba(255,255,255,.015));
+  padding:24px 24px 20px;
+}
+.notbug h3{margin:0 0 13px;font-size:17.5px;font-weight:620}
+.notbug p{margin:0 0 14px;font-size:15px;line-height:1.8;color:#BDCDE0}
+.notbug p:last-child{margin-bottom:0}
+.notbug b{color:var(--txt);font-weight:560}
+
+/* ---------- 04 transition ---------- */
+.trans{
+  border:1px solid rgba(34,211,238,.22);border-radius:14px;padding:30px 30px 26px;
+  background:linear-gradient(160deg,rgba(34,211,238,.075),rgba(59,130,246,.035) 55%,transparent);
+}
+.trans p{margin:0 0 15px;font-size:16.2px;line-height:1.82;color:#D3E0F0}
+.trans p:last-child{margin-bottom:0}
+.trans b{color:var(--cyan);font-weight:580}
+
+/* ---------- 05 solution ---------- */
+.flow{margin-top:38px;display:grid;grid-template-columns:1fr 1.34fr 1fr;gap:16px;align-items:start}
+@media(max-width:1000px){.flow{grid-template-columns:1fr}}
+.card{
+  border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:19px;
+}
+.card-h{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--dim2);margin-bottom:13px;display:flex;align-items:center;gap:8px;
+}
+.card-h i{width:6px;height:6px;border-radius:2px;background:var(--cyan);display:inline-block}
+.card p{margin:0 0 12px;font-size:14.4px;line-height:1.75;color:#B4C4D8}
+.card p:last-child{margin-bottom:0}
+.in-list{list-style:none;margin:0;padding:0}
+.in-list li{
+  font-size:14.4px;color:#CBD9EA;padding:8px 0;border-bottom:1px dashed var(--line);
+  display:flex;gap:9px;align-items:flex-start;line-height:1.65;
+}
+.in-list li:last-child{border-bottom:0}
+.in-list li::before{content:"\203A";color:var(--cyan);font-family:var(--mono);flex:none}
+.dims{display:flex;flex-direction:column;gap:11px}
+.dim{
+  border:1px solid var(--line);border-radius:10px;padding:13px 15px;
+  background:rgba(255,255,255,.018);transition:border-color .2s,background .2s;
+}
+.dim:hover{border-color:rgba(34,211,238,.3);background:rgba(34,211,238,.035)}
+.dim-t{display:flex;align-items:baseline;gap:9px;margin-bottom:6px}
+.dim-t .no{font-family:var(--mono);font-size:10.5px;color:var(--cyan);letter-spacing:.1em}
+.dim-t h3{margin:0;font-size:15px;font-weight:600}
+.dim-t em{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--dim2);margin-left:auto;white-space:nowrap}
+.dim p{margin:0;font-size:13.8px;line-height:1.72;color:#A8B8CD}
+.dim p b{color:var(--cyan);font-weight:540}
+.out-box{
+  border:1px solid rgba(34,211,238,.3);border-radius:10px;padding:15px;
+  background:rgba(34,211,238,.05);
+}
+.out-box .ob-h{margin:0 0 11px;font-family:var(--mono);font-size:10.5px;letter-spacing:.15em;color:var(--cyan);text-transform:uppercase}
+.out-box ol{margin:0;padding-left:17px}
+.out-box li{font-size:14.2px;color:#CBDAEB;line-height:1.72;margin-bottom:8px}
+.out-box li:last-child{margin-bottom:0}
+
+/* ---------- 06 cases ---------- */
+.cases{margin-top:38px;display:flex;flex-direction:column;gap:20px}
+.case{
+  border:1px solid var(--line);border-radius:13px;background:var(--panel);
+  overflow:hidden;
+}
+.case-top{
+  display:flex;align-items:center;gap:14px;padding:16px 20px;
+  border-bottom:1px solid var(--line);background:rgba(255,255,255,.02);flex-wrap:wrap;
+}
+.case-top .cn{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--cyan)}
+.case-top h3{margin:0;font-size:17px;font-weight:620;letter-spacing:-.005em}
+.case-top .scale{
+  margin-left:auto;font-family:var(--mono);font-size:11.2px;color:var(--dim2);letter-spacing:.04em;
+}
+.case-body{padding:19px 20px 17px;display:grid;grid-template-columns:1fr 262px;gap:26px}
+@media(max-width:880px){.case-body{grid-template-columns:1fr;gap:20px}}
+.case-body .blk{margin-bottom:15px}
+.case-body .blk:last-child{margin-bottom:0}
+.case-body .k{
+  font-family:var(--mono);font-size:10.4px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--dim2);display:block;margin-bottom:6px;
+}
+.case-body p{margin:0;font-size:14.6px;line-height:1.76;color:#B7C7DB}
+.case-body p b{color:#E4EDF8;font-weight:560}
+.case-body .hl{
+  border-left:2px solid var(--amber);padding-left:13px;background:rgba(240,169,59,.035);
+  border-radius:0 7px 7px 0;padding-top:8px;padding-bottom:8px;
+}
+.mini{border:1px solid var(--line2);border-radius:10px;padding:14px;background:rgba(8,11,18,.72)}
+.mini .mt{font-family:var(--mono);font-size:10.2px;letter-spacing:.14em;color:var(--dim2);text-transform:uppercase;margin-bottom:11px}
+.mini-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.mini-row:last-child{margin-bottom:0}
+.mini-row .mn{font-size:12.2px;color:#A9B9CE}
+.mini-row .mb{display:flex;gap:2.5px}
+.mini-row .mb i{width:9px;height:5px;border-radius:1.5px;background:rgba(255,255,255,.1)}
+.mini-row .mb i.on{background:var(--cyan)}
+.mini-row .mb i.low{background:var(--amber)}
+.mini-row .mv{font-family:var(--mono);font-size:11.6px;color:var(--txt);min-width:26px;text-align:right}
+.mini-tot{
+  margin-top:12px;padding-top:11px;border-top:1px dashed var(--line2);
+  display:flex;justify-content:space-between;align-items:baseline;
+}
+.mini-tot .k{font-family:var(--mono);font-size:10.2px;letter-spacing:.13em;color:var(--dim2);text-transform:uppercase}
+.mini-tot .v{font-family:var(--mono);font-size:17px;color:var(--txt);font-weight:600}
+.mini-tot .v s{text-decoration:none;color:var(--dim2);font-size:11.5px}
+.mini-flag{
+  margin-top:10px;font-family:var(--mono);font-size:10.6px;color:var(--amber);
+  letter-spacing:.03em;line-height:1.6;
+}
+.publish-req{
+  margin-top:22px;border:1px dashed rgba(240,169,59,.4);border-radius:10px;
+  padding:14px 17px;background:rgba(240,169,59,.04);
+}
+.publish-req .t{font-family:var(--mono);font-size:10.8px;letter-spacing:.14em;color:var(--amber);text-transform:uppercase;margin-bottom:8px}
+.publish-req p{margin:0;font-size:13.8px;line-height:1.76;color:#C3B79E}
+
+/* ---------- 07 advantages ---------- */
+.advs{margin-top:38px;display:grid;grid-template-columns:1fr 1fr;gap:17px}
+@media(max-width:860px){.advs{grid-template-columns:1fr}}
+.adv{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--panel);display:flex;flex-direction:column}
+.adv .an{
+  font-family:var(--mono);font-size:10.6px;letter-spacing:.16em;color:var(--cyan);
+  display:block;margin-bottom:11px;
+}
+.adv h3{margin:0 0 11px;font-size:16.5px;font-weight:610;line-height:1.42}
+.adv p{margin:0 0 12px;font-size:14.4px;line-height:1.76;color:#AFBFD3}
+.adv p b{color:#E2EBF6;font-weight:560}
+.adv .conc{
+  margin-top:auto;padding-top:12px;border-top:1px dashed var(--line);
+  font-size:14.2px;color:#D6E3F2;
+}
+.adv .conc b{color:var(--cyan);font-weight:580}
+
+/* ---------- 08 why ---------- */
+.why{
+  border:1px solid var(--line2);border-radius:14px;padding:32px 32px 28px;
+  background:linear-gradient(200deg,rgba(167,139,250,.07),rgba(59,130,246,.04) 50%,transparent);
+}
+.why p{margin:0 0 16px;font-size:16.4px;line-height:1.84;color:#D0DEEE}
+.why p:last-child{margin-bottom:0;color:var(--txt);font-weight:520}
+.why b{color:var(--violet);font-weight:580}
+
+/* ---------- 09 CTA ---------- */
+.cta{
+  border:1px solid rgba(34,211,238,.28);border-radius:14px;overflow:hidden;
+  background:linear-gradient(150deg,rgba(34,211,238,.085),rgba(59,130,246,.04) 60%,transparent);
+}
+.cta-in{padding:34px 32px 30px}
+.cta .name{
+  font-family:var(--mono);font-size:19px;letter-spacing:.2em;color:var(--txt);
+  margin:0 0 6px;text-transform:uppercase;font-weight:600;
+}
+.cta .role{font-size:13.8px;color:var(--dim);margin:0 0 20px}
+.cmd{
+  display:flex;align-items:center;gap:12px;border:1px solid var(--line2);border-radius:9px;
+  padding:11px 14px;background:rgba(0,0,0,.42);margin-bottom:12px;flex-wrap:wrap;
+}
+.cmd code{font-family:var(--mono);font-size:13px;color:var(--cyan);letter-spacing:.01em}
+.cmd .req{font-size:12.2px;color:var(--dim2);margin-left:auto}
+.linkline{margin:0 0 20px;font-size:14px;color:var(--dim);line-height:1.72}
+.linkline a{color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(59,130,246,.4);word-break:break-all;display:inline-block;padding:3px 0}
+.linkline a:hover{color:var(--cyan);border-bottom-color:var(--cyan)}
+.cta-io{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:4px}
+@media(max-width:760px){.cta-io{grid-template-columns:1fr}}
+.cta-io .side{border-left:2px solid var(--line2);padding-left:15px}
+.cta-io .side.res{border-left-color:var(--cyan)}
+.cta-io .k{font-family:var(--mono);font-size:10.4px;letter-spacing:.15em;text-transform:uppercase;color:var(--dim2);display:block;margin-bottom:7px}
+.cta-io .side.res .k{color:var(--cyan)}
+.cta-io p{margin:0;font-size:14.8px;line-height:1.75;color:#CDDBEC}
+
+/* ---------- footer ---------- */
+footer.foot{
+  border-top:1px solid var(--line);margin-top:76px;padding:30px 0 46px;
+  font-size:13.1px;color:#7E8CA6;line-height:1.9;
+}
+footer.foot .fr{max-width:var(--max);margin:0 auto;padding:0 26px}
+footer.foot b{color:var(--dim);font-weight:540}
+.grade{
+  margin-top:15px;border:1px solid var(--line);border-radius:9px;padding:13px 15px;
+  background:var(--panel);
+}
+.grade .gt{font-family:var(--mono);font-size:10.6px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;margin-bottom:8px}
+.grade ul{margin:0;padding-left:16px}
+.grade li{margin-bottom:5px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+
+/* ===== Finch 宿主兼容层：不透明页面容器 + 媒体自适应 ===== */
+.finch-page{margin:0; background:var(--bg); color:var(--txt); font-family:var(--sans); font-size:16.5px; line-height:1.72; -webkit-font-smoothing:antialiased;}
+.finch-page img,.finch-page video{max-width:100%;height:auto}
+
+/* ===== Finch 宿主兼容层：横比表不再横向滚动，改为自适应折行 ===== */
+.cmp th,.cmp td{overflow-wrap:anywhere}
+@media(max-width:720px){.cmp table{font-size:11px}.cmp th:first-child,.cmp td:first-child{width:32%;white-space:normal}.cmp td.n{overflow-wrap:normal}}
+</style>
+</head>
+<body>
+<div class="finch-page">
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="7" fill="#0B0F18" stroke="rgba(34,211,238,.35)"/>
+        <path d="M8 21l5-7 4 4 7-10" stroke="#22D3EE" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      diagnose <small>AI Workflow Diagnostics</small>
+    </div>
+    <nav class="toc">
+      <a href="#ba">Before / After</a>
+      <a href="#pain">Pain points</a>
+      <a href="#solution">Solution</a>
+      <a href="#cases">Cases</a>
+      <a href="#advantages">Advantages</a>
+      <a href="#cta">Install</a>
+    </nav>
+    <a class="lang" href="information-zh.html" hreflang="zh-CN" lang="zh-CN">中文</a>
+  </div>
+</header>
+
+<!-- ============ 01 Title / first screen ============ -->
+<section class="hero" id="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow"><i></i>01 · Skill / Workflow diagnostics</span>
+        <h1>It runs, so you ship it?<br>This Skill catches the flaws<br>that only surface <em>after launch</em>.</h1>
+        <p class="sub">An inspection for AI workflows you built yourself. Hand over your prompt text, tool inventory, or agent config, and you get a 1 to 5 score on five dimensions, an overall score out of 25, and the fixes ranked by severity.</p>
+        <p class="hero-p">Prompts, Skills, multi-agent pipelines: once they run end to end, most people call them done. <b>The structural problems that break them in production were already there the moment the first run succeeded.</b></p>
+        <p class="hero-p">diagnose is a diagnostic Skill. It scores <b>Prompt Quality, Context Efficiency, Tool Health, Architecture Fitness, and Safety &amp; Reliability</b> from 1 to 5 each, then returns a scorecard out of 25 with the critical findings and the fixes ordered by severity.</p>
+        <p class="hero-p">What comes back is not a generic checklist. A score has to land on a specific layer, and every finding has to cite its evidence.</p>
+        <div class="chips">
+          <span class="chip"><b>106</b> lines / <b>0</b> dependencies</span>
+          <span class="chip">Official repo <b>39,089</b> ★</span>
+          <span class="chip"><b>418</b> Skills in the same repo</span>
+          <span class="chip">License <b>MIT</b></span>
+          <span class="chip">Install needs GitHub CLI <b>2.90.0+</b></span>
+        </div>
+      </div>
+
+      <div class="report">
+        <div class="report-bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="ttl">Workflow Diagnostic</span>
+          <span class="st">CASE 01 / REAL RUN</span>
+        </div>
+        <div class="report-body">
+          <div class="rrow">
+            <div class="rlabel">Prompt Quality<span>STRUCTURE, OUTPUT SCHEMA, EDGE CASES</span></div>
+            <div class="rbar">
+              <span class="track"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+              <span class="rnum">4/5</span>
+            </div>
+          </div>
+          <div class="rrow">
+            <div class="rlabel">Context Efficiency<span>BUDGET, ORDERING, MEMORY</span></div>
+            <div class="rbar">
+              <span class="track"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span>
+              <span class="rnum">3/5</span>
+            </div>
+          </div>
+          <div class="rrow">
+            <div class="rlabel">Tool Health<span>COUNT, CONTRACTS, ERROR PATHS</span></div>
+            <div class="rbar">
+              <span class="track"><i class="low"></i><i class="low"></i><i></i><i></i><i></i></span>
+              <span class="rnum">2/5</span>
+            </div>
+          </div>
+          <div class="rrow">
+            <div class="rlabel">Architecture Fitness<span>TOPOLOGY, BOUNDARIES, COST</span></div>
+            <div class="rbar">
+              <span class="track"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+              <span class="rnum">4/5</span>
+            </div>
+          </div>
+          <div class="rrow">
+            <div class="rlabel">Safety &amp; Reliability<span>VALIDATION, LIMITS, RECOVERY</span></div>
+            <div class="rbar">
+              <span class="track"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+              <span class="rnum">4/5</span>
+            </div>
+          </div>
+          <div class="report-total">
+            <span class="k">Overall</span>
+            <span class="v">17<s>/25</s></span>
+          </div>
+          <div class="report-note">
+            <b>Critical Finding</b><br>
+            The flow states that six reusable scripts ship with the package. Searching every one of the six filenames returns zero hits.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 Before / After ============ -->
+<section class="sec sec-line" id="ba">
+  <div class="wrap">
+    <span class="snum">02 · Before / After</span>
+    <h2>Three shifts: how you judge, what comes back, what you can audit</h2>
+    <p class="lead">In each pair, the left side is the state before you use it and the right side is what you hold after a diagnosis.</p>
+
+    <div class="ba">
+      <div class="ba-item">
+        <div class="ba-head"><span class="n">01</span><h3>How you judge it</h3></div>
+        <div class="ba-grid">
+          <div class="ba-cell">
+            <span class="ba-tag">Before</span>
+            <p>Once an AI workflow is built, there is usually one signal available for judging it: it ran without errors. Whether the output format is defined, whether it recovers from failure, whether cost has a ceiling, you reconstruct all of that from memory afterward.</p>
+          </div>
+          <div class="ba-cell after">
+            <span class="ba-tag">After</span>
+            <p>Five dimensions, each scored 1 to 5, each one stating where points were lost. Anything under 3 is flagged, so you can see which layer the problem sits in.</p>
+          </div>
+        </div>
+        <p class="ba-change">From <b>“looks fine to me”</b> to <b>“I know which dimension scored 2, and why.”</b></p>
+        <div class="artifact">
+          <div class="artifact-h"><i></i>Real scorecard &middot; CASE 01 &middot; Single-file prompt Skill<b>17 / 25</b></div>
+          <div class="sc">
+            <div class="sc-row"><span class="sn">Prompt Quality</span><span class="sbar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="sr">Role and deliverable are explicit; Steps 0-4 are cleanly partitioned; the report keeps a fixed 5-item structure</span><span class="sv">4</span></div>
+            <div class="sc-row"><span class="sn">Context Efficiency</span><span class="sbar"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span class="sr">Everything loads at once; the opening 40 lines are machine-specific setup sitting in the most expensive attention slot</span><span class="sv">3</span></div>
+            <div class="sc-row low"><span class="sn">Tool Health</span><span class="sbar"><i class="low"></i><i class="low"></i><i></i><i></i><i></i></span><span class="sr">The reusable scripts the document declares do not exist; paths are hard-coded to one machine</span><span class="sv">2</span></div>
+            <div class="sc-row"><span class="sn">Architecture</span><span class="sbar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="sr">Single responsibility, single agent; retrying a hung command is explicitly forbidden</span><span class="sv">4</span></div>
+            <div class="sc-row"><span class="sn">Safety &amp; Reliability</span><span class="sbar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="sr">The 7 false-positive traps are false-alarm suppression, each with a cause and the correct test</span><span class="sv">4</span></div>
+          </div>
+          <div class="artifact-note">Scores and per-dimension reasons come from this session's runs and can be checked line by line in research/diagnostic-runs.md. Dimensions below 3 are marked in amber.</div>
+        </div>
+      </div>
+
+      <div class="ba-item">
+        <div class="ba-head"><span class="n">02</span><h3>From a paragraph to a report</h3></div>
+        <div class="ba-grid">
+          <div class="ba-cell">
+            <span class="ba-tag">Before</span>
+            <p>The problems are scattered across prompts, scripts, config, and memory. Reviewing the workflow means rereading every file, and with no fixed format to compare against, you finish with an impression rather than a list.</p>
+          </div>
+          <div class="ba-cell after">
+            <span class="ba-tag">After</span>
+            <p>A report out of 25: five dimension bars with an overall score, three critical findings ranked by severity, and the fix for each one.</p>
+          </div>
+        </div>
+        <p class="ba-change">From <b>“I think this part might be a problem”</b> to <b>“these three are what to fix now.”</b></p>
+        <div class="artifact">
+          <div class="artifact-h"><i></i>Diagnostic report &middot; Key findings and fixes &middot; CASE 01<b>Ranked by severity</b></div>
+          <div class="fnd">
+            <div class="fnd-item hi">
+              <span class="sev">HIGH</span>
+              <div>
+                <div class="fnd-t">Bundled dependencies are missing, and it reproduces</div>
+                <div class="fnd-d">Step 1 states that six scripts live in audit/ and can simply be copied. A full-disk search for those six filenames returns zero hits, and the directory does not exist. Following the document stops right there.</div>
+                <div class="fnd-f">Either ship the six scripts, or rewrite the step so it no longer claims they are bundled.</div>
+              </div>
+            </div>
+            <div class="fnd-item">
+              <span class="sev">MED</span>
+              <div>
+                <div class="fnd-t">Attention order runs against value</div>
+                <div class="fnd-d">The most valuable part of the document, the seven false-positive traps, sits at lines 87 to 109. What leads instead is 40 lines of environment setup that only holds on one machine.</div>
+                <div class="fnd-f">Move the machine-specific setup later or collapse it, and let the general steps lead.</div>
+              </div>
+            </div>
+            <div class="fnd-item">
+              <span class="sev">MED</span>
+              <div>
+                <div class="fnd-t">No cost ceiling</div>
+                <div class="fnd-d">The Step 2 measurement matrix is viewports &times; throttle profiles &times; routes, so browser operations can run into the dozens. The document sets no ceiling.</div>
+                <div class="fnd-f">State a default ceiling, and make raising it an explicit action.</div>
+              </div>
+            </div>
+          </div>
+          <div class="artifact-note">Findings are taken from this session's runs in research/diagnostic-runs.md. The recommended fixes follow from each scoring dimension; they are not verified conclusions.</div>
+        </div>
+      </div>
+
+      <div class="ba-item">
+        <div class="ba-head"><span class="n">03</span><h3>What size you can audit</h3></div>
+        <div class="ba-grid">
+          <div class="ba-cell">
+            <span class="ba-tag">Before</span>
+            <p>A prompt you can still eyeball from experience. Once the scripts multiply and the layers deepen, there is no general way to check it, and the more files there are, the more you miss.</p>
+          </div>
+          <div class="ba-cell after">
+            <span class="ba-tag">After</span>
+            <p>One scoring scale covers three orders of magnitude: a single-file prompt, a multi-stage gated pipeline, and a system with scripts and external side effects.</p>
+          </div>
+        </div>
+        <p class="ba-change">From <b>“only prompts are auditable”</b> to <b>“1 file or 52 files, same scale.”</b></p>
+        <div class="artifact">
+          <div class="artifact-h"><i></i>Three-case comparison &middot; one ruler, three scales<b>Real runs</b></div>
+          <div class="cmp">
+            <table>
+              <thead>
+                <tr><th>Dimension</th><th>CASE 01</th><th>CASE 02</th><th>CASE 03</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Subject</td><td>Single-file prompt Skill</td><td>Multi-stage gated pipeline</td><td>Execution system with real side effects</td></tr>
+                <tr><td>Files</td><td class="n">1</td><td class="n">10</td><td class="n">52</td></tr>
+                <tr><td>Scripts</td><td class="n">0</td><td class="n">0</td><td class="n">37</td></tr>
+                <tr><td>Size (bytes)</td><td class="n">7,535</td><td class="n">39,992</td><td class="n">1,921,632</td></tr>
+                <tr><td>Prompt Quality</td><td class="n">4</td><td class="n">5</td><td class="n">4</td></tr>
+                <tr><td>Context Efficiency</td><td class="n">3</td><td class="n">3</td><td class="n">4</td></tr>
+                <tr class="low"><td>Tool Health</td><td class="n">2</td><td class="n">2</td><td class="n">2</td></tr>
+                <tr><td>Architecture</td><td class="n">4</td><td class="n">4</td><td class="n">3</td></tr>
+                <tr><td>Safety &amp; Reliability</td><td class="n">4</td><td class="n">5</td><td class="n">3</td></tr>
+                <tr class="tot"><td>Overall</td><td class="n">17 / 25</td><td class="n">19 / 25</td><td class="n">16 / 25</td></tr>
+                <tr><td>Most damaging finding</td><td>A declared script does not exist</td><td>A tool capability the flow requires was never declared</td><td>Undeclared webhook and command-execution channels</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="cmp-hint">Scroll the table sideways to see all three cases</div>
+          <div class="artifact-note">All three score 2 on Tool Health, for three different reasons: a missing dependency, a blank tool contract, and tool overload. Every number can be checked in research/diagnostic-runs.md.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 Pain Point / Use Case ============ -->
+<section class="sec sec-line" id="pain">
+  <div class="wrap">
+    <span class="snum">03 · Pain Point / Use Case</span>
+    <h2>What breaks an AI workflow is rarely that it fails to run</h2>
+    <p class="lead">All three situations below come from real workflows. None of them is hypothetical.</p>
+
+    <div class="pains">
+      <div class="pain">
+        <span class="who">Situation 01 / Author of a single-file Skill</span>
+        <h3>The dependencies are in the document, not in the package</h3>
+        <p>A prompt Skill at <span class="kv-inline">123 lines / 7,535 bytes</span>. The logic is clear, the steps are complete, every path and version number is spelled out. It reads like a finished product you can use as is.</p>
+        <p>But it points to six scripts described as already included and ready to copy, and those six files were never in the package. The author had them on their own machine. The reader does not.</p>
+        <div class="punch">Nothing here throws an error. It leaves the reader <b>stuck at step two</b>, assuming the problem is their own environment.</div>
+      </div>
+
+      <div class="pain">
+        <span class="who">Situation 02 / Owner of a multi-stage pipeline</span>
+        <h3>The flow needs the network but never declares it</h3>
+        <p>A gated copy pipeline whose output contract, banned-word list, and self-check are written more carefully than most. Its anti-fabrication rules run four levels deep on evidence.</p>
+        <p>Yet it puts searching official pages to verify links into the required flow, whenever the network happens to be available, while the documentation never declares a single tool capability.</p>
+        <div class="punch">On a host with network access it searches. On a host without it, it stalls. <b>The same workflow changes behavior with the environment</b>, and the user is never told.</div>
+      </div>
+
+      <div class="pain">
+        <span class="who">Situation 03 / Owner of a system that moves real money</span>
+        <h3>The code can do more than the documentation says</h3>
+        <p>An execution system across five exchanges with <span class="kv-inline">37 scripts</span>. Credentials live only in environment variables, every order is confirmed by the user first, and no pre-trade check is missing.</p>
+        <p>But one script marked optional can POST data to any URL, and can execute an external command named by an environment variable. Neither channel appears in its capability declaration.</p>
+        <div class="punch">The capability surface a reader sees is <b>smaller than the one the code actually has</b>, and a single functional test never reaches that gap.</div>
+      </div>
+    </div>
+
+    <div class="notbug">
+      <h3>None of these three is a bug</h3>
+      <p>They share one property: <b>they run clean and they pass the tests</b>. They only surface in a particular environment, on a particular call path. So no check for “does it work” will ever stop them.</p>
+      <p>And the tools people reach for by default do not operate on this layer. Prompt-writing articles hand you a generic checklist that never looks at your workflow. Code checkers understand syntax but cannot tell whether a prompt defines its output format. Rereading the files yourself mostly surfaces what you meant when you wrote them, not the gaps in the structure.</p>
+      <p>What you get is delayed exposure. The problem does not appear while you are building. It appears when other people start using it, after launch, once it starts moving real money.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 Transition ============ -->
+<section class="sec sec-line" id="transition">
+  <div class="wrap">
+    <span class="snum">04 · Transition</span>
+    <div class="trans">
+      <p>What is missing is not more experience. It is <b>one review run against fixed dimensions</b>. Structural problems only come out under direct questioning: does this section define its output? Do the declared tools match actual behavior? What happens after a failure? Is there a ceiling on cost?</p>
+      <p>diagnose is that questioning, made repeatable. It splits the review into five fixed dimensions and asks the same questions every time, so two diagnoses land on the same scale and a revision shows up as better or worse.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 Solution ============ -->
+<section class="sec sec-line" id="solution">
+  <div class="wrap">
+    <span class="snum">05 · Solution</span>
+    <h2>You bring the workflow. It scores each dimension and shows its reasoning.</h2>
+    <p class="lead">Three steps from input to output, and nothing in between needs configuring.</p>
+
+    <div class="flow">
+      <div class="card">
+        <div class="card-h"><i></i>Input</div>
+        <p>Any one of these four is enough to start. The more specific you are, the sharper the findings.</p>
+        <ul class="in-list">
+          <li>Workflow description</li>
+          <li>Prompt text</li>
+          <li>Tool inventory</li>
+          <li>Agent config</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="card-h"><i></i>Review / five dimensions</div>
+        <div class="dims">
+          <div class="dim">
+            <div class="dim-t"><span class="no">D1</span><h3>Prompt Quality</h3><em>1 to 5</em></div>
+            <p>Whether role, context, instructions, and output region each sit where they should, whether the output format is written down or left implied, whether edge cases are covered, and whether obvious anti-patterns are present.</p>
+          </div>
+          <div class="dim">
+            <div class="dim-t"><span class="no">D2</span><h3>Context Efficiency</h3><em>1 to 5</em></div>
+            <p>Whether the budget was planned, whether key information sits at the start or the end, whether state and memory are managed explicitly or left to defaults, and whether length matches the task.</p>
+          </div>
+          <div class="dim">
+            <div class="dim-t"><span class="no">D3</span><h3>Tool Health</h3><em>1 to 5</em></div>
+            <p>Whether the tool count sits in a workable range, whether descriptions are specific, whether error handling exists, whether input, output, and error are all defined, and whether repeat calls are safe. <b>It also separates the tools a project configures from the tools an agent brings with it, and only counts the first group.</b></p>
+          </div>
+          <div class="dim">
+            <div class="dim-t"><span class="no">D4</span><h3>Architecture Fitness</h3><em>1 to 5</em></div>
+            <p>Whether a single agent is enough, whether multiple agents are genuinely needed, whether boundaries overlap, whether handoffs have a protocol, whether decisions leave a trace, and whether cost has a budget.</p>
+          </div>
+          <div class="dim">
+            <div class="dim-t"><span class="no">D5</span><h3>Safety &amp; Reliability</h3><em>1 to 5</em></div>
+            <p>Input validation, output filtering, cost ceilings, failure recovery, evaluation strategy. Risk is judged against how far the data actually travels, not against a blanket maximum.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><i></i>Output</div>
+        <div class="out-box">
+          <div class="ob-h">Always these three</div>
+          <ol>
+            <li>A scorecard out of 25, one bar per dimension plus the overall score</li>
+            <li>Three critical findings ordered by severity</li>
+            <li>The fix for each finding</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 Real Cases / Outputs ============ -->
+<section class="sec sec-line" id="cases">
+  <div class="wrap">
+    <span class="snum">06 · Real Cases / Outputs</span>
+    <h2>One scale, three orders of magnitude</h2>
+    <p class="lead">All three cases are real workflows scored against its five dimensions in this session. Every score and every finding can be checked line by line.</p>
+
+    <div class="cases">
+      <div class="case">
+        <div class="case-top">
+          <span class="cn">CASE 01</span>
+          <h3>Single-file prompt Skill</h3>
+          <span class="scale">1 file · 123 lines · 7,535 bytes</span>
+        </div>
+        <div class="case-body">
+          <div>
+            <div class="blk">
+              <span class="k">Input</span>
+              <p>A single-file prompt Skill that audits websites with a real headless browser. Its own rule: every conclusion has to trace back to a number, a screenshot, or a raw response.</p>
+            </div>
+            <div class="blk">
+              <span class="k">Output</span>
+              <p>17 / 25. The most damaging finding is a missing packaged dependency: the flow states that six reusable scripts live in <b>audit/</b> and can simply be copied, while a full search for all six filenames returns <b>0 hits</b> and the directory does not exist. The other two environment claims in the same document, the Chromium binary path and the playwright-core install location, both checked out as <b>true</b>.</p>
+            </div>
+            <div class="blk">
+              <span class="k">Why it matters</span>
+              <p class="hl">True and false claims sit in the same stretch of text. Trusting the whole block misses the break, and doubting the whole block wrongly discards two correct claims. Only checking line by line works, and that is exactly what a manual reread skips.</p>
+            </div>
+          </div>
+          <div class="mini">
+            <div class="mt">Diagnostic · 17/25</div>
+            <div class="mini-row"><span class="mn">Prompt Quality</span><span class="mb"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="mv">4</span></div>
+            <div class="mini-row"><span class="mn">Context Efficiency</span><span class="mb"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span class="mv">3</span></div>
+            <div class="mini-row"><span class="mn">Tool Health</span><span class="mb"><i class="low"></i><i class="low"></i><i></i><i></i><i></i></span><span class="mv">2</span></div>
+            <div class="mini-row"><span class="mn">Architecture</span><span class="mb"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="mv">4</span></div>
+            <div class="mini-row"><span class="mn">Safety &amp; Reliability</span><span class="mb"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="mv">4</span></div>
+            <div class="mini-tot"><span class="k">Overall</span><span class="v">17<s>/25</s></span></div>
+            <div class="mini-flag">▼ MISSING DEPENDENCY</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="case">
+        <div class="case-top">
+          <span class="cn">CASE 02</span>
+          <h3>Multi-stage gated pipeline</h3>
+          <span class="scale">10 files · 719 lines · 39,992 bytes</span>
+        </div>
+        <div class="case-body">
+          <div>
+            <div class="blk">
+              <span class="k">Input</span>
+              <p>A copy-production pipeline with a fixed nine-section output contract, three human gates, four evidence tiers, and 11 final self-checks. It explicitly bans fabricated screenshots, data, and links.</p>
+            </div>
+            <div class="blk">
+              <span class="k">Output</span>
+              <p>19 / 25, the highest of the three. The typical gap is an empty tool contract: the flow requires searching official pages to verify links whenever the network is available, while the documentation declares no tool capability at all, so the same workflow behaves differently on different hosts. Each invocation also carries a fixed <b>35,363-byte</b> preload that cannot be trimmed on demand.</p>
+            </div>
+            <div class="blk">
+              <span class="k">Why it matters</span>
+              <p class="hl">Its anti-fabrication design is the strongest of the three, and its score is in fact the highest. Scoring is not fault-finding. It also registers what was done right.</p>
+            </div>
+          </div>
+          <div class="mini">
+            <div class="mt">Diagnostic · 19/25</div>
+            <div class="mini-row"><span class="mn">Prompt Quality</span><span class="mb"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span class="mv">5</span></div>
+            <div class="mini-row"><span class="mn">Context Efficiency</span><span class="mb"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span class="mv">3</span></div>
+            <div class="mini-row"><span class="mn">Tool Health</span><span class="mb"><i class="low"></i><i class="low"></i><i></i><i></i><i></i></span><span class="mv">2</span></div>
+            <div class="mini-row"><span class="mn">Architecture</span><span class="mb"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="mv">4</span></div>
+            <div class="mini-row"><span class="mn">Safety &amp; Reliability</span><span class="mb"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span class="mv">5</span></div>
+            <div class="mini-tot"><span class="k">Overall</span><span class="v">19<s>/25</s></span></div>
+            <div class="mini-flag">▼ EMPTY TOOL CONTRACT</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="case">
+        <div class="case-top">
+          <span class="cn">CASE 03</span>
+          <h3>Execution system with real side effects</h3>
+          <span class="scale">52 files · 37 scripts · 1.92 MB</span>
+        </div>
+        <div class="case-body">
+          <div>
+            <div class="blk">
+              <span class="k">Input</span>
+              <p>An algorithmic execution system across five exchanges that can create, modify, and cancel real orders. Credentials stay in environment variables, and every write requires user confirmation.</p>
+            </div>
+            <div class="blk">
+              <span class="k">Output</span>
+              <p>16 / 25, the lowest of the three. The core finding is <b>a declared surface smaller than the actual behavior</b>: one script marked optional can POST data to any URL and execute an external command named by an environment variable, and neither channel appears in the capability declaration. On top of that, all 37 scripts sit flat in one directory, which makes choosing between them costly.</p>
+            </div>
+            <div class="blk">
+              <span class="k">Why it matters</span>
+              <p class="hl">The more complex the workflow, the more likely it carries an undeclared capability surface, and a single functional test never reaches that gap. It will not turn any test red.</p>
+            </div>
+          </div>
+          <div class="mini">
+            <div class="mt">Diagnostic · 16/25</div>
+            <div class="mini-row"><span class="mn">Prompt Quality</span><span class="mb"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="mv">4</span></div>
+            <div class="mini-row"><span class="mn">Context Efficiency</span><span class="mb"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="mv">4</span></div>
+            <div class="mini-row"><span class="mn">Tool Health</span><span class="mb"><i class="low"></i><i class="low"></i><i></i><i></i><i></i></span><span class="mv">2</span></div>
+            <div class="mini-row"><span class="mn">Architecture</span><span class="mb"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span class="mv">3</span></div>
+            <div class="mini-row"><span class="mn">Safety &amp; Reliability</span><span class="mb"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span class="mv">3</span></div>
+            <div class="mini-tot"><span class="k">Overall</span><span class="v">16<s>/25</s></span></div>
+            <div class="mini-flag">▼ UNDECLARED SURFACE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="publish-req">
+      <div class="t">Before publishing</div>
+      <p>The scores, file counts, line counts, and search results in all three cases come from this session's runs against the five dimensions, and can be verified one by one in <b>diagnostic-runs.md</b>. The scorecard, the key findings, and the comparison table in section 02 are rendered from that same record: they visualise the data, they are not screenshots of an interface. If real screenshots become available, they can replace them.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 Core Advantages ============ -->
+<section class="sec sec-line" id="advantages">
+  <div class="wrap">
+    <span class="snum">07 · Core Advantages</span>
+    <h2>Four differences that reach the user</h2>
+
+    <div class="advs">
+      <div class="adv">
+        <span class="an">01</span>
+        <h3>Scores land on a layer, not on a feeling</h3>
+        <p>Because the five dimensions are scored separately, a 2 points to a specific layer. Tool Health scored 2 in all three cases for three different reasons: <b>a missing dependency, an empty tool contract, and tool overload</b>.</p>
+        <p class="conc">A blanket “too many tools” would misjudge two of them. <b>Layered scoring does not.</b></p>
+      </div>
+
+      <div class="adv">
+        <span class="an">02</span>
+        <h3>Every finding has to cite its evidence</h3>
+        <p>Its rules require concrete findings for every dimension, not just a number. The zero hits for six scripts, the fixed 35,363-byte preload, and the undeclared POST channel in the three cases all trace back to something you can check.</p>
+        <p class="conc">Whoever holds the report can <b>verify it themselves</b>, without first trusting the reviewer.</p>
+      </div>
+
+      <div class="adv">
+        <span class="an">03</span>
+        <h3>One scale, so you can retest</h3>
+        <p>The dimensions, the score range, and the meaning of the five bands are fixed. Score again after a change and both numbers land on the same scale, so you can see whether it improved or regressed instead of re-deciding from scratch.</p>
+        <p class="conc">That is <b>what a generic checklist cannot give you</b>, because a checklist has no score.</p>
+      </div>
+
+      <div class="adv">
+        <span class="an">04</span>
+        <h3>It only bills you for tools you control</h3>
+        <p>Tool Health carries a specific rule: separate the tools a project configures from the tools an agent ships with or installs globally, and deduct only for the first group. Otherwise a report charges your host environment’s tool count to you, and it reads as a long list of problems you cannot fix.</p>
+        <p class="conc">Every finding left in the report <b>is one you can act on</b>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 Why It Matters ============ -->
+<section class="sec sec-line" id="why">
+  <div class="wrap">
+    <span class="snum">08 · Why It Matters</span>
+    <div class="why">
+      <p>What diagnose changes is not the result of one review. It is <b>where in the timeline the discovery happens</b>.</p>
+      <p>Put a fixed check between “it runs” and “you ship it”, and problems move from the moment someone hits them to before it goes out. Because the dimensions are fixed, the check is reusable: score again after editing the prompt, after adding a script, after switching hosts, and every score lands on the same scale.</p>
+      <p>One diagnosis leaves you with more than three fixes. It also shows which dimension of your own workflow is thinnest. Once you know that, the next workflow you build starts with that layer reinforced.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 CTA ============ -->
+<section class="sec sec-line" id="cta">
+  <div class="wrap">
+    <span class="snum">09 · CTA</span>
+    <div class="cta">
+      <div class="cta-in">
+        <p class="name">Diagnose</p>
+        <p class="role">AI workflow diagnostic Skill · five dimensions · a report out of 25</p>
+
+        <div class="cmd">
+          <code>gh skills install github/awesome-copilot diagnose</code>
+          <span class="req">Requires GitHub CLI v2.90.0+</span>
+        </div>
+        <p class="linkline">Official source: <a href="https://github.com/github/awesome-copilot/tree/main/skills/diagnose">github/awesome-copilot · skills/diagnose</a></p>
+
+        <div class="cta-io">
+          <div class="side">
+            <span class="k">You provide</span>
+            <p>A workflow description, prompt text, a tool inventory, or an agent config. Any one of the four is enough to start.</p>
+          </div>
+          <div class="side res">
+            <span class="k">You get</span>
+            <p>A 1 to 5 score on five dimensions, a scorecard out of 25, and the critical findings with fixes ordered by severity.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="fr">
+    <p><b>diagnose</b> is an Agent Skill in the <b>skills/diagnose</b> directory of the <b>github/awesome-copilot</b> repository. The Skill itself is a single SKILL.md file (106 lines / 4,442 bytes, 0 scripts, 0 dependencies). This page is an independent introduction and is not affiliated with the repository’s maintainers. Rights to the diagnostic Skill and related names belong to their respective owners.</p>
+    <p>Repository data read on 2026-09-17: 39,089 stars / 4,958 forks / MIT License / 418 Skill folders under skills. The repository is hosted by the GitHub organization and its content is community-contributed. Check the target Skill and its documentation before installing.</p>
+    <p>This page makes no guarantee about the launch outcome of any workflow. The five-dimension score is the output of a diagnostic method, not a quality certification.</p>
+
+    <div class="grade">
+      <div class="gt">How the numbers on this page are sourced</div>
+      <ul>
+        <li><b>Observed:</b> repository stars / forks / Skill count, the file counts, line counts and byte sizes for the three cases, the search results, the install command, and the official link. All are readings from this session and are reproducible, with the raw record in diagnostic-runs.md.</li>
+        <li><b>Method-supported:</b> the names and scope of the five dimensions, the 25-point scale and its five bands, and the rule that only project-controlled tools are counted. All come from the Skill’s SKILL.md.</li>
+        <li><b>Written for this page:</b> the title, the subtitle, the section wording, and the four advantage statements.</li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>
