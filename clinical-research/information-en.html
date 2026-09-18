@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>clinical-research | Clinical study design Skill: endpoint scoring, sample size, feasibility</title>
+<meta name="description" content="Bring candidate endpoints, statistical parameters and protocol parameters. Get an endpoint classification, a dropout-inflated sample size, and a five-dimension feasibility verdict with a blocker list and a named sign-off chain.">
+<meta name="theme-color" content="#F4F1E8">
+<link rel="canonical" href="https://github.com/FinchipAIOrg/clinical-research">
+<link rel="alternate" hreflang="zh-CN" href="information-zh.html">
+<link rel="alternate" hreflang="en" href="information-en.html">
+<link rel="alternate" hreflang="x-default" href="information-zh.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="The hardest part of a clinical protocol is not thinking it through. It is doing the math.">
+<meta property="og:description" content="Bring candidate endpoints, statistical parameters and protocol parameters. Get an endpoint classification, a dropout-inflated sample size, and a five-dimension feasibility verdict with a blocker list and a named sign-off chain.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The hardest part of a clinical protocol is not thinking it through. It is doing the math.">
+<meta name="twitter:description" content="Bring candidate endpoints, statistical parameters and protocol parameters. Get an endpoint classification, a dropout-inflated sample size, and a five-dimension feasibility verdict with a blocker list and a named sign-off chain.">
+<style>
+:root{
+  --cream:#F4F1E8;
+  --paper:#FFFFFF;
+  --paper-warm:#FFFDF6;
+  --ink:#111111;
+  --ink-2:#3F3F3A;
+  --ink-3:#6E6E66;
+  --blue:#2B44FF;
+  --blue-soft:#DCE2FF;
+  --green:#0E9F6E;
+  --green-soft:#D6F5E7;
+  --amber:#D98A00;
+  --amber-soft:#FFEFCF;
+  --red:#E5342B;
+  --red-soft:#FFDCD7;
+  --yellow:#FFD23F;
+  --line:#111111;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  --sans:"Helvetica Neue",Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --bd:2.5px solid var(--ink);
+  --sh:5px 5px 0 var(--ink);
+  --sh-sm:3px 3px 0 var(--ink);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;background:var(--cream);color:var(--ink);
+  font-family:var(--sans);font-size:16.5px;line-height:1.85;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+.wrap{max-width:1140px;margin:0 auto;padding:0 30px;}
+a{color:inherit;}
+
+.eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+  font-weight:700;margin:0 0 14px;display:flex;align-items:center;gap:10px;
+}
+.eyebrow::before{content:"";width:26px;height:3px;background:var(--ink);display:block;}
+
+.sticker{
+  display:inline-block;font-family:var(--mono);font-size:12.5px;font-weight:700;
+  padding:6px 14px;border:var(--bd);border-radius:999px;background:var(--paper);
+  box-shadow:var(--sh-sm);letter-spacing:.04em;
+}
+.sticker.blue{background:var(--blue-soft);}
+.sticker.green{background:var(--green-soft);}
+.sticker.amber{background:var(--amber-soft);}
+.sticker.red{background:var(--red-soft);color:var(--red);}
+.sticker.yellow{background:var(--yellow);}
+.sticker.black{background:var(--ink);color:#fff;}
+
+.chip{
+  display:inline-block;font-family:var(--mono);font-size:11.5px;font-weight:700;
+  padding:4px 10px;border:2px solid var(--ink);border-radius:6px;background:#fff;
+  letter-spacing:.05em;
+}
+.chip.blue{background:var(--blue-soft);}
+.chip.green{background:var(--green-soft);}
+.chip.amber{background:var(--amber-soft);}
+.chip.red{background:var(--red-soft);color:var(--red);}
+
+/* ---------- topbar ---------- */
+.topbar{position:sticky;top:0;z-index:60;background:var(--cream);border-bottom:2.5px solid var(--ink);}
+.topbar-in{display:flex;align-items:center;justify-content:space-between;height:66px;gap:20px;}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-mark{
+  width:34px;height:34px;background:var(--blue);border:var(--bd);border-radius:9px;
+  box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:900;font-size:16px;font-family:var(--mono);
+}
+.logo b{font-size:18px;letter-spacing:-.02em;}
+.logo span{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);letter-spacing:.08em;}
+.nav{display:flex;gap:22px;font-size:14px;font-weight:600;align-items:center;margin-left:auto;}
+.nav a{text-decoration:none;padding-bottom:2px;border-bottom:2px solid transparent;}
+.nav a:hover{border-color:var(--blue);color:var(--blue);}
+.langbtn{
+  font-family:var(--mono);font-size:12px;font-weight:700;text-decoration:none;
+  border:2px solid var(--ink);border-radius:8px;padding:6px 12px;background:var(--yellow);
+  box-shadow:var(--sh-sm);white-space:nowrap;
+}
+.langbtn:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--ink);}
+@media(max-width:980px){.nav{display:none;}}
+
+.ticker{background:var(--ink);color:#fff;border-bottom:2.5px solid var(--ink);overflow:hidden;white-space:nowrap;padding:9px 0;}
+.ticker-track{display:inline-block;font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;font-weight:700;animation:slide 40s linear infinite;}
+.ticker-track span{padding:0 18px;}
+.ticker-track i{color:var(--yellow);font-style:normal;}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding:58px 0 66px;overflow:hidden;}
+.hero-bgword{
+  position:absolute;left:50%;top:10px;transform:translateX(-50%);
+  font-size:clamp(80px,17vw,200px);font-weight:900;letter-spacing:-.05em;
+  color:transparent;-webkit-text-stroke:2px #E2DCCB;white-space:nowrap;
+  pointer-events:none;user-select:none;z-index:0;
+}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.06fr .94fr;gap:46px;align-items:start;}
+.hero-grid > *{min-width:0;}
+@media(max-width:980px){.hero-grid{grid-template-columns:minmax(0,1fr);gap:34px;}}
+.hero h1{font-size:clamp(29px,3.9vw,46px);font-weight:900;letter-spacing:-.03em;line-height:1.22;margin:0 0 18px;}
+.hero h1 .hl{
+  display:inline-block;background:var(--yellow);padding:0 9px;
+  border:2.5px solid var(--ink);border-radius:6px;box-shadow:var(--sh-sm);
+}
+.brandtag{
+  display:inline-flex;align-items:center;gap:10px;margin:0 0 16px;
+  font-family:var(--mono);font-size:14px;font-weight:700;
+  background:var(--ink);color:#fff;padding:7px 15px;border-radius:8px;box-shadow:var(--sh-sm);
+}
+.hero-lead{font-size:17px;color:var(--ink-2);max-width:580px;margin:0 0 20px;}
+.hero-lead b{color:var(--ink);font-weight:800;}
+.io-list{list-style:none;padding:0;margin:0 0 22px;max-width:580px;}
+.io-list li{
+  display:flex;gap:12px;align-items:flex-start;padding:9px 0;
+  border-bottom:1.5px dashed #CFC8B6;font-size:15.5px;color:var(--ink-2);
+}
+.io-list li:last-child{border-bottom:none;}
+.io-list b{color:var(--ink);font-weight:800;flex:0 0 96px;font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;padding-top:4px;}
+.sticker-row{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 24px;}
+.cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:4px;}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;padding:14px 26px;text-decoration:none;
+  font-weight:800;font-size:15.5px;border:var(--bd);border-radius:11px;box-shadow:var(--sh);transition:.14s;
+}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink);}
+.btn.blue{background:var(--blue);color:#fff;}
+.btn.paper{background:var(--paper);color:var(--ink);}
+.btn .ar{font-family:var(--mono);font-weight:900;}
+
+/* ---------- cards / terminal ---------- */
+.card{background:var(--paper);border:var(--bd);border-radius:16px;box-shadow:var(--sh);position:relative;}
+.card-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 15px;border-bottom:2.5px solid var(--ink);
+  font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.1em;
+  background:var(--paper-warm);border-radius:13px 13px 0 0;
+}
+.card-head .dots{display:flex;gap:5px;}
+.card-head .dots i{width:10px;height:10px;border:2px solid var(--ink);border-radius:50%;display:block;}
+.card-head .dots i:nth-child(1){background:var(--red);}
+.card-head .dots i:nth-child(2){background:var(--yellow);}
+.card-head .dots i:nth-child(3){background:var(--blue);}
+.term{
+  background:var(--ink);color:#E8E8E2;font-family:var(--mono);font-size:12.2px;
+  line-height:1.8;padding:15px 16px 17px;border-radius:0 0 13px 13px;
+  white-space:pre-wrap;overflow-wrap:anywhere;margin:0;
+}
+.cap{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);margin:0;letter-spacing:.03em;line-height:1.8;}
+.stack{display:flex;flex-direction:column;gap:20px;padding-top:6px;}
+
+/* ---------- section frame ---------- */
+section{padding:70px 0;border-top:2.5px solid var(--ink);}
+section:first-of-type{border-top:none;}
+.sec-head{margin:0 0 32px;}
+.sec-num{
+  font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.2em;
+  color:var(--ink-3);display:block;margin-bottom:10px;
+}
+.sec-head h2{font-size:clamp(23px,2.9vw,33px);font-weight:900;letter-spacing:-.025em;line-height:1.3;margin:0;max-width:880px;}
+.sec-head p.sub{margin:14px 0 0;color:var(--ink-2);font-size:16px;max-width:800px;}
+
+/* ---------- prose ---------- */
+.prose{max-width:840px;}
+.prose p{margin:0 0 18px;font-size:16.5px;color:var(--ink-2);}
+.prose p:last-child{margin-bottom:0;}
+.prose p b{color:var(--ink);}
+.prose ul{margin:0 0 18px;padding-left:20px;color:var(--ink-2);font-size:16px;}
+.prose li{margin-bottom:9px;}
+.prose li:last-child{margin-bottom:0;}
+
+/* ---------- run-case components ---------- */
+.tbl-wrap{overflow-wrap:anywhere;}
+.tbl{width:100%;border:var(--bd);border-radius:14px;overflow:hidden;border-collapse:separate;border-spacing:0;background:var(--paper);box-shadow:var(--sh);font-size:14.5px;}
+.tbl th,.tbl td{padding:11px 14px;border-bottom:2px solid var(--ink);text-align:left;vertical-align:top;}
+.tbl th{background:var(--ink);color:#fff;font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;font-weight:700;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl td.num{font-family:var(--mono);text-align:right;font-weight:700;white-space:nowrap;}
+.tbl td.na{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);}
+.tbl td.cls{font-family:var(--mono);font-weight:900;font-size:11.5px;letter-spacing:.03em;white-space:nowrap;}
+.tbl td.cls.p{color:var(--blue);}
+.tbl td.cls.k{color:#A96A00;}
+.tbl td.cls.e{color:var(--ink-3);}
+
+.gate{display:grid;gap:12px;max-width:900px;}
+.gate-item{display:flex;gap:14px;align-items:flex-start;background:var(--paper);border:var(--bd);border-radius:12px;padding:14px 18px;box-shadow:var(--sh-sm);}
+.gate-item .mk{
+  flex:0 0 30px;height:30px;border:2px solid var(--ink);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-weight:900;font-size:15px;background:var(--green-soft);
+}
+.gate-item.flag{border-color:var(--ink);background:var(--amber-soft);box-shadow:3px 3px 0 var(--amber);}
+.gate-item.flag .mk{background:var(--amber);color:#fff;}
+.gate-item .bd b{display:block;font-size:15.5px;font-weight:800;margin-bottom:3px;}
+.gate-item .bd span{font-size:14.5px;color:var(--ink-2);line-height:1.75;}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:24px;}
+@media(max-width:800px){.stats{grid-template-columns:1fr;}}
+.stat{background:var(--paper);border:var(--bd);border-radius:14px;padding:18px 20px;box-shadow:var(--sh-sm);}
+.stat .k{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.13em;color:var(--ink-3);display:block;margin-bottom:6px;}
+.stat .v{font-family:var(--mono);font-size:31px;font-weight:900;letter-spacing:-.03em;line-height:1.1;display:block;}
+.stat .s{font-size:13px;color:var(--ink-3);display:block;margin-top:5px;line-height:1.7;}
+.stat.hi{background:var(--blue-soft);}
+.stat.hi .v{color:#1226A8;}
+
+.verdict{border:var(--bd);border-radius:16px;box-shadow:var(--sh);overflow:hidden;background:var(--paper);}
+.verdict-top{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  padding:15px 19px;background:var(--green-soft);border-bottom:2.5px solid var(--ink);
+}
+.verdict-top.bad{background:var(--red-soft);}
+.verdict-top .k{font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.12em;color:var(--ink-2);}
+.verdict-top .v{font-size:21px;font-weight:900;color:var(--green);letter-spacing:-.01em;}
+.verdict-top.bad .v{color:var(--red);}
+.verdict-body{padding:16px 19px 18px;}
+.bar-row{display:flex;align-items:center;gap:12px;margin:0 0 10px;font-size:13px;}
+.bar-row .lbl{flex:0 0 208px;font-family:var(--mono);font-size:12px;color:var(--ink-2);}
+.bar-track{flex:1;height:11px;border:2px solid var(--ink);border-radius:999px;background:#fff;overflow:hidden;min-width:80px;}
+.bar-fill{display:block;height:100%;background:var(--blue);}
+.bar-fill.g{background:var(--green);}
+.bar-fill.a{background:var(--amber);}
+.bar-fill.r{background:var(--red);}
+.bar-row .num{flex:0 0 50px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:700;}
+.verdict-foot{
+  border-top:2px dashed #CFC8B6;margin-top:13px;padding-top:12px;
+  font-size:14.5px;color:var(--ink-2);line-height:1.8;
+}
+.verdict-foot b{color:var(--ink);}
+.blocker{
+  font-family:var(--mono);font-size:12.5px;font-weight:700;color:#8E1F18;
+  background:var(--red-soft);border:2px dashed var(--red);border-radius:8px;
+  padding:9px 13px;margin:0 0 8px;display:block;
+}
+.blocker:last-of-type{margin-bottom:0;}
+
+.owners{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+@media(max-width:1020px){.owners{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:520px){.owners{grid-template-columns:1fr;}}
+.owner{background:var(--paper);border:var(--bd);border-radius:13px;padding:15px 16px;box-shadow:var(--sh-sm);}
+.owner .av{
+  width:36px;height:36px;border:2px solid var(--ink);border-radius:9px;background:var(--blue-soft);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-weight:900;font-size:13px;margin-bottom:10px;
+}
+.owner .role{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--ink-3);display:block;margin-bottom:5px;}
+.owner .nm{font-size:14.5px;font-weight:800;line-height:1.4;display:block;}
+.owner .ph{font-family:var(--mono);font-size:10px;color:var(--ink-3);display:block;margin-top:5px;}
+
+.penalty{border:var(--bd);border-radius:14px;overflow:hidden;box-shadow:var(--sh-sm);max-width:660px;background:var(--paper);margin:0 0 22px;}
+.penalty div{display:flex;justify-content:space-between;gap:14px;padding:12px 18px;border-bottom:1.5px dashed #CFC8B6;font-size:15px;color:var(--ink-2);}
+.penalty div:last-child{border-bottom:none;}
+.penalty div b{font-family:var(--mono);font-weight:900;color:var(--ink);}
+.penalty div.final{background:var(--amber-soft);}
+
+.note-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:34px;}
+@media(max-width:860px){.note-row{grid-template-columns:1fr;}}
+.note{background:var(--paper-warm);border:var(--bd);border-radius:14px;padding:20px 22px;box-shadow:var(--sh-sm);}
+.note .note-h{margin:0 0 8px;font-size:16px;font-weight:800;}
+.note p{margin:0;font-size:15px;color:var(--ink-2);line-height:1.8;}
+.note p b{color:var(--ink);}
+.note.warn{background:var(--amber-soft);}
+
+.req{
+  margin-top:26px;padding:18px 22px;border:2.5px dashed var(--red);border-radius:14px;
+  background:var(--red-soft);font-family:var(--mono);font-size:13px;font-weight:700;
+  color:#8E1F18;line-height:1.9;
+}
+
+.adv-grid{display:grid;grid-template-columns:1fr;gap:20px;}
+.adv{background:var(--paper);border:var(--bd);border-radius:16px;padding:22px 26px;box-shadow:var(--sh);display:flex;gap:20px;align-items:flex-start;}
+@media(max-width:700px){.adv{flex-direction:column;gap:12px;}}
+.adv .n{font-family:var(--mono);font-size:23px;font-weight:900;letter-spacing:-.04em;color:var(--blue);flex:0 0 44px;}
+.adv h3{margin:0 0 9px;font-size:17.5px;font-weight:800;line-height:1.45;}
+.adv p{margin:0;font-size:15.5px;color:var(--ink-2);}
+.adv p b{color:var(--ink);}
+
+footer{
+  border-top:2.5px solid var(--ink);padding:26px 0 40px;background:var(--cream);
+  font-family:var(--mono);font-size:12px;color:var(--ink-3);letter-spacing:.06em;
+}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+footer .fl{max-width:660px;line-height:1.9;}
+
+/* ---------- utility classes (replaces inline styles) ---------- */
+.ink{color:var(--ink);}
+.term-cont{border-radius:0 0 13px 13px;border-top:2.5px solid var(--ink);}
+.mt11{margin-top:11px;}
+.mt12{margin-top:12px;}
+.mt13{margin-top:13px;}
+.mt22{margin-top:22px;}
+.mt24{margin-top:24px;}
+.mt26{margin-top:26px;}
+.mt30{margin-top:30px;}
+.mw920{max-width:920px;}
+.mw780{max-width:780px;}
+.mw760{max-width:760px;}
+.mw680{max-width:680px;}
+.mw640{max-width:640px;}
+.card.mw780,.card.mw760{margin-top:26px;}
+.tbl.tight{min-width:0;}
+.msg-pad{padding:22px 24px 24px;}
+.msg-text{margin:0;font-size:17.5px;line-height:1.78;color:var(--ink-2);}
+.tar{text-align:right;}
+.verdict-top .v.v-ink{color:var(--ink);}
+.w84{width:84%;}
+.w60{width:60%;}
+.w767{width:76.7%;}
+.w94{width:94%;}
+.w556{width:55.6%;}
+
+@media(max-width:600px){
+  .bar-row{flex-wrap:wrap;gap:8px 12px;}
+  .bar-row .lbl{flex:1 1 100%;}
+  .bar-row .num{flex:0 0 46px;}
+}
+
+/* ===== Finch 宿主兼容层：不透明页面容器 + 媒体自适应 ===== */
+.finch-page{margin:0;background:var(--cream);color:var(--ink); font-family:var(--sans);font-size:16.5px;line-height:1.85; -webkit-font-smoothing:antialiased;}
+.finch-page img,.finch-page video{max-width:100%;height:auto}
+
+/* ===== Finch 宿主兼容层：表格不再横向滚动，改为自适应折行 ===== */
+.tbl th,.tbl td{overflow-wrap:anywhere}
+@media(max-width:700px){
+  .tbl{font-size:12.5px}
+  .tbl th{font-size:10.4px;letter-spacing:.03em;padding:8px 7px}
+  .tbl th,.tbl td{padding:8px 7px}
+  .tbl td.num,.tbl td.cls{white-space:normal}
+}
+
+/* ===== Information 页追加组件 ===== */
+.hero-p{margin:0 0 20px;font-size:16.5px;color:var(--ink-2);max-width:580px;}
+.hero-p b{color:var(--ink);font-weight:800;}
+code{font-family:var(--mono);font-size:.88em;background:#EFEADD;border:1.5px solid #D8D0BC;border-radius:5px;padding:1px 6px;color:#1226A8;}
+
+.pains{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:30px;}
+@media(max-width:860px){.pains{grid-template-columns:1fr;}}
+.pain{background:var(--paper);border:var(--bd);border-radius:14px;padding:18px 20px;box-shadow:var(--sh-sm);}
+.pain .n{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--ink-3);display:block;margin-bottom:8px;}
+.pain b{display:block;font-size:16.5px;font-weight:800;margin-bottom:6px;line-height:1.5;}
+.pain span{font-size:14.5px;color:var(--ink-2);line-height:1.75;}
+
+.ba{margin-top:6px;display:flex;flex-direction:column;gap:20px;}
+.ba-item{background:var(--paper);border:var(--bd);border-radius:16px;box-shadow:var(--sh);padding:20px 22px 18px;}
+.ba-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.ba-head .n{font-family:var(--mono);font-size:11.5px;font-weight:700;color:#1226A8;background:var(--blue-soft);border:2px solid var(--ink);border-radius:6px;padding:2px 9px;letter-spacing:.08em;}
+.ba-head h3{margin:0;font-size:17.5px;font-weight:800;line-height:1.45;}
+.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:800px){.ba-grid{grid-template-columns:1fr;gap:16px;}}
+.ba-cell{border-left:3px solid #CFC8B6;padding-left:15px;}
+.ba-cell.after{border-left-color:var(--blue);}
+.ba-tag{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:7px;}
+.ba-cell.after .ba-tag{color:var(--blue);}
+.ba-cell p{margin:0;font-size:15.2px;line-height:1.8;color:var(--ink-2);}
+.ba-change{margin:16px 0 0;padding-top:14px;border-top:2px dashed #CFC8B6;font-size:16px;font-weight:800;color:var(--ink);}
+.ba-change b{color:var(--blue);}
+
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:28px;}
+@media(max-width:860px){.flow{grid-template-columns:1fr;}}
+.step{background:var(--paper-warm);border:var(--bd);border-radius:14px;padding:18px 20px;box-shadow:var(--sh-sm);}
+.step .k{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--ink-3);display:block;margin-bottom:8px;}
+.step b{display:block;font-size:16.5px;font-weight:800;margin-bottom:6px;}
+.step span{font-size:14.6px;color:var(--ink-2);line-height:1.75;}
+
+.tools{display:flex;flex-direction:column;gap:16px;}
+.tool{display:flex;gap:20px;align-items:flex-start;background:var(--paper);border:var(--bd);border-radius:14px;padding:18px 20px;box-shadow:var(--sh-sm);}
+@media(max-width:760px){.tool{flex-direction:column;gap:10px;}}
+.tool .fn{font-family:var(--mono);font-size:12.5px;font-weight:700;flex:0 0 232px;color:#1226A8;padding-top:3px;overflow-wrap:anywhere;}
+.tool .tx b{display:block;font-size:16px;font-weight:800;margin-bottom:4px;}
+.tool .tx span{font-size:14.8px;color:var(--ink-2);line-height:1.78;}
+
+.outcard{background:var(--paper);border:var(--bd);border-radius:16px;box-shadow:var(--sh);margin-bottom:26px;}
+.outcard-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px 18px;border-bottom:2.5px solid var(--ink);background:var(--paper-warm);border-radius:13px 13px 0 0;}
+.outcard-head b{font-size:16.5px;font-weight:800;}
+.outcard-body{padding:18px 20px 20px;}
+
+.cta-box{background:var(--paper);border:var(--bd);border-radius:18px;box-shadow:var(--sh);padding:28px 30px;}
+.cta-box p{margin:0 0 18px;font-size:16.5px;color:var(--ink-2);}
+.cta-box p:last-of-type{margin-bottom:0;}
+.cta-box p b{color:var(--ink);font-weight:800;}
+
+
+/* ===== 信息页排版修正 ===== */
+@media(min-width:981px){
+  .hero h1{font-size:clamp(28px,2.8vw,36px);}
+}
+@media(max-width:600px){
+  .hero h1{font-size:22px;}
+  .hero-bgword{font-size:44px;}
+}
+
+/* 窄屏：8 列表格改为堆叠卡片，避免单元格被压成单字竖排 */
+@media(max-width:760px){
+  .tbl.ep thead{display:none;}
+  .tbl.ep,.tbl.ep tbody,.tbl.ep tr,.tbl.ep td{display:block;width:auto;}
+  .tbl.ep{border:none;border-radius:0;box-shadow:none;background:transparent;font-size:13.4px;}
+  .tbl.ep tr{background:var(--paper);border:var(--bd);border-radius:13px;box-shadow:var(--sh-sm);padding:13px 15px;margin-bottom:12px;}
+  .tbl.ep tr:last-child{margin-bottom:0;}
+  .tbl.ep td{border-bottom:none;padding:3px 0;display:flex;justify-content:space-between;align-items:baseline;gap:12px;text-align:right;font-size:13.4px;}
+  .tbl.ep td::before{content:attr(data-l);font-family:var(--mono);font-size:10.4px;font-weight:700;letter-spacing:.06em;color:var(--ink-3);text-align:left;flex:0 0 auto;}
+  .tbl.ep td:first-child{display:block;text-align:left;font-weight:800;font-size:15px;padding:0 0 8px;margin-bottom:7px;border-bottom:2px dashed #CFC8B6;}
+  .tbl.ep td:first-child::before{display:none;}
+  .tbl.ep td.num,.tbl.ep td.cls{white-space:normal;}
+}
+
+/* 进度条填充：.bar-fill 是 span，行内元素会让 width 失效，必须先块级化 */
+.bar-track{display:flex;}
+.bar-fill{flex:0 0 auto;}
+</style>
+</head>
+<body>
+<div class="finch-page">
+<div class="topbar">
+  <div class="wrap topbar-in">
+    <div class="logo">
+      <div class="logo-mark">CR</div>
+      <div><b>clinical-research</b><br><span>Clinical study design Skill · v2.9.0</span></div>
+    </div>
+    <nav class="nav">
+      <a href="#ba">02 Shifts</a>
+      <a href="#pain">03 Pain</a>
+      <a href="#solution">05 How it works</a>
+      <a href="#cases">06 Outputs</a>
+      <a href="#advantages">07 Differences</a>
+    </nav>
+    <a class="langbtn" href="information-zh.html">中文 →</a>
+  </div>
+</div>
+
+<div class="ticker"><div class="ticker-track"><span>standard library only</span><span><i>·</i></span><span>deterministic</span><span><i>·</i></span><span>no network</span><span><i>·</i></span><span>no model calls</span><span><i>·</i></span><span>same input, same output</span><span><i>·</i></span><span>an estimate, not a conclusion</span><span><i>·</i></span><span>standard library only</span><span><i>·</i></span><span>deterministic</span><span><i>·</i></span><span>no network</span><span><i>·</i></span><span>no model calls</span><span><i>·</i></span><span>same input, same output</span><span><i>·</i></span><span>an estimate, not a conclusion</span><span><i>·</i></span></div></div>
+
+<section class="hero">
+  <div class="hero-bgword">ENDPOINTS</div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">clinical-research · clinical study design Skill</p>
+        <div class="brandtag">endpoints &middot; statistics &middot; protocol</div>
+        <h1>The hard part of a protocol is not thinking it through.<br>It is <span class="hl">doing the math</span>.</h1>
+        <p class="hero-lead">This Skill works out endpoints, sample size and feasibility in one pass. Endpoints get picked from literature and meeting rooms, Sample sizes wait on a biostatistician&#39;s calendar. Feasibility rests on "we should be able to enrol". <b>Every number looks precise, none of them says where it came from, and nobody has signed for it.</b></p>
+        <ul class="io-list">
+          <li><b>Input</b><span>Candidate endpoints: name, surrogate flag, validated flag, five dimension scores</span></li>
+          <li><b>Input</b><span>Statistical parameters: design type, effect size or rates or hazard ratio, alpha, power, dropout</span></li>
+          <li><b>Input</b><span>Protocol parameters: eligible population, planned n, sites, duration, budget, phase</span></li>
+          <li><b>Output</b><span>Endpoint classification, a dropout-inflated sample size, and a feasibility verdict with a blocker list</span></li>
+          <li><b>Output</b><span>The named people who have to sign each conclusion</span></li>
+        </ul>
+        <div class="sticker-row">
+          <span class="sticker green">standard library only</span>
+          <span class="sticker blue">deterministic</span>
+          <span class="sticker amber">an estimate, not a conclusion</span>
+          <span class="sticker black">no network &middot; no model calls</span>
+        </div>
+      </div>
+      <div class="stack">
+        <div class="card"><div class="card-head"><span>One run &middot; three scripts</span><span class="dots"><i></i><i></i><i></i></span></div><div class="term">01  ENDPOINTS   endpoint_selector.py
+    GAD-7 responder rate w8        78.2  PRIMARY
+    CGI-Improvement w8             66.6  KEY-SECONDARY
+    In-app engagement w8           38.2  EXPLORATORY
+      ! UNVALIDATED SURROGATE
+
+02  SAMPLE SIZE sample_size_estimator.py
+    proportions   p1 .35 -> p2 .55   dropout .20
+    n/arm 96  ->  120 with dropout   total 240
+
+03  PHASE GATE  phase_gate_scorer.py
+    composite 74.6 / 100             verdict NO-GO
+      ! planned n 200 &lt; 90% of required 240
+      ! planned budget &lt; 75% of benchmark
+    named owners x5</div></div>
+        <p class="cap">The values above come from one synthetic-input walkthrough run on this machine, shown to illustrate the output shape. The same input always returns the same output, and every line can be recomputed against the script that produced it.</p>
+      </div>
+    </div>
+    <div class="note-row"><div class="note"><p class="note-h">How to read this page</p><p>Sections 02 to 06 cover what the Skill does: <b>three shifts, the three numbers that stall a protocol, how it works, and what its three outputs actually look like</b>. Sections 07 to 09 cover what it saves and where to get it.</p></div><div class="note warn"><p class="note-h">Its limits are written into its own output</p><p>Every output carries an <b>ESTIMATE</b> banner stating that this is a first-pass estimate. A verdict is not an authorization: it is a blocker list plus the roles that must sign it. Final sample size must be confirmed by a biostatistician.</p></div></div>
+  </div>
+</section>
+
+<section id="ba">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">02 &middot; Before / After</span>
+      <h2>Three shifts: the basis for an endpoint, the source of a sample size, the gap behind a recruitment plan</h2>
+      <p class="sub">The same design move, taken from "this looks reasonable" to "we know where it will be challenged".</p>
+    </div>
+    <div class="ba">
+      <div class="ba-item">
+        <div class="ba-head"><span class="n">01</span><h3>Endpoints: from "this looks reasonable" to "we know where it will be challenged"</h3></div>
+        <div class="ba-grid">
+          <div class="ba-cell"><span class="ba-tag">Before</span><p>The candidate endpoints are listed and the primary is chosen on instinct and precedent. An unvalidated surrogate looks like a good fit, and nobody can say whether it can hold the primary endpoint position with regulators.</p></div>
+          <div class="ba-cell after"><span class="ba-tag">After</span><p>Every candidate is scored across five weighted dimensions (clinical relevance, measurability, regulatory acceptance, sensitivity to change, patient burden) and classified as PRIMARY, KEY-SECONDARY or EXPLORATORY. An unvalidated surrogate is flagged and demoted, and cannot become the primary endpoint.</p></div>
+        </div>
+        <p class="ba-change">From "this endpoint looks reasonable" to "<b>here is where it will be challenged, and why</b>".</p>
+      </div>
+      <div class="ba-item">
+        <div class="ba-head"><span class="n">02</span><h3>Sample size: from "an effect size we can reach" to "an effect size we can trace"</h3></div>
+        <div class="ba-grid">
+          <div class="ba-cell"><span class="ba-tag">Before</span><p>Sample size is often worked backwards: see how many patients can be enrolled, then choose the effect size that makes that number work. Dropout is written into the assumptions but never enters the calculation, so n comes out too small.</p></div>
+          <div class="ba-cell after"><span class="ba-tag">After</span><p>A closed-form solution per design: Cohen&#39;s d for means, a normal approximation for proportions, Schoenfeld event counts for survival. The sample size is inflated by the expected dropout rate, and the printed assumption block asks you to trace the effect size back to a published or anchor source.</p></div>
+        </div>
+        <p class="ba-change">From "the number adds up" to "<b>the number can be traced</b>".</p>
+      </div>
+      <div class="ba-item">
+        <div class="ba-head"><span class="n">03</span><h3>Feasibility: from "we should be able to enrol" to "the gap is on this line"</h3></div>
+        <div class="ba-grid">
+          <div class="ba-cell"><span class="ba-tag">Before</span><p>The enrolment plan comes from optimistic site estimates. A dozen sites, a dozen months, a couple of hundred patients: nobody separated "is the eligible population big enough" from "how many patients can each site enrol per month".</p></div>
+          <div class="ba-cell after"><span class="ba-tag">After</span><p>Feasibility is scored 0 to 100 across five dimensions (recruitment, endpoint readiness, statistical power, operational complexity, budget fit). Anything below threshold becomes a named blocker and decides the verdict directly: GO, GO-WITH-CONDITIONS, REDESIGN or NO-GO.</p></div>
+        </div>
+        <p class="ba-change">From "we should be able to enrol" to "<b>the gap is on this line, and this person has to sign</b>".</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pain">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">03 &middot; Pain point and use case</span>
+      <h2>What stalls a protocol is rarely the science. It is three numbers nobody actually ran.</h2>
+      <p class="sub">They live in different places, and the work of joining them up stays with people.</p>
+    </div>
+    <div class="pains">
+      <div class="pain"><span class="n">Number 01</span><b>The endpoint has to hold the primary position</b><span>The evidence is scattered across literature, precedent and regulatory tables, and the choice is made on instinct.</span></div>
+      <div class="pain"><span class="n">Number 02</span><b>The sample size has to hold the power</b><span>It lives on a biostatistician&#39;s schedule. Dropout is written into the assumptions but never enters the calculation.</span></div>
+      <div class="pain"><span class="n">Number 03</span><b>Recruitment has to land inside time and budget</b><span>It comes from optimistic site estimates, and nobody separated eligible population from patients per site per month.</span></div>
+    </div>
+    <div class="prose">
+      <p>The problem is not a lack of tools. Statistics software computes sample sizes, regulatory guidance documents endpoint precedent, and a spreadsheet assembles a feasibility table. The problem is that each tool answers one segment of the question.</p>
+      <p>Worse, what comes out the other end looks a lot like a conclusion. A standard-looking sample size, a plausible enrolment window, a workable site count: none of them is marked as an assumption when it is written into the protocol.</p>
+      <p>These are the numbers that cause trouble at the phase gate. The committee rarely asks whether you ran the calculation. It asks where the effect size came from, why dropout was set at 15%, and who verified the eligible population. When nobody can answer, the protocol is sent back for what looks like a design flaw. <b>Underneath, it is that nobody can say where the basis sits.</b></p>
+      <p>One risk is quieter still: an unvalidated surrogate treated as the primary endpoint. It looks sensitive, cheap and easy to measure early on, right up to the point where regulators say it cannot hold the primary position. By then, the whole design has to be redone.</p>
+    </div>
+  </div>
+</section>
+
+<section id="transition">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">04 &middot; Transition</span>
+      <h2>What is missing is not a fourth tool. It is a layer that keeps the basis attached.</h2>
+      <p class="sub">Every estimate should arrive together with its assumptions, its source and its limits. Every decision should know whose signature makes it stand.</p>
+    </div>
+    <div class="prose">
+      <p>That is what this Skill does. <b>It adds no authority to the judgement. It leaves a trace of it.</b></p>
+    </div>
+  </div>
+</section>
+
+<section id="solution">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">05 &middot; Solution</span>
+      <h2>Bring three sets of parameters. Get an estimate with its basis, its limits and its sign-off chain.</h2>
+    </div>
+    <div class="flow">
+      <div class="step"><span class="k">STEP 01 &middot; INPUT</span><b>Three sets of parameters</b><span>Endpoint list, statistical parameters, protocol parameters.</span></div>
+      <div class="step"><span class="k">STEP 02 &middot; PROCESS</span><b>Three deterministic scripts</b><span>Endpoint scoring and classification, sample size and power, five-dimension feasibility.</span></div>
+      <div class="step"><span class="k">STEP 03 &middot; OUTPUT</span><b>Blockers and a sign-off chain</b><span>An ESTIMATE banner, a blocker list, and named owners.</span></div>
+    </div>
+    <div class="tools">
+      <div class="tool"><div class="fn">endpoint_selector.py</div><div class="tx"><b>Endpoint scoring and classification</b><span>A composite across five weighted dimensions, sorted into PRIMARY, KEY-SECONDARY and EXPLORATORY. An unvalidated surrogate is flagged and demoted, and cannot take the primary position.</span></div></div>
+      <div class="tool"><div class="fn">sample_size_estimator.py</div><div class="tx"><b>Sample size and power</b><span>Cohen&#39;s d for means, a normal approximation for proportions, Schoenfeld event counts for survival. Inflated by dropout, with an assumption block to paste into the statistics section.</span></div></div>
+      <div class="tool"><div class="fn">phase_gate_scorer.py</div><div class="tx"><b>Feasibility verdict and sign-off chain</b><span>A five-dimension composite out of 100, a blocker list, a verdict of GO, GO-WITH-CONDITIONS, REDESIGN or NO-GO, and the named owners who must sign.</span></div></div>
+      <div class="tool"><div class="fn">onboard.py</div><div class="tx"><b>One-time setup on first use</b><span>Seven questions that write the development area, default alpha, power, dropout and three named owners into config. Every script picks those defaults up afterwards.</span></div></div>
+    </div>
+    <div class="prose mt26">
+      <p>All four scripts are pure standard library. <b>No network calls, no model calls.</b> The same input always returns the same output, so any conclusion can be recomputed and challenged. The development area genuinely changes the result: drug, device, biologic, diagnostic and digital-therapeutic each carry their own per-patient cost benchmark and recruitment difficulty coefficient.</p>
+    </div>
+  </div>
+</section>
+
+<section id="cases">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">06 &middot; Real outputs</span>
+      <h2>What the three outputs look like</h2>
+      <p class="sub">The three sets of values below come from one synthetic-input walkthrough run on this machine, and every one of them can be recomputed against the script that produced it.</p>
+    </div>
+    <div class="outcard">
+      <div class="outcard-head"><b>Output 01 &middot; Endpoint scoring and classification</b><span class="chip blue">endpoint_selector.py</span></div>
+      <div class="outcard-body">
+        <div class="tbl-wrap"><table class="tbl ep"><thead><tr><th>Endpoint</th><th>Class</th><th>Composite</th><th>Clinical relevance</th><th>Measurability</th><th>Regulatory acceptance</th><th>Sensitivity</th><th>Burden</th></tr></thead><tbody><tr><td data-l="Endpoint">GAD-7 responder rate at week 8</td><td class="cls p" data-l="Class">PRIMARY</td><td class="num" data-l="Composite">78.2</td><td class="num" data-l="Clinical relevance">88</td><td class="num" data-l="Measurability">80</td><td class="num" data-l="Regulatory acceptance">60*</td><td class="num" data-l="Sensitivity">82</td><td class="num" data-l="Burden">85</td></tr><tr><td data-l="Endpoint">CGI-Improvement at week 8</td><td class="cls k" data-l="Class">KEY-SECONDARY</td><td class="num" data-l="Composite">66.6</td><td class="num" data-l="Clinical relevance">80</td><td class="num" data-l="Measurability">68</td><td class="num" data-l="Regulatory acceptance">52*</td><td class="num" data-l="Sensitivity">60</td><td class="num" data-l="Burden">70</td></tr><tr><td data-l="Endpoint">In-app engagement sessions per week</td><td class="cls e" data-l="Class">EXPLORATORY</td><td class="num" data-l="Composite">38.2</td><td class="num" data-l="Clinical relevance">35</td><td class="num" data-l="Measurability">92</td><td class="num" data-l="Regulatory acceptance">20*</td><td class="num" data-l="Sensitivity">78</td><td class="num" data-l="Burden">90</td></tr></tbody></table></div>
+        <p class="cap mt12">* Regulatory acceptance is shown <b>after the digital-therapeutic profile multiplier (x0.80)</b> is applied.</p>
+        <p class="cap mt11">The engagement metric has one of the better raw measurability (92) and sensitivity (78) readings in this set, but it carries the unvalidated-surrogate flag and <b>cannot anchor a primary endpoint</b>.</p>
+      </div>
+    </div>
+    <div class="outcard">
+      <div class="outcard-head"><b>Output 02 &middot; Sample size and power</b><span class="chip green">sample_size_estimator.py</span></div>
+      <div class="outcard-body">
+        <div class="stats">
+          <div class="stat"><span class="k">n per arm &middot; raw</span><span class="v">96</span><span class="s">two-arm proportions design</span></div>
+          <div class="stat hi"><span class="k">n per arm &middot; w/ dropout</span><span class="v">120</span><span class="s">inflated by 20% expected dropout</span></div>
+          <div class="stat"><span class="k">total &middot; w/ dropout</span><span class="v">240</span><span class="s">a recruitment target that can go into the protocol</span></div>
+        </div>
+        <p class="cap">Formula n = [za*sqrt(2*pbar*qbar) + zb*sqrt(p1q1+p2q2)]^2 / (p1-p2)^2, at alpha 0.05 and power 0.80.</p>
+        <p class="cap mt11">One flag is kept on purpose: the 35% to 55% anchor is supplied by the requester and is not yet cited to a published MCID. The tool still returns a number; the assumption block asks you to trace it to a source.</p>
+      </div>
+    </div>
+    <div class="outcard">
+      <div class="outcard-head"><b>Output 03 &middot; Feasibility verdict and sign-off chain</b><span class="chip amber">phase_gate_scorer.py</span></div>
+      <div class="outcard-body">
+        <div class="verdict"><div class="verdict-top bad"><div><span class="k">Verdict</span><br><span class="v">NO-GO</span></div><div class="tar"><span class="k">Composite</span><br><span class="v v-ink">74.6 / 100</span></div></div><div class="verdict-body"><span class="blocker">! power: planned n (200) &lt; 90% of required n (240)</span><span class="blocker">! budget: planned budget &lt; 75% of benchmark cost</span><div class="bar-row"><span class="lbl">Recruitment</span><span class="bar-track"><span class="bar-fill  w84"></span></span><span class="num">84.0</span></div><div class="bar-row"><span class="lbl">Endpoint readiness</span><span class="bar-track"><span class="bar-fill a w60"></span></span><span class="num">60.0</span></div><div class="bar-row"><span class="lbl">Statistical power</span><span class="bar-track"><span class="bar-fill a w767"></span></span><span class="num">76.7</span></div><div class="bar-row"><span class="lbl">Operational complexity</span><span class="bar-track"><span class="bar-fill g w94"></span></span><span class="num">94.0</span></div><div class="bar-row"><span class="lbl">Budget fit</span><span class="bar-track"><span class="bar-fill r w556"></span></span><span class="num">55.6</span></div><div class="verdict-foot">A composite of 74.6 would read as GO-WITH-CONDITIONS on its own, but <b>two blockers force NO-GO</b>. A high score cannot override a blocker: that is the tool design, not a scoring bug.</div></div></div>
+        <div class="owners mt24"><div class="owner"><div class="av">MM</div><span class="role">MEDICAL MONITOR</span><span class="nm">Medical Monitor</span><span class="ph">placeholder &middot; onboarding writes the real name</span></div><div class="owner"><div class="av">BS</div><span class="role">BIOSTATISTICIAN</span><span class="nm">Biostatistician</span><span class="ph">placeholder &middot; onboarding writes the real name</span></div><div class="owner"><div class="av">RO</div><span class="role">REGULATORY OWNER</span><span class="nm">Regulatory Owner</span><span class="ph">placeholder &middot; onboarding writes the real name</span></div><div class="owner"><div class="av">SD</div><span class="role">STUDY DIRECTOR</span><span class="nm">Study Director</span><span class="ph">placeholder &middot; onboarding writes the real name</span></div><div class="owner"><div class="av">RH</div><span class="role">R&amp;D HEAD</span><span class="nm">R&amp;D Head</span><span class="ph">placeholder &middot; onboarding writes the real name</span></div></div>
+      </div>
+    </div>
+    <div class="req">[PRE-LAUNCH REQUIREMENT] The values in this section come from one synthetic-input walkthrough run, shown to illustrate the output shape. Replace or supplement them with real project inputs, outputs and screenshots before publishing. If no real material exists, do not describe these values as a solved clinical problem, and do not present them as a real project that changed course because of them.</div>
+  </div>
+</section>
+
+<section id="advantages">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">07 &middot; Core advantages</span>
+      <h2>Five differences that reach the user</h2>
+    </div>
+    <div class="adv-grid">
+      <div class="adv"><span class="n">01</span><div><h3>Deterministic output you can recompute and audit</h3><p>No model calls, no network, standard library only. The same input always returns the same result, and anyone can take the parameters and recompute a conclusion line by line. Where a protocol has to pass a gate, <b>reproducibility matters more than looking clever</b>.</p></div></div>
+      <div class="adv"><span class="n">02</span><div><h3>Every output carries its limits, not just a conclusion</h3><p>All outputs carry an ESTIMATE banner stating that this is a first-pass estimate and that the final sample size must be confirmed by a biostatistician using simulation, an adaptive design or an exact method. It deliberately avoids the tone of a conclusion.</p></div></div>
+      <div class="adv"><span class="n">03</span><div><h3>The decision stays with named people</h3><p>A verdict is not an authorization. It is a recommendation with a blocker list, followed by the roles that must sign: Principal Investigator, Medical Monitor, Biostatistician, Regulatory Owner, Study Director, depending on the verdict tier. Onboarding replaces those roles with real names and prints them into the output.</p></div></div>
+      <div class="adv"><span class="n">04</span><div><h3>An unvalidated surrogate cannot take the primary position</h3><p>A surrogate endpoint with no validation evidence is flagged and demoted, and cannot become the primary endpoint. That rule moves one of the most expensive kinds of late rework <b>back into the design stage</b>.</p></div></div>
+      <div class="adv"><span class="n">05</span><div><h3>The development area actually changes the result</h3><p>drug, device, biologic, diagnostic and digital-therapeutic each adjust the per-patient cost benchmark and the recruitment difficulty coefficient. This is not a relabelled dropdown: budget fit and recruitment feasibility move with it.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">08 &middot; Why it matters</span>
+      <h2>Giving a design decision its first paper trail</h2>
+    </div>
+    <div class="prose">
+      <p>What this Skill reduces is not a few calculations. It is the same thing that keeps happening in clinical design: a number is produced, written into a protocol, questioned in review, and then nobody can say where it came from.</p>
+      <p>When every estimate arrives with its assumptions, its source and its limits, and when every verdict knows whose signature makes it stand, the design process moves from "that is what we decided at the time" to "here is the basis, recompute it". The first set of parameters can carry into the next revision, the first blocker can be tracked to closure, and the first named owner can keep the same thread.</p>
+      <p><b>For a clinical team, what is saved is not time. It is rework.</b></p>
+    </div>
+  </div>
+</section>
+
+<section id="cta">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">09 &middot; Get started</span>
+      <h2>clinical-research</h2>
+    </div>
+    <div class="cta-box">
+      <p>Bring your candidate endpoints, statistical parameters and protocol parameters, and run the seven-question onboarding once to pin down the development area, default alpha, power and three named owners.</p>
+      <p>What you get back is <b>a first-pass estimate with its basis, its limits and its sign-off chain</b>, ready to put in front of a phase-gate discussion.</p>
+      <div class="cta-row">
+        <a class="btn blue" href="https://github.com/FinchipAIOrg/clinical-research">clinical-research <span class="ar">→</span></a>
+        <span class="sticker">standard library &middot; zero dependencies &middot; no network</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fl">clinical-research v2.9.0, a clinical study design Skill. Every output on this page is a planning estimate that must be reviewed and signed by a biostatistician, a medical monitor and a regulatory owner. None of it is a clinical conclusion or a regulatory commitment.</div>
+    <div>standard library &middot; no network &middot; no model calls</div>
+  </div>
+</footer>
+</div>
+</body>
+</html>

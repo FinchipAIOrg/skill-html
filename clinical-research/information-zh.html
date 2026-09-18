@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>clinical-research｜临床研究设计 Skill：终点分类、样本量估算、可行性裁定</title>
+<meta name="description" content="输入候选终点、统计参数和方案参数，得到终点分类、含脱落膨胀的样本量和五维可行性裁定。三个纯标准库脚本不联网、不调用模型，每条结论后面都跟着必须签字的具名责任人。">
+<meta name="theme-color" content="#F4F1E8">
+<link rel="canonical" href="https://github.com/FinchipAIOrg/clinical-research">
+<link rel="alternate" hreflang="zh-CN" href="information-zh.html">
+<link rel="alternate" hreflang="en" href="information-en.html">
+<link rel="alternate" hreflang="x-default" href="information-zh.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="临床方案最难的不是想清楚，是算清楚。这个 Skill 把终点、样本量和可行性一起算明白">
+<meta property="og:description" content="输入候选终点、统计参数和方案参数，得到终点分类、含脱落膨胀的样本量和五维可行性裁定。三个纯标准库脚本不联网、不调用模型，每条结论后面都跟着必须签字的具名责任人。">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="临床方案最难的不是想清楚，是算清楚。这个 Skill 把终点、样本量和可行性一起算明白">
+<meta name="twitter:description" content="输入候选终点、统计参数和方案参数，得到终点分类、含脱落膨胀的样本量和五维可行性裁定。三个纯标准库脚本不联网、不调用模型，每条结论后面都跟着必须签字的具名责任人。">
+<style>
+:root{
+  --cream:#F4F1E8;
+  --paper:#FFFFFF;
+  --paper-warm:#FFFDF6;
+  --ink:#111111;
+  --ink-2:#3F3F3A;
+  --ink-3:#6E6E66;
+  --blue:#2B44FF;
+  --blue-soft:#DCE2FF;
+  --green:#0E9F6E;
+  --green-soft:#D6F5E7;
+  --amber:#D98A00;
+  --amber-soft:#FFEFCF;
+  --red:#E5342B;
+  --red-soft:#FFDCD7;
+  --yellow:#FFD23F;
+  --line:#111111;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  --sans:"Helvetica Neue",Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --bd:2.5px solid var(--ink);
+  --sh:5px 5px 0 var(--ink);
+  --sh-sm:3px 3px 0 var(--ink);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;background:var(--cream);color:var(--ink);
+  font-family:var(--sans);font-size:16.5px;line-height:1.85;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+.wrap{max-width:1140px;margin:0 auto;padding:0 30px;}
+a{color:inherit;}
+
+.eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+  font-weight:700;margin:0 0 14px;display:flex;align-items:center;gap:10px;
+}
+.eyebrow::before{content:"";width:26px;height:3px;background:var(--ink);display:block;}
+
+.sticker{
+  display:inline-block;font-family:var(--mono);font-size:12.5px;font-weight:700;
+  padding:6px 14px;border:var(--bd);border-radius:999px;background:var(--paper);
+  box-shadow:var(--sh-sm);letter-spacing:.04em;
+}
+.sticker.blue{background:var(--blue-soft);}
+.sticker.green{background:var(--green-soft);}
+.sticker.amber{background:var(--amber-soft);}
+.sticker.red{background:var(--red-soft);color:var(--red);}
+.sticker.yellow{background:var(--yellow);}
+.sticker.black{background:var(--ink);color:#fff;}
+
+.chip{
+  display:inline-block;font-family:var(--mono);font-size:11.5px;font-weight:700;
+  padding:4px 10px;border:2px solid var(--ink);border-radius:6px;background:#fff;
+  letter-spacing:.05em;
+}
+.chip.blue{background:var(--blue-soft);}
+.chip.green{background:var(--green-soft);}
+.chip.amber{background:var(--amber-soft);}
+.chip.red{background:var(--red-soft);color:var(--red);}
+
+/* ---------- topbar ---------- */
+.topbar{position:sticky;top:0;z-index:60;background:var(--cream);border-bottom:2.5px solid var(--ink);}
+.topbar-in{display:flex;align-items:center;justify-content:space-between;height:66px;gap:20px;}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-mark{
+  width:34px;height:34px;background:var(--blue);border:var(--bd);border-radius:9px;
+  box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:900;font-size:16px;font-family:var(--mono);
+}
+.logo b{font-size:18px;letter-spacing:-.02em;}
+.logo span{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);letter-spacing:.08em;}
+.nav{display:flex;gap:22px;font-size:14px;font-weight:600;align-items:center;margin-left:auto;}
+.nav a{text-decoration:none;padding-bottom:2px;border-bottom:2px solid transparent;}
+.nav a:hover{border-color:var(--blue);color:var(--blue);}
+.langbtn{
+  font-family:var(--mono);font-size:12px;font-weight:700;text-decoration:none;
+  border:2px solid var(--ink);border-radius:8px;padding:6px 12px;background:var(--yellow);
+  box-shadow:var(--sh-sm);white-space:nowrap;
+}
+.langbtn:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--ink);}
+@media(max-width:980px){.nav{display:none;}}
+
+.ticker{background:var(--ink);color:#fff;border-bottom:2.5px solid var(--ink);overflow:hidden;white-space:nowrap;padding:9px 0;}
+.ticker-track{display:inline-block;font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;font-weight:700;animation:slide 40s linear infinite;}
+.ticker-track span{padding:0 18px;}
+.ticker-track i{color:var(--yellow);font-style:normal;}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding:58px 0 66px;overflow:hidden;}
+.hero-bgword{
+  position:absolute;left:50%;top:10px;transform:translateX(-50%);
+  font-size:clamp(80px,17vw,200px);font-weight:900;letter-spacing:-.05em;
+  color:transparent;-webkit-text-stroke:2px #E2DCCB;white-space:nowrap;
+  pointer-events:none;user-select:none;z-index:0;
+}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.06fr .94fr;gap:46px;align-items:start;}
+.hero-grid > *{min-width:0;}
+@media(max-width:980px){.hero-grid{grid-template-columns:minmax(0,1fr);gap:34px;}}
+.hero h1{font-size:clamp(29px,3.9vw,46px);font-weight:900;letter-spacing:-.03em;line-height:1.22;margin:0 0 18px;}
+.hero h1 .hl{
+  display:inline-block;background:var(--yellow);padding:0 9px;
+  border:2.5px solid var(--ink);border-radius:6px;box-shadow:var(--sh-sm);
+}
+.brandtag{
+  display:inline-flex;align-items:center;gap:10px;margin:0 0 16px;
+  font-family:var(--mono);font-size:14px;font-weight:700;
+  background:var(--ink);color:#fff;padding:7px 15px;border-radius:8px;box-shadow:var(--sh-sm);
+}
+.hero-lead{font-size:17px;color:var(--ink-2);max-width:580px;margin:0 0 20px;}
+.hero-lead b{color:var(--ink);font-weight:800;}
+.io-list{list-style:none;padding:0;margin:0 0 22px;max-width:580px;}
+.io-list li{
+  display:flex;gap:12px;align-items:flex-start;padding:9px 0;
+  border-bottom:1.5px dashed #CFC8B6;font-size:15.5px;color:var(--ink-2);
+}
+.io-list li:last-child{border-bottom:none;}
+.io-list b{color:var(--ink);font-weight:800;flex:0 0 96px;font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;padding-top:4px;}
+.sticker-row{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 24px;}
+.cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:4px;}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;padding:14px 26px;text-decoration:none;
+  font-weight:800;font-size:15.5px;border:var(--bd);border-radius:11px;box-shadow:var(--sh);transition:.14s;
+}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink);}
+.btn.blue{background:var(--blue);color:#fff;}
+.btn.paper{background:var(--paper);color:var(--ink);}
+.btn .ar{font-family:var(--mono);font-weight:900;}
+
+/* ---------- cards / terminal ---------- */
+.card{background:var(--paper);border:var(--bd);border-radius:16px;box-shadow:var(--sh);position:relative;}
+.card-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 15px;border-bottom:2.5px solid var(--ink);
+  font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.1em;
+  background:var(--paper-warm);border-radius:13px 13px 0 0;
+}
+.card-head .dots{display:flex;gap:5px;}
+.card-head .dots i{width:10px;height:10px;border:2px solid var(--ink);border-radius:50%;display:block;}
+.card-head .dots i:nth-child(1){background:var(--red);}
+.card-head .dots i:nth-child(2){background:var(--yellow);}
+.card-head .dots i:nth-child(3){background:var(--blue);}
+.term{
+  background:var(--ink);color:#E8E8E2;font-family:var(--mono);font-size:12.2px;
+  line-height:1.8;padding:15px 16px 17px;border-radius:0 0 13px 13px;
+  white-space:pre-wrap;overflow-wrap:anywhere;margin:0;
+}
+.cap{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);margin:0;letter-spacing:.03em;line-height:1.8;}
+.stack{display:flex;flex-direction:column;gap:20px;padding-top:6px;}
+
+/* ---------- section frame ---------- */
+section{padding:70px 0;border-top:2.5px solid var(--ink);}
+section:first-of-type{border-top:none;}
+.sec-head{margin:0 0 32px;}
+.sec-num{
+  font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.2em;
+  color:var(--ink-3);display:block;margin-bottom:10px;
+}
+.sec-head h2{font-size:clamp(23px,2.9vw,33px);font-weight:900;letter-spacing:-.025em;line-height:1.3;margin:0;max-width:880px;}
+.sec-head p.sub{margin:14px 0 0;color:var(--ink-2);font-size:16px;max-width:800px;}
+
+/* ---------- prose ---------- */
+.prose{max-width:840px;}
+.prose p{margin:0 0 18px;font-size:16.5px;color:var(--ink-2);}
+.prose p:last-child{margin-bottom:0;}
+.prose p b{color:var(--ink);}
+.prose ul{margin:0 0 18px;padding-left:20px;color:var(--ink-2);font-size:16px;}
+.prose li{margin-bottom:9px;}
+.prose li:last-child{margin-bottom:0;}
+
+/* ---------- run-case components ---------- */
+.tbl-wrap{overflow-wrap:anywhere;}
+.tbl{width:100%;border:var(--bd);border-radius:14px;overflow:hidden;border-collapse:separate;border-spacing:0;background:var(--paper);box-shadow:var(--sh);font-size:14.5px;}
+.tbl th,.tbl td{padding:11px 14px;border-bottom:2px solid var(--ink);text-align:left;vertical-align:top;}
+.tbl th{background:var(--ink);color:#fff;font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;font-weight:700;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl td.num{font-family:var(--mono);text-align:right;font-weight:700;white-space:nowrap;}
+.tbl td.na{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);}
+.tbl td.cls{font-family:var(--mono);font-weight:900;font-size:11.5px;letter-spacing:.03em;white-space:nowrap;}
+.tbl td.cls.p{color:var(--blue);}
+.tbl td.cls.k{color:#A96A00;}
+.tbl td.cls.e{color:var(--ink-3);}
+
+.gate{display:grid;gap:12px;max-width:900px;}
+.gate-item{display:flex;gap:14px;align-items:flex-start;background:var(--paper);border:var(--bd);border-radius:12px;padding:14px 18px;box-shadow:var(--sh-sm);}
+.gate-item .mk{
+  flex:0 0 30px;height:30px;border:2px solid var(--ink);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-weight:900;font-size:15px;background:var(--green-soft);
+}
+.gate-item.flag{border-color:var(--ink);background:var(--amber-soft);box-shadow:3px 3px 0 var(--amber);}
+.gate-item.flag .mk{background:var(--amber);color:#fff;}
+.gate-item .bd b{display:block;font-size:15.5px;font-weight:800;margin-bottom:3px;}
+.gate-item .bd span{font-size:14.5px;color:var(--ink-2);line-height:1.75;}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:24px;}
+@media(max-width:800px){.stats{grid-template-columns:1fr;}}
+.stat{background:var(--paper);border:var(--bd);border-radius:14px;padding:18px 20px;box-shadow:var(--sh-sm);}
+.stat .k{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.13em;color:var(--ink-3);display:block;margin-bottom:6px;}
+.stat .v{font-family:var(--mono);font-size:31px;font-weight:900;letter-spacing:-.03em;line-height:1.1;display:block;}
+.stat .s{font-size:13px;color:var(--ink-3);display:block;margin-top:5px;line-height:1.7;}
+.stat.hi{background:var(--blue-soft);}
+.stat.hi .v{color:#1226A8;}
+
+.verdict{border:var(--bd);border-radius:16px;box-shadow:var(--sh);overflow:hidden;background:var(--paper);}
+.verdict-top{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  padding:15px 19px;background:var(--green-soft);border-bottom:2.5px solid var(--ink);
+}
+.verdict-top.bad{background:var(--red-soft);}
+.verdict-top .k{font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.12em;color:var(--ink-2);}
+.verdict-top .v{font-size:21px;font-weight:900;color:var(--green);letter-spacing:-.01em;}
+.verdict-top.bad .v{color:var(--red);}
+.verdict-body{padding:16px 19px 18px;}
+.bar-row{display:flex;align-items:center;gap:12px;margin:0 0 10px;font-size:13px;}
+.bar-row .lbl{flex:0 0 208px;font-family:var(--mono);font-size:12px;color:var(--ink-2);}
+.bar-track{flex:1;height:11px;border:2px solid var(--ink);border-radius:999px;background:#fff;overflow:hidden;min-width:80px;}
+.bar-fill{display:block;height:100%;background:var(--blue);}
+.bar-fill.g{background:var(--green);}
+.bar-fill.a{background:var(--amber);}
+.bar-fill.r{background:var(--red);}
+.bar-row .num{flex:0 0 50px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:700;}
+.verdict-foot{
+  border-top:2px dashed #CFC8B6;margin-top:13px;padding-top:12px;
+  font-size:14.5px;color:var(--ink-2);line-height:1.8;
+}
+.verdict-foot b{color:var(--ink);}
+.blocker{
+  font-family:var(--mono);font-size:12.5px;font-weight:700;color:#8E1F18;
+  background:var(--red-soft);border:2px dashed var(--red);border-radius:8px;
+  padding:9px 13px;margin:0 0 8px;display:block;
+}
+.blocker:last-of-type{margin-bottom:0;}
+
+.owners{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+@media(max-width:1020px){.owners{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:520px){.owners{grid-template-columns:1fr;}}
+.owner{background:var(--paper);border:var(--bd);border-radius:13px;padding:15px 16px;box-shadow:var(--sh-sm);}
+.owner .av{
+  width:36px;height:36px;border:2px solid var(--ink);border-radius:9px;background:var(--blue-soft);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-weight:900;font-size:13px;margin-bottom:10px;
+}
+.owner .role{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--ink-3);display:block;margin-bottom:5px;}
+.owner .nm{font-size:14.5px;font-weight:800;line-height:1.4;display:block;}
+.owner .ph{font-family:var(--mono);font-size:10px;color:var(--ink-3);display:block;margin-top:5px;}
+
+.penalty{border:var(--bd);border-radius:14px;overflow:hidden;box-shadow:var(--sh-sm);max-width:660px;background:var(--paper);margin:0 0 22px;}
+.penalty div{display:flex;justify-content:space-between;gap:14px;padding:12px 18px;border-bottom:1.5px dashed #CFC8B6;font-size:15px;color:var(--ink-2);}
+.penalty div:last-child{border-bottom:none;}
+.penalty div b{font-family:var(--mono);font-weight:900;color:var(--ink);}
+.penalty div.final{background:var(--amber-soft);}
+
+.note-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:34px;}
+@media(max-width:860px){.note-row{grid-template-columns:1fr;}}
+.note{background:var(--paper-warm);border:var(--bd);border-radius:14px;padding:20px 22px;box-shadow:var(--sh-sm);}
+.note .note-h{margin:0 0 8px;font-size:16px;font-weight:800;}
+.note p{margin:0;font-size:15px;color:var(--ink-2);line-height:1.8;}
+.note p b{color:var(--ink);}
+.note.warn{background:var(--amber-soft);}
+
+.req{
+  margin-top:26px;padding:18px 22px;border:2.5px dashed var(--red);border-radius:14px;
+  background:var(--red-soft);font-family:var(--mono);font-size:13px;font-weight:700;
+  color:#8E1F18;line-height:1.9;
+}
+
+.adv-grid{display:grid;grid-template-columns:1fr;gap:20px;}
+.adv{background:var(--paper);border:var(--bd);border-radius:16px;padding:22px 26px;box-shadow:var(--sh);display:flex;gap:20px;align-items:flex-start;}
+@media(max-width:700px){.adv{flex-direction:column;gap:12px;}}
+.adv .n{font-family:var(--mono);font-size:23px;font-weight:900;letter-spacing:-.04em;color:var(--blue);flex:0 0 44px;}
+.adv h3{margin:0 0 9px;font-size:17.5px;font-weight:800;line-height:1.45;}
+.adv p{margin:0;font-size:15.5px;color:var(--ink-2);}
+.adv p b{color:var(--ink);}
+
+footer{
+  border-top:2.5px solid var(--ink);padding:26px 0 40px;background:var(--cream);
+  font-family:var(--mono);font-size:12px;color:var(--ink-3);letter-spacing:.06em;
+}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+footer .fl{max-width:660px;line-height:1.9;}
+
+/* ---------- utility classes (replaces inline styles) ---------- */
+.ink{color:var(--ink);}
+.term-cont{border-radius:0 0 13px 13px;border-top:2.5px solid var(--ink);}
+.mt11{margin-top:11px;}
+.mt12{margin-top:12px;}
+.mt13{margin-top:13px;}
+.mt22{margin-top:22px;}
+.mt24{margin-top:24px;}
+.mt26{margin-top:26px;}
+.mt30{margin-top:30px;}
+.mw920{max-width:920px;}
+.mw780{max-width:780px;}
+.mw760{max-width:760px;}
+.mw680{max-width:680px;}
+.mw640{max-width:640px;}
+.card.mw780,.card.mw760{margin-top:26px;}
+.tbl.tight{min-width:0;}
+.msg-pad{padding:22px 24px 24px;}
+.msg-text{margin:0;font-size:17.5px;line-height:1.78;color:var(--ink-2);}
+.tar{text-align:right;}
+.verdict-top .v.v-ink{color:var(--ink);}
+.w84{width:84%;}
+.w60{width:60%;}
+.w767{width:76.7%;}
+.w94{width:94%;}
+.w556{width:55.6%;}
+
+@media(max-width:600px){
+  .bar-row{flex-wrap:wrap;gap:8px 12px;}
+  .bar-row .lbl{flex:1 1 100%;}
+  .bar-row .num{flex:0 0 46px;}
+}
+
+/* ===== Finch 宿主兼容层：不透明页面容器 + 媒体自适应 ===== */
+.finch-page{margin:0;background:var(--cream);color:var(--ink); font-family:var(--sans);font-size:16.5px;line-height:1.85; -webkit-font-smoothing:antialiased;}
+.finch-page img,.finch-page video{max-width:100%;height:auto}
+
+/* ===== Finch 宿主兼容层：表格不再横向滚动，改为自适应折行 ===== */
+.tbl th,.tbl td{overflow-wrap:anywhere}
+@media(max-width:700px){
+  .tbl{font-size:12.5px}
+  .tbl th{font-size:10.4px;letter-spacing:.03em;padding:8px 7px}
+  .tbl th,.tbl td{padding:8px 7px}
+  .tbl td.num,.tbl td.cls{white-space:normal}
+}
+
+/* ===== Information 页追加组件 ===== */
+.hero-p{margin:0 0 20px;font-size:16.5px;color:var(--ink-2);max-width:580px;}
+.hero-p b{color:var(--ink);font-weight:800;}
+code{font-family:var(--mono);font-size:.88em;background:#EFEADD;border:1.5px solid #D8D0BC;border-radius:5px;padding:1px 6px;color:#1226A8;}
+
+.pains{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:30px;}
+@media(max-width:860px){.pains{grid-template-columns:1fr;}}
+.pain{background:var(--paper);border:var(--bd);border-radius:14px;padding:18px 20px;box-shadow:var(--sh-sm);}
+.pain .n{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--ink-3);display:block;margin-bottom:8px;}
+.pain b{display:block;font-size:16.5px;font-weight:800;margin-bottom:6px;line-height:1.5;}
+.pain span{font-size:14.5px;color:var(--ink-2);line-height:1.75;}
+
+.ba{margin-top:6px;display:flex;flex-direction:column;gap:20px;}
+.ba-item{background:var(--paper);border:var(--bd);border-radius:16px;box-shadow:var(--sh);padding:20px 22px 18px;}
+.ba-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.ba-head .n{font-family:var(--mono);font-size:11.5px;font-weight:700;color:#1226A8;background:var(--blue-soft);border:2px solid var(--ink);border-radius:6px;padding:2px 9px;letter-spacing:.08em;}
+.ba-head h3{margin:0;font-size:17.5px;font-weight:800;line-height:1.45;}
+.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:800px){.ba-grid{grid-template-columns:1fr;gap:16px;}}
+.ba-cell{border-left:3px solid #CFC8B6;padding-left:15px;}
+.ba-cell.after{border-left-color:var(--blue);}
+.ba-tag{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:7px;}
+.ba-cell.after .ba-tag{color:var(--blue);}
+.ba-cell p{margin:0;font-size:15.2px;line-height:1.8;color:var(--ink-2);}
+.ba-change{margin:16px 0 0;padding-top:14px;border-top:2px dashed #CFC8B6;font-size:16px;font-weight:800;color:var(--ink);}
+.ba-change b{color:var(--blue);}
+
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:28px;}
+@media(max-width:860px){.flow{grid-template-columns:1fr;}}
+.step{background:var(--paper-warm);border:var(--bd);border-radius:14px;padding:18px 20px;box-shadow:var(--sh-sm);}
+.step .k{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--ink-3);display:block;margin-bottom:8px;}
+.step b{display:block;font-size:16.5px;font-weight:800;margin-bottom:6px;}
+.step span{font-size:14.6px;color:var(--ink-2);line-height:1.75;}
+
+.tools{display:flex;flex-direction:column;gap:16px;}
+.tool{display:flex;gap:20px;align-items:flex-start;background:var(--paper);border:var(--bd);border-radius:14px;padding:18px 20px;box-shadow:var(--sh-sm);}
+@media(max-width:760px){.tool{flex-direction:column;gap:10px;}}
+.tool .fn{font-family:var(--mono);font-size:12.5px;font-weight:700;flex:0 0 232px;color:#1226A8;padding-top:3px;overflow-wrap:anywhere;}
+.tool .tx b{display:block;font-size:16px;font-weight:800;margin-bottom:4px;}
+.tool .tx span{font-size:14.8px;color:var(--ink-2);line-height:1.78;}
+
+.outcard{background:var(--paper);border:var(--bd);border-radius:16px;box-shadow:var(--sh);margin-bottom:26px;}
+.outcard-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px 18px;border-bottom:2.5px solid var(--ink);background:var(--paper-warm);border-radius:13px 13px 0 0;}
+.outcard-head b{font-size:16.5px;font-weight:800;}
+.outcard-body{padding:18px 20px 20px;}
+
+.cta-box{background:var(--paper);border:var(--bd);border-radius:18px;box-shadow:var(--sh);padding:28px 30px;}
+.cta-box p{margin:0 0 18px;font-size:16.5px;color:var(--ink-2);}
+.cta-box p:last-of-type{margin-bottom:0;}
+.cta-box p b{color:var(--ink);font-weight:800;}
+
+
+/* ===== 信息页排版修正 ===== */
+@media(min-width:981px){
+  .hero h1{font-size:clamp(28px,2.8vw,36px);}
+}
+@media(max-width:600px){
+  .hero h1{font-size:22px;}
+  .hero-bgword{font-size:44px;}
+}
+
+/* 窄屏：8 列表格改为堆叠卡片，避免单元格被压成单字竖排 */
+@media(max-width:760px){
+  .tbl.ep thead{display:none;}
+  .tbl.ep,.tbl.ep tbody,.tbl.ep tr,.tbl.ep td{display:block;width:auto;}
+  .tbl.ep{border:none;border-radius:0;box-shadow:none;background:transparent;font-size:13.4px;}
+  .tbl.ep tr{background:var(--paper);border:var(--bd);border-radius:13px;box-shadow:var(--sh-sm);padding:13px 15px;margin-bottom:12px;}
+  .tbl.ep tr:last-child{margin-bottom:0;}
+  .tbl.ep td{border-bottom:none;padding:3px 0;display:flex;justify-content:space-between;align-items:baseline;gap:12px;text-align:right;font-size:13.4px;}
+  .tbl.ep td::before{content:attr(data-l);font-family:var(--mono);font-size:10.4px;font-weight:700;letter-spacing:.06em;color:var(--ink-3);text-align:left;flex:0 0 auto;}
+  .tbl.ep td:first-child{display:block;text-align:left;font-weight:800;font-size:15px;padding:0 0 8px;margin-bottom:7px;border-bottom:2px dashed #CFC8B6;}
+  .tbl.ep td:first-child::before{display:none;}
+  .tbl.ep td.num,.tbl.ep td.cls{white-space:normal;}
+}
+
+/* 进度条填充：.bar-fill 是 span，行内元素会让 width 失效，必须先块级化 */
+.bar-track{display:flex;}
+.bar-fill{flex:0 0 auto;}
+</style>
+</head>
+<body>
+<div class="finch-page">
+<div class="topbar">
+  <div class="wrap topbar-in">
+    <div class="logo">
+      <div class="logo-mark">CR</div>
+      <div><b>clinical-research</b><br><span>临床研究设计 Skill · v2.9.0</span></div>
+    </div>
+    <nav class="nav">
+      <a href="#ba">02 三处变化</a>
+      <a href="#pain">03 痛点</a>
+      <a href="#solution">05 怎么工作</a>
+      <a href="#cases">06 真实输出</a>
+      <a href="#advantages">07 核心差异</a>
+    </nav>
+    <a class="langbtn" href="information-en.html">English →</a>
+  </div>
+</div>
+
+<div class="ticker"><div class="ticker-track"><span>纯标准库</span><span><i>·</i></span><span>确定性计算</span><span><i>·</i></span><span>不联网</span><span><i>·</i></span><span>不调用模型</span><span><i>·</i></span><span>同样的输入，同样的输出</span><span><i>·</i></span><span>是估计值，不是结论</span><span><i>·</i></span><span>纯标准库</span><span><i>·</i></span><span>确定性计算</span><span><i>·</i></span><span>不联网</span><span><i>·</i></span><span>不调用模型</span><span><i>·</i></span><span>同样的输入，同样的输出</span><span><i>·</i></span><span>是估计值，不是结论</span><span><i>·</i></span></div></div>
+
+<section class="hero">
+  <div class="hero-bgword">ENDPOINTS</div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">clinical-research · 临床研究设计 Skill</p>
+        <div class="brandtag">候选终点 · 统计参数 · 方案参数</div>
+        <h1>临床方案最难的不是想清楚，<br>是 <span class="hl">算清楚</span></h1>
+        <p class="hero-lead">这个 Skill 把终点、样本量和可行性一起算明白。终点靠文献和会议挑，样本量等统计师排期，可行性靠「应该能招到」。<b>真正难的是每个数字看起来都很精确，却没有一条写着依据，也没有一个人为它负责。</b></p>
+        <ul class="io-list">
+          <li><b>输入</b><span>候选终点清单：名称、是否替代终点、是否已验证、五个维度评分</span></li>
+          <li><b>输入</b><span>统计参数：设计类型、效应量 / 率 / 风险比、alpha、把握度、脱落率</span></li>
+          <li><b>输入</b><span>方案参数：合格人群、目标入组、中心数、周期、预算、开发阶段</span></li>
+          <li><b>输出</b><span>终点分类、含脱落膨胀的样本量、带 blocker 清单的可行性裁定</span></li>
+          <li><b>输出</b><span>每条结论后面必须签字的具名责任人</span></li>
+        </ul>
+        <div class="sticker-row">
+          <span class="sticker green">纯标准库，零依赖</span>
+          <span class="sticker blue">确定性计算</span>
+          <span class="sticker amber">是估计值，不是结论</span>
+          <span class="sticker black">不联网 · 不调用模型</span>
+        </div>
+      </div>
+      <div class="stack">
+        <div class="card"><div class="card-head"><span>一次运行 · 三个脚本</span><span class="dots"><i></i><i></i><i></i></span></div><div class="term">01  ENDPOINTS   endpoint_selector.py
+    GAD-7 responder rate w8        78.2  PRIMARY
+    CGI-Improvement w8             66.6  KEY-SECONDARY
+    In-app engagement w8           38.2  EXPLORATORY
+      ! UNVALIDATED SURROGATE
+
+02  SAMPLE SIZE sample_size_estimator.py
+    proportions   p1 .35 -> p2 .55   dropout .20
+    n/arm 96  ->  120 with dropout   total 240
+
+03  PHASE GATE  phase_gate_scorer.py
+    composite 74.6 / 100             verdict NO-GO
+      ! planned n 200 &lt; 90% of required 240
+      ! planned budget &lt; 75% of benchmark
+    named owners x5</div></div>
+        <p class="cap">上面这组数值取自本机真实执行的一次合成输入走查，用于说明输出形态。同样的输入永远得到同样的输出，每一条都能对着脚本复算。</p>
+      </div>
+    </div>
+    <div class="note-row"><div class="note"><p class="note-h">怎么读这一页</p><p>第 02 到 06 节讲这个 Skill 做什么：<b>三处变化、卡住方案的三个数字、它的工作方式，以及三个输出实际长什么样</b>。第 07 到 09 节讲它能省下什么，以及去哪里拿。</p></div><div class="note warn"><p class="note-h">它的边界写在自己的输出里</p><p>所有输出都带 <b>ESTIMATE</b> 横幅，明说这是第一版估算。裁定不是授权，而是一份带 blocker 清单的建议；样本量最终必须由生物统计师确认，设计决定必须由具名的人签字。</p></div></div>
+  </div>
+</section>
+
+<section id="ba">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">02 · Before / After</span>
+      <h2>三处变化：终点的依据、样本量的来源、可行性的缺口</h2>
+      <p class="sub">同一个设计动作，从「看起来合理」变成「知道它会被质疑在哪」。</p>
+    </div>
+    <div class="ba">
+      <div class="ba-item">
+        <div class="ba-head"><span class="n">01</span><h3>终点：从「看起来合理」到「知道它会被质疑在哪」</h3></div>
+        <div class="ba-grid">
+          <div class="ba-cell"><span class="ba-tag">Before</span><p>候选终点列出来，主要终点靠直觉和先例挑。一个未验证的替代终点看上去很合适，却不清楚它在监管上撑不撑得起主要终点的位置。</p></div>
+          <div class="ba-cell after"><span class="ba-tag">After</span><p>每个候选终点按临床相关性、可测量性、监管接受度、变化敏感度、患者负担五个维度加权打分，分类为 PRIMARY / KEY-SECONDARY / EXPLORATORY。未验证的替代终点会被标记并降权，无法成为主要终点。</p></div>
+        </div>
+        <p class="ba-change">从「这个终点看起来合理」，变成「<b>这个终点会被质疑在哪，以及为什么</b>」。</p>
+      </div>
+      <div class="ba-item">
+        <div class="ba-head"><span class="n">02</span><h3>样本量：从「用能凑到的效应量」到「用能追溯的效应量」</h3></div>
+        <div class="ba-grid">
+          <div class="ba-cell"><span class="ba-tag">Before</span><p>样本量常常反过来做：先看能招到多少人，再挑一个让这个人数成立的效应量。脱落率被写进假设却不进入计算，最后 n 偏小。</p></div>
+          <div class="ba-cell after"><span class="ba-tag">After</span><p>按设计给出闭式解，均值用 Cohen's d，比例用正态近似，生存用 Schoenfeld 事件数。样本量按预计脱落率向上膨胀，输出的假设块会要求你把效应量追溯到一个已发表或锚点来源。</p></div>
+        </div>
+        <p class="ba-change">从「数字能凑上」，变成「<b>数字能追溯</b>」。</p>
+      </div>
+      <div class="ba-item">
+        <div class="ba-head"><span class="n">03</span><h3>可行性：从「应该能招到」到「缺口写在哪一行」</h3></div>
+        <div class="ba-grid">
+          <div class="ba-cell"><span class="ba-tag">Before</span><p>入组计划来自各中心的乐观估计。十几个中心、十几个月、两百多例，写进方案时没人把「合格人群够不够」和「每中心每月能入几例」分开算过。</p></div>
+          <div class="ba-cell after"><span class="ba-tag">After</span><p>可行性按五个维度打 0 到 100 分：入组可行性、终点就绪度、统计把握度、运营复杂度、预算匹配度。低于阈值的项会变成具名 blocker，并直接决定裁定是 GO、GO-WITH-CONDITIONS、REDESIGN 还是 NO-GO。</p></div>
+        </div>
+        <p class="ba-change">从「应该能招到」，变成「<b>缺口写在哪一行，谁必须签字</b>」。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pain">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">03 · 痛点与场景</span>
+      <h2>卡住方案的往往不是科学，是三个没人真正算过的数字</h2>
+      <p class="sub">这三件事分散在不同地方，而把三段接起来的动作始终留在人手上。</p>
+    </div>
+    <div class="pains">
+      <div class="pain"><span class="n">数字 01</span><b>终点要能撑住主要终点</b><span>依据散在文献、先例和监管表格里，挑的时候靠直觉和印象。</span></div>
+      <div class="pain"><span class="n">数字 02</span><b>样本量要能撑住把握度</b><span>在统计师的排期里。脱落率被写进假设，却不进入计算。</span></div>
+      <div class="pain"><span class="n">数字 03</span><b>入组要能在时间和预算内完成</b><span>来自几个中心的乐观估计，没人把合格人群和月入组量分开算过。</span></div>
+    </div>
+    <div class="prose">
+      <p>问题不在于没有工具。统计软件能算样本量，监管指南能查终点先例，Excel 能拼可行性表。问题在于每一件工具只回答其中一段。</p>
+      <p>更麻烦的是，接完之后出来的数字长得很像结论。一个看起来标准的样本量、一个看起来合理的入组周期、一组看起来够用的中心数，写进方案时没有任何标记说明它只是一个假设。</p>
+      <p>这类数字在 gate 会上最容易出事。评审问的通常不是「你算了吗」，而是「这个效应量从哪来」「脱落率为什么是 15%」「合格人群这个数谁核过」。答不上来的时候，方案被退回的原因看起来是设计缺陷，<b>实质是没人能说清依据在哪</b>。</p>
+      <p>还有一类风险更隐蔽：一个未验证的替代终点被当成主要终点。它在早期看起来灵敏、好测、成本低，直到监管环节才发现它撑不起主要终点的位置。等到那时候，要重做的是整个设计。</p>
+    </div>
+  </div>
+</section>
+
+<section id="transition">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">04 · 转折</span>
+      <h2>真正缺的不是第四个工具，是一层能把依据固定下来的结构</h2>
+      <p class="sub">每一次估算都该带着它的假设、它的来源和它的边界一起出现，每一个决定都该知道由谁签字才算成立。</p>
+    </div>
+    <div class="prose">
+      <p>这个 Skill 做的就是这件事。<b>它不给判断增加权威，它给判断留下痕迹。</b></p>
+    </div>
+  </div>
+</section>
+
+<section id="solution">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">05 · 怎么工作</span>
+      <h2>输入三组参数，得到带依据、带边界、带签字人的估算</h2>
+    </div>
+    <div class="flow">
+      <div class="step"><span class="k">STEP 01 · 输入</span><b>三组参数</b><span>终点清单、统计参数、方案参数。</span></div>
+      <div class="step"><span class="k">STEP 02 · 处理</span><b>三个确定性脚本</b><span>终点打分与分类、样本量与把握度、五维可行性裁定。</span></div>
+      <div class="step"><span class="k">STEP 03 · 输出</span><b>带 blocker 与签字人链</b><span>ESTIMATE 横幅、blocker 清单、具名责任人。</span></div>
+    </div>
+    <div class="tools">
+      <div class="tool"><div class="fn">endpoint_selector.py</div><div class="tx"><b>终点打分与分类</b><span>按五个加权维度算复合分，分出 PRIMARY / KEY-SECONDARY / EXPLORATORY。未验证的替代终点会被标记并降权，拿不到主要终点位置。</span></div></div>
+      <div class="tool"><div class="fn">sample_size_estimator.py</div><div class="tx"><b>样本量与把握度</b><span>均值用 Cohen's d，比例用正态近似，生存用 Schoenfeld 事件数。按脱落率向上膨胀，并打印需要写进方案统计章节的假设块。</span></div></div>
+      <div class="tool"><div class="fn">phase_gate_scorer.py</div><div class="tx"><b>可行性裁定与签字人链</b><span>五维复合分 0 到 100，列出 blocker，给出 GO / GO-WITH-CONDITIONS / REDESIGN / NO-GO，以及必须签字的具名责任人。</span></div></div>
+      <div class="tool"><div class="fn">onboard.py</div><div class="tx"><b>首次使用的一次性设置</b><span>七问引导，把开发领域、默认 alpha、把握度、脱落率和三位责任人写进配置，之后每个脚本自动带上这些默认值。</span></div></div>
+    </div>
+    <div class="prose mt26">
+      <p>四个脚本都是纯标准库实现，<b>不联网、不调用模型</b>。同样的输入永远得到同样的输出，任何一条结论都可以被复算，也可以被质询。开发领域会真的改变结果：drug / device / biologic / diagnostic / digital-therapeutic 五档配置会调整每例成本基准与入组难度系数。</p>
+    </div>
+  </div>
+</section>
+
+<section id="cases">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">06 · 真实输出</span>
+      <h2>三个输出分别长什么样</h2>
+      <p class="sub">下面三组数值取自本机真实执行的一次合成输入走查，每一项都能对着产出它的脚本复算。</p>
+    </div>
+    <div class="outcard">
+      <div class="outcard-head"><b>输出 01 · 终点评分与分类</b><span class="chip blue">endpoint_selector.py</span></div>
+      <div class="outcard-body">
+        <div class="tbl-wrap"><table class="tbl ep"><thead><tr><th>终点</th><th>分类</th><th>复合分</th><th>临床相关性</th><th>可测量性</th><th>法规接受度</th><th>敏感度</th><th>负担</th></tr></thead><tbody><tr><td data-l="终点">GAD-7 第 8 周应答率</td><td class="cls p" data-l="分类">PRIMARY</td><td class="num" data-l="复合分">78.2</td><td class="num" data-l="临床相关性">88</td><td class="num" data-l="可测量性">80</td><td class="num" data-l="法规接受度">60*</td><td class="num" data-l="敏感度">82</td><td class="num" data-l="负担">85</td></tr><tr><td data-l="终点">CGI-Improvement 第 8 周</td><td class="cls k" data-l="分类">KEY-SECONDARY</td><td class="num" data-l="复合分">66.6</td><td class="num" data-l="临床相关性">80</td><td class="num" data-l="可测量性">68</td><td class="num" data-l="法规接受度">52*</td><td class="num" data-l="敏感度">60</td><td class="num" data-l="负担">70</td></tr><tr><td data-l="终点">App 内每周参与次数</td><td class="cls e" data-l="分类">EXPLORATORY</td><td class="num" data-l="复合分">38.2</td><td class="num" data-l="临床相关性">35</td><td class="num" data-l="可测量性">92</td><td class="num" data-l="法规接受度">20*</td><td class="num" data-l="敏感度">78</td><td class="num" data-l="负担">90</td></tr></tbody></table></div>
+        <p class="cap mt12">* 法规接受度显示的是<b>乘上 digital-therapeutic 档位系数（×0.80）之后</b>的分数。</p>
+        <p class="cap mt11">参与度指标的原始可测量性（92）与变化敏感度（78）在这三个候选里都不低，但它带未验证替代终点标记，<b>无法锚定主要终点</b>。</p>
+      </div>
+    </div>
+    <div class="outcard">
+      <div class="outcard-head"><b>输出 02 · 样本量与把握度</b><span class="chip green">sample_size_estimator.py</span></div>
+      <div class="outcard-body">
+        <div class="stats">
+          <div class="stat"><span class="k">每组所需 · 原始</span><span class="v">96</span><span class="s">两臂比例设计</span></div>
+          <div class="stat hi"><span class="k">每组所需 · 含脱落</span><span class="v">120</span><span class="s">按 20% 预计脱落向上膨胀</span></div>
+          <div class="stat"><span class="k">合计 · 含脱落</span><span class="v">240</span><span class="s">可直接写进方案的入组目标</span></div>
+        </div>
+        <p class="cap">公式 n = [zα√(2p̄q̄) + zβ√(p1q1+p2q2)]^2 / (p1-p2)^2，对应 alpha 0.05、把握度 0.80。</p>
+        <p class="cap mt11">这里有一个刻意保留的标记：35% → 55% 这个锚点由提问方提出，尚未引用已发表的 MCID。工具会给数字，但假设块会要求你把它追溯到一个来源。</p>
+      </div>
+    </div>
+    <div class="outcard">
+      <div class="outcard-head"><b>输出 03 · 可行性裁定与签字人链</b><span class="chip amber">phase_gate_scorer.py</span></div>
+      <div class="outcard-body">
+        <div class="verdict"><div class="verdict-top bad"><div><span class="k">裁定</span><br><span class="v">NO-GO</span></div><div class="tar"><span class="k">复合分</span><br><span class="v v-ink">74.6 / 100</span></div></div><div class="verdict-body"><span class="blocker">! power: planned n (200) &lt; 90% of required n (240)</span><span class="blocker">! budget: planned budget &lt; 75% of benchmark cost</span><div class="bar-row"><span class="lbl">入组可行性</span><span class="bar-track"><span class="bar-fill  w84"></span></span><span class="num">84.0</span></div><div class="bar-row"><span class="lbl">终点就绪度</span><span class="bar-track"><span class="bar-fill a w60"></span></span><span class="num">60.0</span></div><div class="bar-row"><span class="lbl">统计把握度</span><span class="bar-track"><span class="bar-fill a w767"></span></span><span class="num">76.7</span></div><div class="bar-row"><span class="lbl">运营复杂度</span><span class="bar-track"><span class="bar-fill g w94"></span></span><span class="num">94.0</span></div><div class="bar-row"><span class="lbl">预算匹配度</span><span class="bar-track"><span class="bar-fill r w556"></span></span><span class="num">55.6</span></div><div class="verdict-foot">复合分 74.6 单独看会落在 GO-WITH-CONDITIONS 一档，但<b>两条 blocker 直接判 NO-GO</b>。分数再高也压不过 blocker，这是设计如此，不是评分错误。</div></div></div>
+        <div class="owners mt24"><div class="owner"><div class="av">MM</div><span class="role">MEDICAL MONITOR</span><span class="nm">医学监查</span><span class="ph">占位 · 由引导问卷写入姓名</span></div><div class="owner"><div class="av">BS</div><span class="role">BIOSTATISTICIAN</span><span class="nm">生物统计师</span><span class="ph">占位 · 由引导问卷写入姓名</span></div><div class="owner"><div class="av">RO</div><span class="role">REGULATORY OWNER</span><span class="nm">注册负责人</span><span class="ph">占位 · 由引导问卷写入姓名</span></div><div class="owner"><div class="av">SD</div><span class="role">STUDY DIRECTOR</span><span class="nm">研究总监</span><span class="ph">占位 · 由引导问卷写入姓名</span></div><div class="owner"><div class="av">RH</div><span class="role">R&amp;D HEAD</span><span class="nm">研发负责人</span><span class="ph">占位 · 由引导问卷写入姓名</span></div></div>
+      </div>
+    </div>
+    <div class="req">[发布前要求] 本节数值来自一次合成输入的实跑走查，用于说明输出形态。上线前请替换或补充真实项目的输入、输出与截图；没有真实素材时，不得把这些数值写成已解决的临床问题，也不得写成某个真实项目因此改判。</div>
+  </div>
+</section>
+
+<section id="advantages">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">07 · 核心差异</span>
+      <h2>五条能落到用户身上的差异</h2>
+    </div>
+    <div class="adv-grid">
+      <div class="adv"><span class="n">01</span><div><h3>确定性输出，可以复算，也可以审计</h3><p>三个脚本不调用模型、不联网，只用标准库。同样的输入永远得到同样的结果，一条结论可以被人拿着参数复算一遍。在需要过 gate、需要写进方案的场合，<b>可复现比「看起来聪明」重要</b>。</p></div></div>
+      <div class="adv"><span class="n">02</span><div><h3>每个输出都带边界，而不是一个结论</h3><p>所有输出都带 ESTIMATE 横幅，并明说这是第一版估算，最终样本量必须由生物统计师用模拟、自适应设计或精确方法确认。它刻意不用结论的语气说话。</p></div></div>
+      <div class="adv"><span class="n">03</span><div><h3>决定权留给具名的人</h3><p>裁定不是授权，而是一份带 blocker 清单的建议，后面跟着必须签字的角色：Principal Investigator、Medical Monitor、Biostatistician、Regulatory Owner、Study Director，具体取决于裁定档位。引导问卷可以把这些角色换成真实姓名，直接打印在输出上。</p></div></div>
+      <div class="adv"><span class="n">04</span><div><h3>未验证的替代终点拿不到主要终点位置</h3><p>替代终点只要没有验证证据，就会被标记并降权，无法成为主要终点。这条规则把一类代价最高的后期返工<b>提前到了设计阶段</b>。</p></div></div>
+      <div class="adv"><span class="n">05</span><div><h3>开发领域会真的改变结果</h3><p>drug / device / biologic / diagnostic / digital-therapeutic 五档配置会调整每例成本基准和入组难度系数，不是换个标签而已。预算匹配度和入组可行性会跟着一起变。</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">08 · 为什么重要</span>
+      <h2>让设计决定第一次有痕迹</h2>
+    </div>
+    <div class="prose">
+      <p>这个 Skill 想减少的不是几次计算，而是临床设计里反复发生的同一件事：一个数字被算出来、被写进方案、被评审问到，然后没人能说清它从哪来。</p>
+      <p>当每一次估算都带着假设、来源和边界，当每一个裁定都知道该由谁签字，设计过程就从「当时是这么定的」变成「依据在这里，可以复算」。第一次算出的参数可以继续用于下一次修订，第一次标出的 blocker 可以继续追踪到关闭，第一次指定的责任人可以继续承担同一条线。</p>
+      <p><b>对临床团队来说，省下的不是时间，是返工。</b></p>
+    </div>
+  </div>
+</section>
+
+<section id="cta">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">09 · 开始使用</span>
+      <h2>clinical-research</h2>
+    </div>
+    <div class="cta-box">
+      <p>输入你的候选终点、统计参数和方案参数，先跑一次引导问卷把开发领域、默认 alpha、把握度和三位责任人固定下来。</p>
+      <p>得到的是<b>带依据、带边界、带签字人链的第一版估算</b>，可以直接放进 gate packet 讨论。</p>
+      <div class="cta-row">
+        <a class="btn blue" href="https://github.com/FinchipAIOrg/clinical-research">clinical-research <span class="ar">→</span></a>
+        <span class="sticker">纯标准库 · 零依赖 · 不联网</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fl">clinical-research v2.9.0 · 临床研究设计 Skill。本页所有输出均为规划用估计值，需由生物统计师、医学监查与注册负责人复核并签字，不构成临床结论或监管承诺。</div>
+    <div>纯标准库 · 不联网 · 不调用模型</div>
+  </div>
+</footer>
+</div>
+</body>
+</html>
