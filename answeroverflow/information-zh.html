@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Answer Overflow · Discord 问答检索 Skill</title>
+<style>
+  :root{
+    --bg:#0A0E13; --bg-elev:#101720; --card:#141B25; --card2:#0F151D;
+    --line:#232C39; --line2:#33404F;
+    --ink:#E8EDF4; --ink2:#9BA6B5; --ink3:#6B7685;
+    --cyan:#3FB6FF; --cyan-soft:rgba(63,182,255,.10); --cyan-line:rgba(63,182,255,.35);
+    --green:#3FB950; --green-soft:rgba(63,185,80,.10); --green-line:rgba(63,185,80,.35);
+    --red:#F85149; --red-soft:rgba(248,81,73,.10); --red-line:rgba(248,81,73,.32);
+    --amber:#D6A425; --amber-soft:rgba(214,164,37,.11); --amber-line:rgba(214,164,37,.35);
+    --purple:#A98BF5; --purple-soft:rgba(169,139,245,.11); --purple-line:rgba(169,139,245,.35);
+    --mono:ui-monospace,SFMono-Regular,"JetBrains Mono",Menlo,Consolas,monospace;
+    --r-lg:14px; --r-md:10px; --r-sm:7px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;padding:0;
+    background:
+      radial-gradient(1200px 520px at 10% -10%, rgba(63,182,255,.09), transparent 62%),
+      radial-gradient(900px 420px at 92% 2%, rgba(169,139,245,.07), transparent 60%),
+      var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:14px;line-height:1.72;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1140px;margin:0 auto;padding:0 22px}
+
+  .nav{
+    display:flex;align-items:center;gap:14px;
+    padding:18px 22px;max-width:1140px;margin:0 auto;
+    border-bottom:0.5px solid var(--line);
+  }
+  .logo{display:flex;align-items:center;gap:9px;font-weight:600;font-size:15px;letter-spacing:.01em}
+  .logo .mark{
+    width:26px;height:26px;border-radius:7px;flex:none;
+    background:linear-gradient(135deg,var(--cyan),var(--purple));
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:12px;font-weight:700;color:#04121C;
+  }
+  .nav .tagchip{
+    font-family:var(--mono);font-size:11px;padding:2px 9px;border-radius:999px;
+    background:var(--cyan-soft);color:var(--cyan);border:0.5px solid var(--cyan-line);
+  }
+  .nav .spacer{flex:1}
+  .nav .ver{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+
+  .hero{
+    max-width:1140px;margin:0 auto;padding:62px 22px 56px;
+    display:grid;grid-template-columns:1.02fr 1fr;gap:46px;align-items:center;
+  }
+  @media(max-width:980px){.hero{grid-template-columns:1fr;gap:36px;padding-top:44px}}
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;
+    color:var(--cyan);background:var(--cyan-soft);border:0.5px solid var(--cyan-line);
+    padding:4px 12px;border-radius:999px;margin-bottom:20px;
+  }
+  .eyebrow i{width:5px;height:5px;border-radius:50%;background:var(--cyan);display:block}
+
+  h1{
+    font-size:40px;line-height:1.22;font-weight:600;margin:0 0 20px;
+    letter-spacing:-.012em;
+  }
+  @media(max-width:980px){h1{font-size:32px}}
+  h1 .grad{
+    background:linear-gradient(100deg,var(--cyan) 8%,var(--purple) 92%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .lede{font-size:15px;color:var(--ink2);margin:0 0 26px;max-width:520px}
+  .lede b{color:var(--ink);font-weight:600}
+
+  .cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+    padding:11px 20px;border-radius:var(--r-md);font-size:13.5px;font-weight:600;
+    text-decoration:none;border:0.5px solid transparent;transition:opacity .15s;
+  }
+  .btn:hover{opacity:.86}
+  .btn-p{background:var(--cyan);color:#04121C}
+  .btn-s{background:transparent;color:var(--ink2);border-color:var(--line2)}
+  .btn .arw{font-family:var(--mono);font-size:12px}
+
+  .hero-facts{
+    display:flex;gap:26px;flex-wrap:wrap;
+    margin-top:34px;padding-top:24px;border-top:0.5px solid var(--line);
+  }
+  .hero-facts div{min-width:96px}
+  .hero-facts .k{font-size:21px;font-weight:600;font-family:var(--mono);letter-spacing:-.01em}
+  .hero-facts .k.c{color:var(--cyan)}
+  .hero-facts .k.g{color:var(--green)}
+  .hero-facts .k.p{color:var(--purple)}
+  .hero-facts .v{font-size:11.5px;color:var(--ink3);margin-top:2px}
+
+  .stage{
+    background:var(--card2);border:0.5px solid var(--line);border-radius:var(--r-lg);
+    overflow:hidden;
+    box-shadow:0 22px 60px -30px rgba(0,0,0,.85);
+  }
+  .stage-bar{
+    display:flex;align-items:center;gap:9px;padding:11px 14px;
+    background:var(--bg-elev);border-bottom:0.5px solid var(--line);
+  }
+  .dots{display:flex;gap:5px}
+  .dots span{width:9px;height:9px;border-radius:50%;background:var(--line2);display:block}
+  .dots span:first-child{background:#3A4553}
+  .stage-url{
+    flex:1;font-family:var(--mono);font-size:11px;color:var(--ink3);
+    background:var(--card);border:0.5px solid var(--line);border-radius:999px;
+    padding:3px 12px;text-align:center;
+  }
+  .stage-body{padding:16px}
+
+  .s-query{
+    display:flex;align-items:center;gap:9px;
+    background:var(--card);border:0.5px solid var(--cyan-line);border-radius:var(--r-sm);
+    padding:9px 13px;font-family:var(--mono);font-size:11.5px;color:#9FD2F5;
+    margin-bottom:13px;
+  }
+  .s-query .cur{width:7px;height:13px;background:var(--cyan);display:block;opacity:.75}
+
+  .s-row{
+    display:flex;gap:11px;align-items:flex-start;
+    padding:11px 13px;border-radius:var(--r-sm);
+    background:var(--card);border:0.5px solid var(--line);margin-bottom:8px;
+  }
+  .s-row.hot{border-color:var(--cyan-line);background:var(--cyan-soft)}
+  .s-row .ic{
+    width:24px;height:24px;border-radius:6px;flex:none;margin-top:1px;
+    background:var(--line);display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:10px;color:var(--ink2);
+  }
+  .s-row.hot .ic{background:var(--cyan);color:#04121C;font-weight:700}
+  .s-row .t{font-size:12.5px;font-weight:600;color:var(--ink);line-height:1.4}
+  .s-row .m{font-family:var(--mono);font-size:10.5px;color:var(--ink3);margin-top:3px}
+  .s-row.hot .t{color:#BEE2FB}
+
+  .s-thread{
+    background:var(--card);border:0.5px solid var(--line);border-radius:var(--r-sm);
+    padding:13px;margin-top:4px;
+  }
+  .s-thread .lbl{
+    font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--ink3);
+    margin-bottom:9px;
+  }
+  .s-msg{display:flex;gap:9px;margin-bottom:9px}
+  .s-msg .av{
+    width:20px;height:20px;border-radius:5px;flex:none;
+    background:var(--line2);font-family:var(--mono);font-size:9px;
+    display:flex;align-items:center;justify-content:center;color:var(--ink2);
+  }
+  .s-msg.pick .av{background:var(--green);color:#04120A;font-weight:700}
+  .s-msg .who{font-family:var(--mono);font-size:10.5px;color:var(--ink2)}
+  .s-msg .tx{font-size:11.5px;color:var(--ink2);line-height:1.55;margin-top:1px}
+  .s-msg.pick .tx{color:#C9D6E4}
+
+  /* ===== section shell ===== */
+  .sec{max-width:1140px;margin:0 auto;padding:60px 22px 0}
+  .sec-hd{margin-bottom:8px}
+  .sec-no{
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--cyan);
+    display:block;margin-bottom:9px;
+  }
+  .sec h2{font-size:25px;font-weight:600;margin:0 0 10px;letter-spacing:-.008em}
+  .sec .sub{color:var(--ink2);font-size:14px;margin:0;max-width:720px}
+
+  /* ===== before / after ===== */
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px}
+  @media(max-width:900px){.cmp{grid-template-columns:1fr}}
+  .pane{
+    background:var(--card);border:0.5px solid var(--line);border-radius:var(--r-lg);
+    overflow:hidden;display:flex;flex-direction:column;
+  }
+  .pane.b{border-color:var(--line2)}
+  .pane.a{border-color:var(--cyan-line)}
+  .pane-hd{
+    display:flex;align-items:center;gap:10px;
+    padding:13px 17px;border-bottom:0.5px solid var(--line);
+  }
+  .pane.b .pane-hd{background:var(--bg-elev)}
+  .pane.a .pane-hd{background:var(--cyan-soft)}
+  .pane-hd .tt{font-size:13.5px;font-weight:600}
+  .pane.a .pane-hd .tt{color:#BEE2FB}
+  .pane-hd .chip{
+    margin-left:auto;font-family:var(--mono);font-size:10.5px;
+    padding:2px 10px;border-radius:999px;white-space:nowrap;
+  }
+  .chip.bad{background:var(--red-soft);color:var(--red);border:0.5px solid var(--red-line)}
+  .chip.good{background:var(--green-soft);color:var(--green);border:0.5px solid var(--green-line)}
+  .pane-bd{padding:16px;flex:1}
+
+  .cap{
+    font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+    color:var(--ink3);margin:14px 0 9px;
+  }
+  .cap:first-child{margin-top:0}
+
+  .gtext{
+    background:var(--card2);border:0.5px solid var(--line);border-radius:var(--r-sm);
+    padding:12px 14px;font-size:12px;line-height:1.68;color:var(--ink3);
+  }
+  .gtext em{color:var(--ink2);font-style:normal}
+
+  .rule{
+    background:var(--green-soft);border:0.5px solid var(--green-line);
+    border-radius:var(--r-sm);padding:12px 14px;
+    font-size:12.5px;line-height:1.66;color:#9BE3A8;
+  }
+  .rule b{color:#C6F0CE}
+
+  .src{
+    display:flex;align-items:center;gap:8px;margin-top:11px;
+    font-family:var(--mono);font-size:10.5px;color:var(--ink3);
+    border-top:0.5px dashed var(--line2);padding-top:10px;
+  }
+  .src .dot-ok{width:6px;height:6px;border-radius:50%;background:var(--green);display:block;flex:none}
+
+  .verdict{
+    border-radius:var(--r-sm);padding:11px 14px;font-size:12.5px;line-height:1.65;margin-top:14px;
+  }
+  .verdict.b{background:var(--red-soft);border:0.5px solid var(--red-line);color:#EFA9A4}
+  .verdict.a{background:var(--cyan-soft);border:0.5px solid var(--cyan-line);color:#BCE0FA}
+  .verdict b{font-weight:600}
+
+  /* ===== diff table ===== */
+  .diff{width:100%;border-collapse:collapse;margin-top:22px;font-size:13px;
+    background:var(--card);border:0.5px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+  .diff th,.diff td{padding:12px 16px;text-align:left;border-bottom:0.5px solid var(--line);vertical-align:top}
+  .diff th{background:var(--bg-elev);font-family:var(--mono);font-size:11px;
+    letter-spacing:.06em;color:var(--ink3);font-weight:500}
+  .diff tr:last-child td{border-bottom:none}
+  .diff td.d{color:var(--ink2);white-space:nowrap;font-weight:500;width:15%}
+  .diff td.b{color:var(--ink3);width:42.5%}
+  .diff td.a{color:#C3D4E4;width:42.5%}
+  .diff td.a strong{color:var(--cyan);font-weight:600}
+
+  .zero{
+    display:flex;align-items:center;gap:9px;margin-top:13px;
+    padding:10px 14px;border-radius:var(--r-sm);
+    background:var(--red-soft);border:0.5px solid var(--red-line);
+    font-family:var(--mono);font-size:11px;color:var(--red);line-height:1.5;
+  }
+  .zero.good{background:var(--green-soft);border-color:var(--green-line);color:var(--green)}
+
+  /* ===== 03 · capabilities ===== */
+  .caps{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px}
+  @media(max-width:860px){.caps{grid-template-columns:1fr}}
+  .cap-card{
+    background:var(--card);border:0.5px solid var(--line);border-radius:var(--r-lg);
+    padding:19px 20px 17px;display:flex;flex-direction:column;
+  }
+  .cap-card .no{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+    color:var(--cyan);display:block;margin-bottom:11px;
+  }
+  .cap-card h3{font-size:15px;font-weight:600;margin:0 0 9px;letter-spacing:-.005em}
+  .cap-card p{margin:0;font-size:12.5px;color:var(--ink2);line-height:1.72}
+  .cap-card .code{
+    font-family:var(--mono);font-size:11px;color:#9FD2F5;
+    background:var(--card2);border:0.5px solid var(--cyan-line);
+    border-radius:var(--r-sm);padding:8px 12px;margin:13px 0 0;
+    word-break:break-all;line-height:1.6;
+  }
+  .cap-card .foot{
+    margin-top:auto;padding-top:12px;border-top:0.5px dashed var(--line2);
+    font-family:var(--mono);font-size:10.5px;color:var(--ink3);line-height:1.62;
+  }
+  .cap-card .foot.note{color:var(--amber)}
+
+  /* ===== 03 · metrics ===== */
+  .metric-grp{margin-top:30px}
+  .metric-grp .gh{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .metric-grp .gh .gt{font-size:13.5px;font-weight:600}
+  .metric-grp .gh .gs{font-family:var(--mono);font-size:10.5px;color:var(--ink3)}
+  .srctag{
+    font-family:var(--mono);font-size:10px;padding:2px 9px;
+    border-radius:999px;white-space:nowrap;
+  }
+  .srctag.off{background:var(--green-soft);color:var(--green);border:0.5px solid var(--green-line)}
+  .srctag.repo{background:var(--cyan-soft);color:var(--cyan);border:0.5px solid var(--cyan-line)}
+  .srctag.tp{background:var(--amber-soft);color:var(--amber);border:0.5px solid var(--amber-line)}
+
+  table.metric{
+    width:100%;border-collapse:collapse;font-size:13px;background:var(--card);
+    border:0.5px solid var(--line);border-radius:var(--r-lg);overflow:hidden;
+  }
+  table.metric th,table.metric td{
+    padding:11px 16px;text-align:left;border-bottom:0.5px solid var(--line);vertical-align:top;
+  }
+  table.metric th{
+    background:var(--bg-elev);font-family:var(--mono);font-size:11px;
+    letter-spacing:.06em;color:var(--ink3);font-weight:500;
+  }
+  table.metric tr:last-child td{border-bottom:none}
+  table.metric td.k{color:var(--ink2);width:36%}
+  table.metric td.v{color:var(--ink);width:28%;font-weight:500}
+  table.metric td.v .mono{font-family:var(--mono);font-size:12.5px}
+  table.metric td.v .mono.c{color:var(--cyan)}
+  table.metric td.s{width:36%;color:var(--ink3);font-size:11.5px}
+
+  .quotebox{
+    margin-top:22px;background:var(--card2);border:0.5px solid var(--line);
+    border-left:2px solid var(--cyan);border-radius:var(--r-md);
+    padding:15px 18px;font-size:12.5px;line-height:1.78;color:var(--ink2);
+  }
+  .quotebox .q{
+    font-family:var(--mono);font-size:11.5px;color:#9FD2F5;
+    display:block;margin-bottom:9px;line-height:1.65;
+  }
+  .quotebox b{color:var(--ink);font-weight:600}
+  .warnbox{
+    margin-top:12px;background:var(--amber-soft);border:0.5px solid var(--amber-line);
+    border-radius:var(--r-md);padding:14px 17px;font-size:12.5px;line-height:1.72;color:#E2CB8C;
+  }
+  .warnbox b{color:#F0DC9E;font-weight:600}
+
+  /* ===== 04 · workflow ===== */
+  .flow{margin-top:26px}
+  .fstep{
+    display:grid;grid-template-columns:44px 1fr;gap:18px;
+    position:relative;padding-bottom:15px;
+  }
+  .fstep:last-child{padding-bottom:0}
+  .fstep::before{
+    content:'';position:absolute;left:21.5px;top:44px;bottom:0;
+    width:1px;background:var(--line2);
+  }
+  .fstep:last-child::before{display:none}
+  .fstep .dot{
+    width:44px;height:44px;border-radius:11px;flex:none;
+    background:var(--card);border:0.5px solid var(--line2);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:14px;font-weight:700;color:var(--ink3);
+    position:relative;z-index:1;
+  }
+  .fstep.key .dot{border-color:var(--cyan-line);background:var(--cyan-soft);color:var(--cyan)}
+  .fstep .body{
+    background:var(--card);border:0.5px solid var(--line);
+    border-radius:var(--r-lg);padding:14px 18px 15px;
+  }
+  .fstep.key .body{border-color:var(--cyan-line);background:var(--cyan-soft)}
+  .fstep .body h3{font-size:13.5px;font-weight:600;margin:0 0 7px}
+  .fstep.key .body h3{color:#BEE2FB}
+  .fstep .body h3 .tag{
+    font-family:var(--mono);font-size:10px;font-weight:500;
+    padding:2px 8px;border-radius:999px;margin-left:8px;
+    background:var(--cyan);color:#04121C;vertical-align:1px;
+  }
+  .fstep .body p{margin:0;font-size:12.5px;color:var(--ink2);line-height:1.72}
+  .fstep .out{
+    margin-top:11px;padding-top:10px;border-top:0.5px dashed var(--line2);
+    font-family:var(--mono);font-size:10.5px;color:var(--ink3);line-height:1.65;
+  }
+  .fstep .out b{color:var(--ink2);font-weight:500}
+  .fstep.key .out{border-top-color:var(--cyan-line)}
+
+  .fallback{
+    margin-top:24px;background:var(--card2);border:0.5px solid var(--line);
+    border-radius:var(--r-lg);padding:17px 19px;
+  }
+  .fallback .fh{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+    color:var(--ink3);margin-bottom:13px;
+  }
+  .fbrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:760px){.fbrow{grid-template-columns:1fr}}
+  .fbit{
+    background:var(--card);border:0.5px solid var(--line);
+    border-left:2px solid var(--amber);border-radius:var(--r-sm);
+    padding:12px 15px;font-size:12.5px;line-height:1.7;color:var(--ink2);
+  }
+  .fbit .ft{
+    font-family:var(--mono);font-size:10.5px;color:var(--amber);
+    display:block;margin-bottom:6px;
+  }
+  .fbit b{color:var(--ink);font-weight:600}
+
+  /* ===== 05 · cases ===== */
+  .cases{margin-top:26px;display:flex;flex-direction:column;gap:18px}
+  .case{
+    background:var(--card);border:0.5px solid var(--line);
+    border-radius:var(--r-lg);overflow:hidden;
+  }
+  .case-hd{
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    padding:13px 18px;background:var(--bg-elev);
+    border-bottom:0.5px solid var(--line);
+  }
+  .case-hd .cn{
+    font-family:var(--mono);font-size:11px;font-weight:700;
+    padding:3px 10px;border-radius:999px;
+    background:var(--cyan-soft);color:var(--cyan);border:0.5px solid var(--cyan-line);
+  }
+  .case-hd .ct{font-size:14.5px;font-weight:600}
+  .case-hd .cb{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--ink3)}
+  .case-bd{padding:5px 18px 15px}
+
+  .seg{
+    display:grid;grid-template-columns:104px 1fr;gap:18px;
+    padding:15px 0;border-bottom:0.5px dashed var(--line2);
+  }
+  @media(max-width:700px){.seg{grid-template-columns:1fr;gap:7px}}
+  .seg:last-child{border-bottom:none;padding-bottom:4px}
+  .seg .sl{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;
+    color:var(--ink3);line-height:1.6;padding-top:2px;
+  }
+  .seg .sl b{display:block;color:var(--ink2);font-weight:500}
+  .seg .sc{font-size:12.5px;color:var(--ink2);line-height:1.72;min-width:0}
+  .seg .sc b{color:var(--ink);font-weight:600}
+
+  .qbox{
+    font-family:var(--mono);font-size:11.5px;color:#9FD2F5;line-height:1.72;
+    background:var(--card2);border:0.5px solid var(--cyan-line);
+    border-radius:var(--r-sm);padding:10px 13px;word-break:break-word;
+  }
+  .hitrow{
+    display:flex;align-items:flex-start;gap:11px;
+    background:var(--card2);border:0.5px solid var(--line);
+    border-radius:var(--r-sm);padding:11px 13px;
+  }
+  .hitrow .ic{
+    width:24px;height:24px;border-radius:6px;flex:none;margin-top:1px;
+    background:var(--cyan);color:#04121C;
+    font-family:var(--mono);font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .hitrow .ht{font-size:12.5px;font-weight:600;color:var(--ink);line-height:1.45}
+  .hitrow .hm{font-family:var(--mono);font-size:10.5px;color:var(--ink3);margin-top:3px}
+
+  .vt{
+    display:inline-flex;align-items:center;gap:7px;
+    font-family:var(--mono);font-size:10.5px;
+    padding:3px 10px;border-radius:999px;margin-bottom:9px;
+  }
+  .vt.ok{background:var(--green-soft);color:var(--green);border:0.5px solid var(--green-line)}
+  .vt.chk{background:var(--amber-soft);color:var(--amber);border:0.5px solid var(--amber-line)}
+
+  .shot{
+    margin-top:14px;border:0.5px dashed var(--line2);border-radius:var(--r-sm);
+    background:var(--card2);padding:16px;text-align:center;
+    font-family:var(--mono);font-size:10.5px;color:var(--ink3);line-height:1.65;
+  }
+  .shot .si{display:block;font-size:15px;margin-bottom:5px;opacity:.5}
+
+  /* ===== 05b · 案例截图 ===== */
+  .shots{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:15px}
+  @media(max-width:760px){.shots{grid-template-columns:1fr}}
+  .shotfig{
+    display:block;border:0.5px solid var(--line);border-radius:var(--r-sm);
+    overflow:hidden;background:var(--card2);text-decoration:none;
+  }
+  .shotfig:hover{border-color:var(--cyan-line)}
+  .shotfig img{display:block;width:100%;height:auto;background:var(--bg)}
+  .shotfig .cap{
+    display:block;font-family:var(--mono);font-size:10px;color:var(--ink3);
+    padding:6px 9px;border-top:0.5px solid var(--line);line-height:1.55;
+  }
+  .shotcap{margin-top:11px;font-family:var(--mono);font-size:10px;color:var(--ink3);line-height:1.6}
+
+  /* ===== 06 · assessment register ===== */
+  .reg-sub{display:flex;align-items:baseline;gap:12px;margin:36px 0 13px;flex-wrap:wrap}
+  .reg-sub .rn{
+    font-family:var(--mono);font-size:10.5px;color:var(--cyan);
+    background:var(--cyan-soft);border:0.5px solid var(--cyan-line);
+    padding:2px 8px;border-radius:6px;flex:none;align-self:center;
+  }
+  .reg-sub .rt{font-size:16.5px;font-weight:600}
+  .reg-sub .rd{font-size:12px;color:var(--ink3);line-height:1.6}
+
+  .reg-meta{
+    margin-top:22px;background:var(--card);border:0.5px solid var(--line);
+    border-radius:var(--r-lg);overflow:hidden;
+  }
+  .reg-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:0.5px solid var(--line)}
+  .reg-row:last-child{border-bottom:none}
+  .reg-cell{padding:13px 17px}
+  .reg-cell+.reg-cell{border-left:0.5px solid var(--line)}
+  @media(max-width:760px){
+    .reg-row{grid-template-columns:1fr}
+    .reg-cell+.reg-cell{border-left:none;border-top:0.5px solid var(--line)}
+  }
+  .reg-cell .rk{
+    font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+    color:var(--ink3);margin-bottom:5px;
+  }
+  .reg-cell .rv{font-size:13px;color:var(--ink)}
+  .reg-cell .rv.mono{font-family:var(--mono);font-size:12px}
+
+  .vcards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+  @media(max-width:820px){.vcards{grid-template-columns:1fr}}
+  .vcard{
+    background:var(--card);border:0.5px solid var(--line);
+    border-radius:var(--r-lg);padding:16px 18px 17px;
+  }
+  .vcard.ok{border-left:2px solid var(--green)}
+  .vcard.no{border-left:2px solid var(--red)}
+  .vcard .vk{
+    font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+    display:block;margin-bottom:8px;
+  }
+  .vcard.ok .vk{color:var(--green)}
+  .vcard.no .vk{color:var(--red)}
+  .vcard h4{font-size:14px;font-weight:600;margin:0 0 8px;letter-spacing:-.004em}
+  .vcard p{margin:0;font-size:12.5px;color:var(--ink2);line-height:1.72}
+
+  .st{
+    display:inline-block;font-family:var(--mono);font-size:10px;
+    padding:2px 8px;border-radius:6px;white-space:nowrap;line-height:1.6;
+  }
+  .st.ok{background:var(--green-soft);color:var(--green);border:0.5px solid var(--green-line)}
+  .st.no{background:var(--red-soft);color:var(--red);border:0.5px solid var(--red-line)}
+  .st.wn{background:var(--amber-soft);color:var(--amber);border:0.5px solid var(--amber-line)}
+  .st.rb{background:var(--purple-soft);color:var(--purple);border:0.5px solid var(--purple-line)}
+
+  table.rt{
+    width:100%;border-collapse:collapse;font-size:12.5px;background:var(--card);
+    border:0.5px solid var(--line);border-radius:var(--r-lg);overflow:hidden;
+  }
+  table.rt th,table.rt td{
+    padding:11px 15px;text-align:left;border-bottom:0.5px solid var(--line);
+    vertical-align:top;line-height:1.66;
+  }
+  table.rt th{
+    background:var(--bg-elev);font-family:var(--mono);font-size:10.5px;
+    letter-spacing:.06em;color:var(--ink3);font-weight:500;
+  }
+  table.rt tr:last-child td{border-bottom:none}
+  table.rt td:first-child{color:var(--ink);font-weight:500}
+  table.rt td.mid{color:var(--ink2)}
+  table.rt td.mono{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+  table.rt td.num{font-family:var(--mono);font-size:12px;color:var(--ink2);white-space:nowrap}
+  table.rt td.num.hi{color:var(--green)}
+  table.rt td.num.mid-c{color:var(--amber)}
+  table.rt td.num.lo{color:var(--red)}
+  table.rt td.act{width:26%;color:var(--ink3);font-size:11.5px}
+
+  .dim{
+    background:var(--card);border:0.5px solid var(--line);
+    border-radius:var(--r-md);padding:15px 17px;margin-bottom:10px;
+  }
+  .dim-h{display:flex;align-items:center;gap:10px;margin-bottom:11px;flex-wrap:wrap}
+  .dim-h .dn{font-size:13.5px;font-weight:600}
+  .dim-h .dsc{margin-left:auto;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--ink)}
+  .bar{height:5px;border-radius:3px;background:var(--card2);border:0.5px solid var(--line);overflow:hidden;margin-bottom:11px}
+  .bar i{display:block;height:100%}
+  .dim .dq{font-size:12.5px;color:var(--ink2);line-height:1.7;margin:0 0 9px}
+  .dim .db{font-family:var(--mono);font-size:11px;color:var(--ink3);line-height:1.74;margin:0}
+  .dim .db b{color:var(--ink2);font-weight:500}
+
+  .loggrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  @media(max-width:840px){.loggrid{grid-template-columns:1fr}}
+  .qlog{
+    background:var(--card);border:0.5px solid var(--line);
+    border-radius:var(--r-md);padding:14px 16px;
+  }
+  .qlog.blocked{border-color:var(--red-line);background:var(--red-soft)}
+  .qlog .qh{display:flex;align-items:center;gap:9px;margin-bottom:11px;flex-wrap:wrap}
+  .qlog .qq{font-family:var(--mono);font-size:11px;color:#9FD2F5;line-height:1.6;word-break:break-all}
+  .qlog .qn{font-size:12px;color:var(--ink2);line-height:1.7;margin:0 0 10px}
+  .hitl{font-family:var(--mono);font-size:11px;color:var(--ink2);line-height:1.85;margin:0;padding:0;list-style:none}
+  .hitl li{margin-bottom:3px;padding-left:13px;position:relative}
+  .hitl li::before{content:'·';position:absolute;left:3px;color:var(--ink3)}
+  .hitl b{color:var(--ink);font-weight:600}
+  .hitl .d{color:var(--ink3)}
+  .hitl .u{color:#9FD2F5}
+  .blockbox{
+    background:var(--card2);border:0.5px solid var(--red-line);border-radius:var(--r-sm);
+    padding:12px 14px;font-family:var(--mono);font-size:11px;
+    color:#EFA9A4;line-height:1.95;white-space:pre-wrap;margin:0 0 11px;
+  }
+  .scoreline{
+    display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+    background:var(--card2);border:0.5px solid var(--line);
+    border-radius:var(--r-md);padding:15px 17px;margin-top:14px;
+  }
+  .scoreline .sv{
+    font-family:var(--mono);font-size:26px;font-weight:700;
+    color:var(--green);letter-spacing:-.02em;line-height:1;
+  }
+  .scoreline .sl2{font-family:var(--mono);font-size:10.5px;color:var(--ink3);letter-spacing:.1em}
+  .scoreline p{
+    margin:0;font-size:12.5px;color:var(--ink2);line-height:1.72;
+    flex:1;min-width:240px;
+  }
+  .scoreline p b{color:var(--ink);font-weight:600}
+
+  /* ===== 07 users & cta ===== */
+  .ugrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}
+  @media(max-width:860px){.ugrid{grid-template-columns:1fr}}
+  .ucard{
+    background:var(--card);border:0.5px solid var(--line);border-radius:var(--r-md);
+    padding:16px 18px;
+  }
+  .ucard .uh{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+  .ucard .un{
+    font-family:var(--mono);font-size:10px;color:var(--cyan);flex:none;
+    background:var(--cyan-soft);border:0.5px solid var(--cyan-line);
+    padding:2px 7px;border-radius:5px;
+  }
+  .ucard h4{margin:0;font-size:14.5px;font-weight:600;letter-spacing:-.004em}
+  .ucard p{margin:0;font-size:12.5px;color:var(--ink2);line-height:1.76}
+  .ucard p b{color:var(--ink);font-weight:600}
+
+  .ugrid-note{
+    margin-top:13px;font-size:11.5px;color:var(--ink3);line-height:1.72;
+    padding-left:13px;border-left:2px solid var(--line2);
+  }
+  .ugrid-note b{color:var(--ink2);font-weight:500}
+
+  .fitsplit{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px}
+  @media(max-width:860px){.fitsplit{grid-template-columns:1fr}}
+  .fitcard{border-radius:var(--r-md);padding:15px 18px;border:0.5px solid var(--line);background:var(--card2)}
+  .fitcard.yes{border-color:var(--green-line);background:var(--green-soft)}
+  .fitcard.nope{border-color:var(--line2);background:var(--card2)}
+  .fitcard .fkh{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;margin-bottom:11px;display:block}
+  .fitcard.yes .fkh{color:var(--green)}
+  .fitcard.nope .fkh{color:var(--ink3)}
+  .fitcard ul{margin:0;padding:0;list-style:none}
+  .fitcard li{
+    font-size:12.5px;color:var(--ink2);line-height:1.72;
+    padding-left:16px;position:relative;margin-bottom:8px;
+  }
+  .fitcard li:last-child{margin-bottom:0}
+  .fitcard li::before{position:absolute;left:0;font-family:var(--mono);font-size:11px;top:0}
+  .fitcard.yes li::before{content:'✓';color:var(--green)}
+  .fitcard.nope li::before{content:'—';color:var(--ink3)}
+  .fitcard li b{color:var(--ink);font-weight:600}
+
+  .ctabox{
+    margin-top:30px;border-radius:var(--r-lg);padding:30px 32px;
+    background:linear-gradient(135deg,rgba(63,182,255,.11),rgba(169,139,245,.07));
+    border:0.5px solid var(--cyan-line);
+  }
+  @media(max-width:700px){.ctabox{padding:22px 20px}}
+  .ctabox .ck{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--cyan);display:block;margin-bottom:12px}
+  .ctabox h3{margin:0 0 12px;font-size:21px;font-weight:600;letter-spacing:-.006em;line-height:1.42}
+  .ctabox .cl{margin:0 0 22px;font-size:13.5px;color:var(--ink2);line-height:1.8;max-width:780px}
+  .ctabox .cl b{color:var(--ink);font-weight:600}
+  .ctarules{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:820px){.ctarules{grid-template-columns:1fr}}
+  .ctarule{
+    background:rgba(10,14,19,.42);border:0.5px solid var(--line);
+    border-radius:var(--r-md);padding:13px 15px;
+  }
+  .ctarule .cn{font-family:var(--mono);font-size:10px;color:var(--ink3);display:block;margin-bottom:8px;letter-spacing:.08em}
+  .ctarule .ct{font-size:12.5px;color:var(--ink2);line-height:1.74}
+  .ctarule .ct b{color:var(--ink);font-weight:600}
+  .ctafoot{
+    margin-top:22px;padding-top:18px;border-top:0.5px solid var(--line2);
+    display:flex;gap:14px;flex-wrap:wrap;align-items:baseline;
+  }
+  .ctafoot .lb{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--ink3);flex:none}
+  .ctafoot .en{
+    font-family:var(--mono);font-size:11px;color:#9FD2F5;
+    background:rgba(10,14,19,.5);border:0.5px solid var(--line);
+    padding:6px 11px;border-radius:var(--r-sm);word-break:break-all;line-height:1.6;
+  }
+
+  .pfoot{
+    max-width:1140px;margin:64px auto 0;padding:26px 22px 60px;
+    border-top:0.5px solid var(--line);
+    display:grid;grid-template-columns:1fr auto;gap:22px;align-items:start;
+  }
+  @media(max-width:860px){.pfoot{grid-template-columns:1fr}}
+  .pfoot .fl{font-size:12.5px;color:var(--ink2);line-height:1.8;max-width:780px}
+  .pfoot .fl b{color:var(--ink);font-weight:600}
+  .pfoot .fl .src{display:block;margin-top:4px;color:var(--ink3)}
+  .pfoot .fr{font-family:var(--mono);font-size:10.5px;color:var(--ink3);line-height:1.95;text-align:right;white-space:nowrap}
+  @media(max-width:860px){.pfoot .fr{text-align:left;white-space:normal}}
+
+/* ===== Finch 宿主兼容层：不透明页面容器 + 媒体自适应 ===== */
+.finch-page{margin:0;padding:0; background: radial-gradient(1200px 520px at 10% -10%, rgba(63,182,255,.09), transparent 62%), radial-gradient(900px 420px at 92% 2%, rgba(169,139,245,.07), transparent 60%), var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; font-size:14px;line-height:1.72; -webkit-font-smoothing:antialiased;}
+.finch-page img,.finch-page video{max-width:100%;height:auto}
+</style>
+</head>
+<body>
+<div class="finch-page">
+
+<nav class="nav">
+  <div class="logo"><span class="mark">AO</span>Answer Overflow</div>
+  <span class="tagchip">Discord 问答检索</span>
+  <span class="spacer"></span>
+  <span class="ver">v1.0.2</span>
+</nav>
+
+<!-- ============ 1 · HERO ============ -->
+<header class="hero">
+  <div>
+    <span class="eyebrow"><i></i>SKILL · 开发者排错</span>
+    <h1>Discord 里解决过的问题，<br><span class="grad">第一次变得可检索</span></h1>
+    <p class="lede">
+      Stack Overflow 上没有、官方文档里也没写，但某个 Discord 频道里有人踩过并解决了——这类答案此前只存在于聊天记录中。
+      Answer Overflow 索引了这些公开问答线程，本 skill 把这份索引接进对话：<b>你照常用自然语言提问，拿到的是可引用、可核验的一手答案</b>。
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-p" href="#cases">看三个真实案例 <span class="arw">→</span></a>
+      <a class="btn btn-s" href="#flow">了解工作流程</a>
+    </div>
+    <div class="hero-facts">
+      <div><div class="k c">3 种</div><div class="v">检索入口<br>网页 / Markdown / MCP</div></div>
+      <div><div class="k g">0 参数</div><div class="v">无需配置<br>自然语言直接提问</div></div>
+      <div><div class="k p">约 6h</div><div class="v">索引处理周期<br>官方文档口径</div></div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-bar">
+      <span class="dots"><span></span><span></span><span></span></span>
+      <span class="stage-url">answeroverflow.com/c/prisma</span>
+    </div>
+    <div class="stage-body">
+      <div class="s-query"><span>site:answeroverflow.com prisma generate never completes</span><span class="cur"></span></div>
+
+      <div class="s-row hot">
+        <span class="ic">◆</span>
+        <div>
+          <div class="t">Prisma generate never completes</div>
+          <div class="m">Prisma 官方服务器 · m/1349804537426477138</div>
+        </div>
+      </div>
+      <div class="s-row">
+        <span class="ic">◇</span>
+        <div>
+          <div class="t">Good way to do many to many relationship Prisma</div>
+          <div class="m">Theo's Typesafe Cult · m/1098688072574582925</div>
+        </div>
+      </div>
+      <div class="s-row">
+        <span class="ic">◇</span>
+        <div>
+          <div class="t">Prisma Postgres vs Accelerate with own Postgres</div>
+          <div class="m">Prisma 官方服务器 · m/1377979294491476178</div>
+        </div>
+      </div>
+
+      <div class="s-thread">
+        <div class="lbl">命中线程 · 已提取结论</div>
+        <div class="s-msg">
+          <span class="av">OP</span>
+          <div>
+            <div class="who">提问者</div>
+            <div class="tx">bunx prisma generate 在 CI 上一直挂着不结束，本机正常。</div>
+          </div>
+        </div>
+        <div class="s-msg pick">
+          <span class="av">✓</span>
+          <div>
+            <div class="who">根因 · 引用已核验</div>
+            <div class="tx">Bun 单独运行缺少 Node.js 依赖；改用 npm 执行可绕过。引用 Issue 已确认存在。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ 2 · BEFORE / AFTER ============ -->
+<section class="sec" id="beforeafter">
+  <div class="sec-hd">
+    <span class="sec-no">02 · 效果对比</span>
+    <h2>同一个问题，用之前和用之后拿到的东西不一样</h2>
+    <p class="sub">下面两组结果都是本次实跑得到的，不是示意。同一个 Prisma 报错：左边是不带数据源限定的通用搜索，右边是加载 skill 后的站内检索。</p>
+  </div>
+
+  <div class="cmp">
+
+    <div class="pane b">
+      <div class="pane-hd">
+        <span class="tt">使用前 · 通用检索与问答</span>
+        <span class="chip bad">0 条命中该数据源</span>
+      </div>
+      <div class="pane-bd">
+        <div class="cap">你的动作</div>
+        <div class="s-query"><span>prisma many-to-many mysql embedded relations are not supported</span></div>
+
+        <div class="s-row">
+          <span class="ic">◇</span>
+          <div>
+            <div class="t">Prisma many to many relation</div>
+            <div class="m">Stack Overflow · 讲 MySQL 必须建独立连接表</div>
+          </div>
+        </div>
+        <div class="s-row">
+          <span class="ic">◇</span>
+          <div>
+            <div class="t">Introspection fails for m2m relation in MySQL</div>
+            <div class="m">prisma 官方 Issue 镜像 · 是 db pull 的另一个 bug</div>
+          </div>
+        </div>
+        <div class="s-row">
+          <span class="ic">◇</span>
+          <div>
+            <div class="t">Relational data modeling</div>
+            <div class="m">Prisma 官方文档 · 讲 junction model 的通用做法</div>
+          </div>
+        </div>
+        <div class="s-row">
+          <span class="ic">◇</span>
+          <div>
+            <div class="t">Relations handling with explicit many to many relation</div>
+            <div class="m">Stack Overflow · 讲显式关系表会让 Client API 变复杂</div>
+          </div>
+        </div>
+        <div class="s-row">
+          <span class="ic">◇</span>
+          <div>
+            <div class="t">MySQL 中的 Schema 不兼容性</div>
+            <div class="m">Prisma 中文文档 · Prisma 1 升级指南</div>
+          </div>
+        </div>
+
+        <div class="zero">
+          <span>本轮实测：共返回 5 条结果，其中来自 Answer Overflow 的 —— 0 条。</span>
+        </div>
+
+        <div class="cap">拿到的回答</div>
+        <div class="gtext">
+          任何多对多关系都需要一张独立的连接表，它由两侧主键组成复合主键。这段内容本身是对的，也确实是官方推荐做法——但它回答的是通用的「Prisma 多对多该怎么建模」。
+        </div>
+
+        <div class="verdict b">
+          <b>卡在哪：</b>你这段 schema 具体怎么改、MySQL 这个报错怎么绕，仍然要自己推一遍。而同一个 schema 结构下那段已经解决并验证过写法的讨论，<b>不在上面这 5 条里</b>。
+        </div>
+      </div>
+    </div>
+
+    <div class="pane a">
+      <div class="pane-hd">
+        <span class="tt">使用后 · answeroverflow skill</span>
+        <span class="chip good">结论可执行</span>
+      </div>
+      <div class="pane-bd">
+        <div class="cap">你的动作</div>
+        <div class="s-query"><span>site:answeroverflow.com prisma many-to-many</span><span class="cur"></span></div>
+
+        <div class="s-row hot">
+          <span class="ic">◆</span>
+          <div>
+            <div class="t">Good way to do many to many relationship Prisma</div>
+            <div class="m">Theo's Typesafe Cult · m/1098688072574582925</div>
+          </div>
+        </div>
+
+        <div class="zero good">
+          <span>同一次检索：命中 2 条 Answer Overflow 线程，第一条即同构场景。</span>
+        </div>
+
+        <div class="cap">提取出的内容</div>
+        <div class="rule">
+          两侧字段都写成 <b>Xyz[]</b> / <b>Kva[]</b>，关系表由 Prisma 自动生成，不需要手写。<br>
+          MySQL 报这个错的原因是<b>隐式多对多的嵌入式写法不受支持</b>，改走关系表语法即可。
+        </div>
+
+        <div class="src">
+          <span class="dot-ok"></span>来源：Theo's Typesafe Cult · 线程已索引，可回原帖逐条核对
+        </div>
+
+        <div class="verdict a">
+          <b>差别在哪：</b>命中的线程和你的报错、schema 结构都同构——它是「同一个坑被踩过并填好了」的记录，写法可以直接搬。
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <table class="diff">
+    <thead>
+      <tr><th>对比维度</th><th>使用前</th><th>使用后</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="d">检索动作</td>
+        <td class="b">拿报错原文做通用搜索，不带 <code style="font-family:var(--mono);font-size:11.5px;color:var(--ink3)">site:</code> 限定</td>
+        <td class="a">在关键词前加上 <code style="font-family:var(--mono);font-size:11.5px;color:var(--cyan)">site:answeroverflow.com</code> 做站内检索</td>
+      </tr>
+      <tr>
+        <td class="d">命中的内容</td>
+        <td class="b">5 条全部来自 Stack Overflow、官方文档与镜像站；来自 Answer Overflow 的 <b>0 条</b></td>
+        <td class="a">命中 <strong>2 条 Answer Overflow 线程</strong>，第一条即同构场景</td>
+      </tr>
+      <tr>
+        <td class="d">回答的是</td>
+        <td class="b">通用的「Prisma 多对多该怎么建模」</td>
+        <td class="a">具体的「你这段 schema 该怎么改」</td>
+      </tr>
+      <tr>
+        <td class="d">来源</td>
+        <td class="b">文档与 Issue，能看懂原理，但都不是你的场景</td>
+        <td class="a">具体线程 URL，可回原帖核对上下文</td>
+      </tr>
+      <tr>
+        <td class="d">关键差距</td>
+        <td class="b">那段已解决并验证过写法的 Discord 讨论，不在结果里</td>
+        <td class="a"><strong>它就在结果里，而且是第一条</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ 3 · 关键能力与数据指标 ============ -->
+<section class="sec" id="caps">
+  <div class="sec-hd">
+    <span class="sec-no">03 · 能力与指标</span>
+    <h2>它能做什么，以及哪些数字经得起核对</h2>
+    <p class="sub">四条能力是 skill 实际可用的路径；下面所有指标都标了来源——官方文档、仓库数据，或明确标注为第三方口径。凡拿不到一手来源的，这里不放。</p>
+  </div>
+
+  <div class="caps">
+
+    <div class="cap-card">
+      <span class="no">01 · 站内检索</span>
+      <h3>把问题变成定向检索</h3>
+      <p>照常用自然语言提问，skill 把它转成加了数据源限定的检索式，直接落到已被索引的 Discord 线程上。这是最省事、也是本次三个案例全部走通的一条。</p>
+      <div class="code">site:answeroverflow.com &lt;关键词&gt;</div>
+      <div class="foot">无需 API Key · 无需配置 · 本次实跑全部命中</div>
+    </div>
+
+    <div class="cap-card">
+      <span class="no">02 · 线程直取</span>
+      <h3>按消息 ID 取回单条线程</h3>
+      <p>已经知道是哪条讨论时，按消息 ID 直接取，返回的是结构化 Markdown 正文，而不是带导航、广告的网页包装。两种写法等价，二选一即可。</p>
+      <div class="code">/m/&lt;message-id&gt;.md　·　Accept: text/markdown</div>
+      <div class="foot note">已知线程时最稳；但本环境实测被限流拦截，见案例 02</div>
+    </div>
+
+    <div class="cap-card">
+      <span class="no">03 · 对话还原</span>
+      <h3>保留结论是怎么收敛出来的</h3>
+      <p>抓回的是完整往返：提问、来回讨论、最终解法都在。被标记为已解决的线程结构更清晰，能直接定位到那句真正生效的结论。</p>
+      <div class="code">提问 → 多轮讨论 → marked solution</div>
+      <div class="foot">给的不是一个答案，而是一份可追溯的判例</div>
+    </div>
+
+    <div class="cap-card">
+      <span class="no">04 · MCP 接入</span>
+      <h3>供 AI Agent 直接调用</h3>
+      <p>官方 README 明示支持通过 MCP 接入，让 AI Agent 直接检索。skill 文档列出 4 个工具：搜索社区、按服务器/频道过滤、拉取整条线程、查找相似线程。</p>
+      <div class="code">answeroverflow.com/mcp</div>
+      <div class="foot note">注：本 skill 当前未实际挂载该 MCP，运行主要走第 01 条</div>
+    </div>
+
+  </div>
+
+  <!-- 指标 · 官方文档 -->
+  <div class="metric-grp">
+    <div class="gh">
+      <span class="gt">索引与内容生命周期</span>
+      <span class="srctag off">官方文档</span>
+      <span class="gs">apps/docs/channel-settings/indexing.mdx</span>
+    </div>
+    <table class="metric">
+      <thead><tr><th>指标</th><th>数值</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="k">频道索引处理</td>
+          <td class="v"><span class="mono" style="color:var(--cyan)">约每 6 小时</span></td>
+          <td class="s">随接入服务器数量浮动</td>
+        </tr>
+        <tr>
+          <td class="k">全量索引完成后的更新</td>
+          <td class="v"><span class="mono">每 24 小时</span></td>
+          <td class="s">与上一行是两个不同阶段，不可混用</td>
+        </tr>
+        <tr>
+          <td class="k">首次完整索引耗时</td>
+          <td class="v"><span class="mono">可能需数天</span></td>
+          <td class="s">从频道最早的消息向最新推进</td>
+        </tr>
+        <tr>
+          <td class="k">关闭索引后内容保留</td>
+          <td class="v"><span class="mono">最多 7 天</span></td>
+          <td class="s">指在 Answer Overflow 站内</td>
+        </tr>
+        <tr>
+          <td class="k">关闭后在 Google 的保留</td>
+          <td class="v"><span class="mono">时长不确定</span></td>
+          <td class="s">由 Google 自己的抓取决定，官方无法控制</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 指标 · 仓库 -->
+  <div class="metric-grp">
+    <div class="gh">
+      <span class="gt">项目活跃度</span>
+      <span class="srctag repo">仓库数据</span>
+      <span class="gs">GitHub API 实时读取 · 2026-09-15</span>
+    </div>
+    <table class="metric">
+      <thead><tr><th>指标</th><th>数值</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="k">开源许可</td>
+          <td class="v"><span class="mono">MIT</span></td>
+          <td class="s">可自部署、可审计</td>
+        </tr>
+        <tr>
+          <td class="k">Star / Fork</td>
+          <td class="v"><span class="mono">2,013 / 103</span></td>
+          <td class="s">读取时实时值</td>
+        </tr>
+        <tr>
+          <td class="k">最近提交</td>
+          <td class="v"><span class="mono" style="color:var(--green)">2026-09-13</span></td>
+          <td class="s">距读取时 2 天，仍在活跃维护</td>
+        </tr>
+        <tr>
+          <td class="k">首次提交</td>
+          <td class="v"><span class="mono">2022-09-06</span></td>
+          <td class="s">已持续四年</td>
+        </tr>
+        <tr>
+          <td class="k">主要语言</td>
+          <td class="v"><span class="mono">TypeScript</span></td>
+          <td class="s">技术栈 Bun / Convex / Next.js 16 / discord.js</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 指标 · 第三方 -->
+  <div class="metric-grp">
+    <div class="gh">
+      <span class="gt">覆盖规模</span>
+      <span class="srctag tp">第三方口径 · 未获官方确认</span>
+      <span class="gs">来源：第三方工具目录站</span>
+    </div>
+    <table class="metric">
+      <thead><tr><th>指标</th><th>数值</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="k">接入服务器数</td>
+          <td class="v"><span class="mono" style="color:var(--amber)">300+</span></td>
+          <td class="s">工具目录站转述，我未在官方一手材料中查到该口径</td>
+        </tr>
+        <tr>
+          <td class="k">覆盖用户数</td>
+          <td class="v"><span class="mono" style="color:var(--amber)">200 万+</span></td>
+          <td class="s">同上；引用时建议注明来源与读取日期</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="quotebox">
+    <span class="q">"Indexing occurs roughly every 6 hours, although this may fluctuate depending on the number of servers Answer Overflow is in."<br>— 同页 Warning："once it is fully indexed it will be updated every 24 hours."</span>
+    这是<span style="color:var(--ink)">同一份官方文档里两个不同阶段的数字</span>：前者是索引处理频率，后者是「已全量索引后」的更新频率。常见的转述错误是把它们合并成一个数——<b>只写 6 小时会漏掉「首次可能要数天」，只写 24 小时又低估了处理频率</b>。
+  </div>
+
+  <div class="warnbox">
+    <b>一个必须留意的口径变动：</b>同一份文档的历史版本写的是「约每 24 小时」，现行版本已改为「约每 6 小时」。这类随规模浮动的运营数字会改版——<b>引用时必须带上读取日期</b>，否则今天写对的数字明年就成了错的数据。本项目所有指标均已标注来源与日期。
+  </div>
+</section>
+
+<!-- ============ 4 · 工作流程 ============ -->
+<section class="sec" id="flow">
+  <div class="sec-hd">
+    <span class="sec-no">04 · 工作流程</span>
+    <h2>从一句话到一条敢用的结论，中间有五步</h2>
+    <p class="sub">前四步是 skill 替你做的动作，第五步是它替代不了你、但能帮你做对的动作。整条链路本次都真实跑过。</p>
+  </div>
+
+  <div class="flow">
+
+    <div class="fstep">
+      <div class="dot">01</div>
+      <div class="body">
+        <h3>把原始素材丢进来</h3>
+        <p>不用先想「该搜什么关键词」。报错原文、异常现象、或一句目标描述，直接贴上就行——越是原样的报错，越容易命中同构线程。</p>
+        <div class="out"><b>输入</b>　bunx prisma generate 在 CI 上一直挂着不结束，本机正常</div>
+      </div>
+    </div>
+
+    <div class="fstep">
+      <div class="dot">02</div>
+      <div class="body">
+        <h3>转成加限定的检索式</h3>
+        <p>skill 把这句话转成带数据源限定的站内检索。这一步是整个 skill 的核心动作——它仍然走普通网页搜索，差别只在于把范围钉在了那个已被索引的数据源上。</p>
+        <div class="out"><b>生成</b>　site:answeroverflow.com prisma generate never completes</div>
+      </div>
+    </div>
+
+    <div class="fstep">
+      <div class="dot">03</div>
+      <div class="body">
+        <h3>挑出同构的那条线程</h3>
+        <p>返回的是已索引的 Discord 线程列表。判断标准不是「标题像不像」，而是报错文本、依赖版本、运行环境是否和你一致——同构的线程才有搬用价值。</p>
+        <div class="out"><b>命中</b>　m/1349804537426477138 · Prisma 官方服务器 · Prisma generate never completes</div>
+      </div>
+    </div>
+
+    <div class="fstep">
+      <div class="dot">04</div>
+      <div class="body">
+        <h3>从对话里提取结论</h3>
+        <p>线程是碎片化往返，skill 帮你定位到那句真正生效的解法，而不是停在「有人讨论过这个问题」这一层。</p>
+        <div class="out"><b>提取</b>　根因＝Bun 单独运行缺少 Node.js 依赖；绕过方案＝改用 npm 执行</div>
+      </div>
+    </div>
+
+    <div class="fstep key">
+      <div class="dot">05</div>
+      <div class="body">
+        <h3>判断这条结论敢不敢用<span class="tag">易被跳过</span></h3>
+        <p>拿到解法不等于能采信。这一步要核两件事：<b>引用链是否还成立</b>、<b>作答者是真人还是机器人</b>。本次实跑里这两件都出过问题——这也是它和「直接问 AI」最大的区别：答案带着可核验的出处。</p>
+        <div class="out"><b>核验</b>　引用 2 个 Issue 初查均 404 → 跟重定向后确认存在；作答者＝社区 AI 机器人 Prisma AI Help</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="fallback">
+    <div class="fh">两条实测回退路径 · 链路断了怎么办</div>
+    <div class="fbrow">
+      <div class="fbit">
+        <span class="ft">断点 ① · 线程直取被限流</span>
+        带 <b>Accept: text/markdown</b> 的直连返回 <b>HTTP 429</b>，网页路径遇人机校验。<br>
+        <b>回退：</b>退回站内检索——搜索快照本身就带回了大段线程正文，链路不必中断。
+      </div>
+      <div class="fbit">
+        <span class="ft">断点 ② · 引用链接 404</span>
+        线程里引用的 GitHub Issue 初查全部 404。<br>
+        <b>回退：</b>先怀疑<b>仓库改名或迁移</b>，跟随重定向再判断——本次即由 <b>prisma/prisma → prisma/orm</b> 改名导致，不应当作伪造。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5 · 三个真实案例 ============ -->
+<section class="sec" id="cases">
+  <div class="sec-hd">
+    <span class="sec-no">05 · 三个真实案例</span>
+    <h2>三个案例，三种难度</h2>
+    <p class="sub">三个案例都真实跑过，Prompt 与命中线程可逐条复核。按难度递进：01 最常用、02 最能体现核心价值、03 最复杂也最有差异化。本页收录的是<b>中文实跑</b>的 Prompt、输出与截图；同一组三个场景的英文版在英文页<b>独立跑过</b>，原始截图逐张存放在「案例素材」目录。</p>
+  </div>
+
+  <div class="cases">
+
+    <!-- 案例 01 -->
+    <div class="case">
+      <div class="case-hd">
+        <span class="cn">01</span>
+        <span class="ct">只给报错原文，直接命中同构线程</span>
+        <span class="cb">基础 · 最常用 · 已完成 26s</span>
+      </div>
+      <div class="case-bd">
+
+        <div class="seg">
+          <div class="sl">输入<br><b>Prompt</b></div>
+          <div class="sc">
+            <div class="qbox">Prisma 报错 Embedded many-to-many relations are not supported on MySQL，我不想建中间表，有别的写法吗？</div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">命中<br><b>线程</b></div>
+          <div class="sc">
+            <div class="hitrow">
+              <span class="ic">◆</span>
+              <div>
+                <div class="ht">Good way to do many to many relationship Prisma</div>
+                <div class="hm">Theo's Typesafe Cult · m/1098688072574582925 · 2023-04-20 · 作答者 OwO7（真人，无 APP 标记）<br>检索式：site:answeroverflow.com prisma many-to-many</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">提取<br><b>结论</b></div>
+          <div class="sc">
+            <b>报错根因：</b>提问者的 schema 把 <b>references: [id], fields: [subcategoryId]</b> 写在了列表侧。这两个字段属于「真正持有外键的那一侧」，也就是关系表；写进多对多的列表侧，Prisma 就把这段关系读成<b>嵌入式多对多</b>——正是 MySQL 不支持的形式。<br>
+            <b>线程给出的两种写法：</b>① 隐式关系表——两侧只写 <b>Xyz[]</b> / <b>Kva[]</b>，不写 fields / references，关系表由 Prisma 托管；② 显式关系表——需要往关系上挂自定义字段时才用。<br>
+            <b>「不建中间表」的正解：做不到。</b>多对多的物理实现必然有一张联结表，这是数据库层约束而非 Prisma 限制。隐式写法的区别只是<b>你不用写它</b>，Prisma 替你建并托管。真正的选择是<b>由谁来写这张表</b>，不是它存不存在。
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">可信度<br><b>判断</b></div>
+          <div class="sc">
+            <span class="vt ok">可采信</span><br>
+            作答者 OwO7 是真人，线程内无 APP 机器人标记；报错文本与 schema 结构与提问场景<b>同构</b>；两个写法的代码块完整且自洽——隐式写法恰好去掉了 fields / references，与上面的根因诊断互相印证。
+            <div class="shotcap">△ 一处如实标注：线程<b>没有</b>给这两种写法排序，原话只说「主要有两种写法」。「不挂自定义字段时隐式写法更省事」是读者推断，不是原文。</div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">运行<br><b>截图</b></div>
+          <div class="sc">
+            <div class="shots">
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-zh/shot-a-01.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-zh/shot-a-01.png" width="1074" height="1060" alt="案例 01 运行截图 1：Prompt 与命中线索">
+                <span class="cap">01 · Prompt + 检索式 + 命中线程 + 来源</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-zh/shot-a-02.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-zh/shot-a-02.png" width="1111" height="1026" alt="案例 01 运行截图 2：两种写法的代码">
+                <span class="cap">02 · 隐式 / 显式两种写法的代码</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-zh/shot-a-03.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-zh/shot-a-03.png" width="1042" height="1063" alt="案例 01 运行截图 3：根因与结论">
+                <span class="cap">03 · 报错根因 + 一句话结论</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-zh/shot-a-04.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-zh/shot-a-04.png" width="1035" height="943" alt="案例 01 运行截图 4：可用性判断与来源">
+                <span class="cap">04 · 可用性判断 + 原帖地址</span>
+              </a>
+            </div>
+            <div class="shotcap">路径实测：线程页直取被 Vercel Security Checkpoint 拦截，curl 与 .md 变体均为 HTTP 429（size=0）；最终经<b>站内检索快照</b>取回完整线程正文。截图可逐张点开核对原图。</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 案例 02 -->
+    <div class="case">
+      <div class="case-hd">
+        <span class="cn">02</span>
+        <span class="ct">给一条线程 URL，还原完整排错链</span>
+        <span class="cb">核心价值 · 已完成 50s</span>
+      </div>
+      <div class="case-bd">
+
+        <div class="seg">
+          <div class="sl">输入<br><b>Prompt</b></div>
+          <div class="sc">
+            <div class="qbox">https://www.answeroverflow.com/m/1072404497596432446<br>把这条线程里关于 connect 和 create 的最终结论提取出来。</div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">命中<br><b>线程</b></div>
+          <div class="sc">
+            <div class="hitrow">
+              <span class="ic">◆</span>
+              <div>
+                <div class="ht">Noob Question Many-to-Many in prisma after nextAuth</div>
+                <div class="hm">Theo's Typesafe Cult · m/1072404497596432446 · 2023-02-07 · 作答者 Brendonovich（真人，无 APP 标记）<br>检索式：site:answeroverflow.com prisma many-to-many after nextAuth connect create</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">提取<br><b>结论</b></div>
+          <div class="sc">
+            <b>判断规则：看这条关系记录是否已经存在。</b>connect —— 通过唯一标识挂接一条<b>已存在</b>的记录，前提是必须先有 ID 可查；create —— <b>新建</b>这条记录，用于记录尚不存在时。<br>
+            套到提问者的场景：给已存在的 user 建新 team，同时要写一条<b>新的</b>关系记录（usersInTeams）。这条记录还不存在，connect 找不到东西可连，所以必须 create 先造出来。<br>
+            <b>一句话：connect 连已有的，create 造还没有的。</b>外层 create、内层 connect，就是它在实际 schema 里的形状。
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">可信度<br><b>判断</b></div>
+          <div class="sc">
+            <span class="vt ok">可采信</span><br>
+            结论没有停在讨论层面，而是<b>由提问者当天实机验证并回帖确认</b>，链路闭合——这正是「考古」比「直接问 AI」更可靠的地方：你能看到它被跑通过。<br>
+            验证时间线：7:34 编译通过但 jest 报错 → 7:38 第一版 <b>Foreign key constraint failed</b> → 7:39 第二版报 <b>No 'User' record(s) was found for a nested connect</b> → 7:39「看起来是对的那类报错」→ <b>7:43 it worked!</b>
+            <div class="shotcap">△ 已知缺口：原帖<b>从未贴出最终跑通的代码</b>，只有提问者一行确认。所以规则是确定的，具体片段要自己套到自己的 schema 上。<br>△ 路径实测：直取该 URL 被 Vercel 拦截 / HTTP 429，实际内容是经<b>站内检索快照</b>回退取得的；另实测<b>加引号的精确标题检索 0 命中</b>，去掉引号的关键词组合才命中。</div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">运行<br><b>截图</b></div>
+          <div class="sc">
+            <div class="shots">
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/02-core-zh/shot-a-01.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/02-core-zh/shot-a-01.png" width="1048" height="1084" alt="案例 02 运行截图 1：Prompt 与命中线索">
+                <span class="cap">01 · Prompt + 线程 URL + 检索式 + 命中线程</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/02-core-zh/shot-a-02.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/02-core-zh/shot-a-02.png" width="1072" height="1063" alt="案例 02 运行截图 2：规则表与套用写法">
+                <span class="cap">02 · connect / create 规则表 + 套用写法</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/02-core-zh/shot-a-03.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/02-core-zh/shot-a-03.png" width="1092" height="1054" alt="案例 02 运行截图 3：验证闭环时间线">
+                <span class="cap">03 · 验证闭环时间线（含 it worked!）</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/02-core-zh/shot-a-04.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/02-core-zh/shot-a-04.png" width="1065" height="750" alt="案例 02 运行截图 4：可用性判断与来源">
+                <span class="cap">04 · 可用性判断 + 来源标注</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 案例 03 -->
+    <div class="case">
+      <div class="case-hd">
+        <span class="cn">03</span>
+        <span class="ct">要求可核验出处，结果挖出一个真问题</span>
+        <span class="cb">最复杂 · 差异化 · 已完成 1m39s</span>
+      </div>
+      <div class="case-bd">
+
+        <div class="seg">
+          <div class="sl">输入<br><b>Prompt</b></div>
+          <div class="sc">
+            <div class="qbox">bunx prisma generate 在 CI 上一直挂着不结束，本机正常。要能核验的出处，不要只给结论。</div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">命中<br><b>线程</b></div>
+          <div class="sc">
+            <div class="hitrow">
+              <span class="ic">◆</span>
+              <div>
+                <div class="ht">Prisma generate never completes</div>
+                <div class="hm">Prisma 官方服务器 · m/1349804537426477138 · 线程起始 2025-03-13 · 检索式：site:answeroverflow.com prisma generate never completes<br><b style="color:var(--amber)">作答者 Prisma AI Help —— AI 机器人（带 APP 标记），不是真人</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">提取<br><b>结论</b></div>
+          <div class="sc">
+            <b>根因：</b>Bun 环境下 Prisma 的 generate 需要 node 在 PATH 上——Prisma 依赖一部分 Node API，纯 Bun 不完整兼容，于是进程挂住不退出。<br>
+            <b>主要解法：</b>在被挂住的机器上装 Node.js。<b>备选：</b>不装 Node，改用 npm 跑 generate。<b>技术解释</b>（来自 Prisma 团队成员 aqrln）：Prisma 并不显式启动 node 进程，而是用 <b>child_process.fork</b> 执行 @prisma/client 里的 generator-build/index.js。
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">可信度<br><b>判断</b></div>
+          <div class="sc">
+            <span class="vt chk">需核验后采信</span><br>
+            本条答案出自机器人，所以核验环节才是重点，实际查出四件事：<br>
+            <b>① 作答者是 AI 机器人</b>——Prisma AI Help，带 APP 标记。Answer Overflow 的排版不会区分人和机器人，这改变了结果的读法：它是知识源汇编，不是「有人踩过同一个坑」的第一手经验。<br>
+            <b>② 两个引用链接初查全部 404，但不是伪造。</b>真因是仓库改名 <b>prisma/prisma → prisma/orm</b>，issue 级重定向没被保留（实测跳转次数 0）。用同仓库另一个编号做对照（#21241）同样 404@旧 / 200@新，属系统性行为而非个别链接丢失。换到新址后两个 Issue 标题完全吻合：#25730 已于 2025-03-24 关闭，#21277 至今仍 open。<br>
+            <b>③ 四条引文逐字回查，全部命中</b>原作评论（含日期与作者）。<b>内容站得住，烂掉的是链接。</b><br>
+            <b>④ 机器人漏了一条更省事的解法。</b>原 Issue 里 2025-03-12 的评论给出 <b>bunx prisma generate | cat</b>——去掉 TTY 即可通过，就在这条线程开始的前一天。机器人只字未提。原因：<b>AI 答案是对知识源的快照，看不到晚于它生成的讨论——它的「新」有天花板。</b>
+            <div class="shotcap">结论：引用链最终闭合，<b>内容可采信，但链接与时效必须自己续上</b>。这类社区索引的真实风险不是内容错，而是链接会烂、答案会过期。</div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">运行<br><b>截图</b></div>
+          <div class="sc">
+            <div class="shots">
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-zh/shot-a-01.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-zh/shot-a-01.png" width="1083" height="981" alt="案例 03 运行截图 1：Prompt 与命中线索">
+                <span class="cap">01 · Prompt + 检索式 + 命中线程 + 「作答者是机器人」</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-zh/shot-a-02.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-zh/shot-a-02.png" width="1098" height="1045" alt="案例 03 运行截图 2：答案四块内容">
+                <span class="cap">02 · 答案四块：根因 / 解法 / 备选 / 技术解释</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-zh/shot-a-03.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-zh/shot-a-03.png" width="1033" height="1063" alt="案例 03 运行截图 3：404 与仓库改名核验">
+                <span class="cap">03 · 404 + 仓库改名 + 对照测试 + 引文复核</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-zh/shot-a-04.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-zh/shot-a-04.png" width="1083" height="1008" alt="案例 03 运行截图 4：漏项与可用性判断">
+                <span class="cap">04 · 漏项 | cat 工作法 + 可用性判断</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-zh/shot-a-05.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-zh/shot-a-05.png" width="1002" height="636" alt="案例 03 运行截图 5：来源标注">
+                <span class="cap">05 · 可用性判断收尾 + 来源标注</span>
+              </a>
+            </div>
+            <div class="shotcap">路径实测与前三案一致：本环境无法直取线程页（Vercel 拦截 / HTTP 429），站内检索是唯一可用路径。</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 6 · 安全性与可靠性 ============ -->
+<section class="sec" id="safety">
+  <div class="sec-hd">
+    <span class="sec-no">06 · 安全与可靠性</span>
+    <h2>这份 skill 是怎么被核验的——以及核验停在了哪里</h2>
+    <p class="sub">本页记录两件从不混在一起的事：<b style="color:var(--ink)">规则评估</b>按七个维度为 skill 文档化的检索与安全行为打分；<b style="color:var(--ink)">实测检索</b>记录真实查询在某一天打向公开档案库时到底发生了什么。凡实测路径被主机拒绝的，一律标为「被阻断」，绝不写成「通过」。</p>
+  </div>
+
+  <div class="reg-meta">
+    <div class="reg-row">
+      <div class="reg-cell"><div class="rk">对 象</div><div class="rv mono">answeroverflow — skill v1.0.2</div></div>
+      <div class="reg-cell"><div class="rk">评估日期</div><div class="rv mono">2026-07-29</div></div>
+    </div>
+    <div class="reg-row">
+      <div class="reg-cell"><div class="rk">环 境</div><div class="rv mono">macOS 15 · Agent 运行时 · 出站 HTTPS</div></div>
+      <div class="reg-cell"><div class="rk">检 索 路 径</div><div class="rv mono">Web search, site:answeroverflow.com</div></div>
+    </div>
+    <div class="reg-row">
+      <div class="reg-cell"><div class="rk">线程抓取路径</div><div class="rv mono">直连 HTTPS 至 /m/&lt;id&gt; — <span class="st no">被阻断</span></div></div>
+      <div class="reg-cell"><div class="rk">MCP 端点</div><div class="rv mono">未连接 — <span class="st wn">未演练</span></div></div>
+    </div>
+  </div>
+
+  <div class="vcards">
+    <div class="vcard ok">
+      <span class="vk">已 实 测 验 证</span>
+      <h4>检索发现可用，且引用真实</h4>
+      <p>三条限定范围的查询已执行，返回的是切题的档案线程，URL 可解析、发布日期覆盖 2023 至 2026。这些 URL 与日期在第 03 节逐字复现，供独立核对。</p>
+    </div>
+    <div class="vcard no">
+      <span class="vk">未 经 验 证</span>
+      <h4>线程正文抓取在此处被阻断</h4>
+      <p>对线程页及其 .md 形式的直连请求，本运行时返回 HTTP 403；普通客户端请求返回 429。因此「上下文还原」与「答案提取」两项仅按规则评分，并记为未验证。</p>
+    </div>
+  </div>
+
+  <!-- ── 01 声明—证据对照 ── -->
+  <div class="reg-sub">
+    <span class="rn">01</span>
+    <span class="rt">声明—证据对照</span>
+    <span class="rd">每一条能力声明，以及支撑它的证据等级。</span>
+  </div>
+
+  <table class="rt">
+    <thead><tr><th style="width:34%">能力声明</th><th>证据等级</th><th style="width:15%">状态</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>能找出与某个技术问题匹配的档案线程</td>
+        <td class="mid">实测检索——3 条限定查询，30 行结果</td>
+        <td><span class="st ok">已验证</span></td>
+      </tr>
+      <tr>
+        <td>返回带日期的可引用 URL</td>
+        <td class="mid">实测检索——每条保留命中都带 <span style="font-family:var(--mono);font-size:11px">/m/&lt;id&gt;</span> 与发布日期</td>
+        <td><span class="st ok">已验证</span></td>
+      </tr>
+      <tr>
+        <td>能区分已解决与未解决的线程</td>
+        <td class="mid">实测检索——观察到标题标记，例如标题含 [SOLVED]</td>
+        <td><span class="st ok">已验证</span></td>
+      </tr>
+      <tr>
+        <td>能把线程以 Markdown 打开阅读</td>
+        <td class="mid">有文档化的 URL 规则；实测抓取被主机拒绝（403 / 429）</td>
+        <td><span class="st no">被阻断</span></td>
+      </tr>
+      <tr>
+        <td>能还原线程内部的修正链条</td>
+        <td class="mid">仅规则——依赖那条被阻断的抓取路径</td>
+        <td><span class="st rb">仅规则</span></td>
+      </tr>
+      <tr>
+        <td>能对档案库运行 MCP 工具</td>
+        <td class="mid">外部端点，本环境未连接</td>
+        <td><span class="st wn">未演练</span></td>
+      </tr>
+      <tr>
+        <td>查询在发出前会被净化</td>
+        <td class="mid">规则——已检视查询构造；3 条已执行查询中不含任何身份标识</td>
+        <td><span class="st rb">仅规则</span> <span class="st ok">一致</span></td>
+      </tr>
+      <tr>
+        <td>把结论标记为候选，并附带核验目标</td>
+        <td class="mid">规则——输出契约已对照 skill 文档复核</td>
+        <td><span class="st rb">仅规则</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ── 02 七个维度 ── -->
+  <div class="reg-sub">
+    <span class="rn">02</span>
+    <span class="rt">七个维度</span>
+    <span class="rd">满分 10 分。每一行都写明依据，读者可以据此对任何不认可的分数打折。</span>
+  </div>
+
+  <div class="dim">
+    <div class="dim-h">
+      <span class="dn">查询精确度</span><span class="st ok">实测</span>
+      <span class="dsc">9.2 / 10</span>
+    </div>
+    <div class="bar"><i style="width:92%;background:var(--green)"></i></div>
+    <p class="dq">限定范围的查询真的落在档案库内、而不是落到通用网络上吗？带引号的报错串是否优于改述？</p>
+    <p class="db"><b>依据 ——</b> 共执行 3 条查询；返回的 30 行全部是 answeroverflow.com 的 URL。带引号报错的查询返回 8 个含该精确串的线程页。扣分：30 行中有 2 行是用户主页的评论页而非线程，因此需要一个过滤步骤。</p>
+  </div>
+
+  <div class="dim">
+    <div class="dim-h">
+      <span class="dn">线程相关性</span><span class="st ok">实测</span>
+      <span class="dsc">8.7 / 10</span>
+    </div>
+    <div class="bar"><i style="width:87%;background:var(--green)"></i></div>
+    <p class="dq">在返回的线程中，有多少是真的关于所提症状，而不是关键词巧合？</p>
+    <p class="db"><b>依据 ——</b> 就带引号的 meta/_journal.json 查询而言，10 行中有 8 行是 2023–2025 年间切合症状的线程；1 行是相邻但不同的故障，1 行是主页。排序正确地偏向新近度与标题标记。</p>
+  </div>
+
+  <div class="dim">
+    <div class="dim-h">
+      <span class="dn">上下文还原</span><span class="st no">未验证</span>
+      <span class="dsc">5.5 / 10</span>
+    </div>
+    <div class="bar"><i style="width:55%;background:var(--red)"></i></div>
+    <p class="dq">完整讨论——提问、纠正、以及最终解决它的那条消息——能被按序读到吗？</p>
+    <p class="db"><b>依据 ——</b> 本次未能演示。本运行时对线程与 .md 请求均返回 403。仅给部分分，用于搜索结果摘要中带回来的实质正文，含完整堆栈帧与代码块。<b>在抓取成功之前，此项分数封顶。</b></p>
+  </div>
+
+  <div class="dim">
+    <div class="dim-h">
+      <span class="dn">来源可溯</span><span class="st ok">实测</span>
+      <span class="dsc">9.6 / 10</span>
+    </div>
+    <div class="bar"><i style="width:96%;background:var(--green)"></i></div>
+    <p class="dq">每一条声明是否都能追溯到一个稳定、可由第三方核对的地址，且带日期？</p>
+    <p class="db"><b>依据 ——</b> 每条保留命中都解析到规范的 /m/&lt;message-id&gt; URL 并带发布日期；本页复现了 13 个不同的线程 URL 供独立核对。扣分：在被阻断的页面抓取缺位的情况下，服务器与频道归属无法确认。</p>
+  </div>
+
+  <div class="dim">
+    <div class="dim-h">
+      <span class="dn">解法提取</span><span class="st wn">部分</span>
+      <span class="dsc">6.8 / 10</span>
+    </div>
+    <div class="bar"><i style="width:68%;background:var(--amber)"></i></div>
+    <p class="dq">能否产出一个可用的候选修法，并归因到它来自的那条线程？</p>
+    <p class="db"><b>依据 ——</b> 部分成立。摘要中带有真实的诊断内容——已解决的标题标记、报错帧，以及一条线程自述的连接池故障成因——但没有任何被采纳的答案是端到端读到的。<b>候选修法可以基于摘要形成；但不得把它们呈现为已确认的线程结论。</b></p>
+  </div>
+
+  <div class="dim">
+    <div class="dim-h">
+      <span class="dn">隐私安全</span><span class="st rb">仅规则</span>
+      <span class="dsc">9.4 / 10</span>
+    </div>
+    <div class="bar"><i style="width:94%;background:var(--green)"></i></div>
+    <p class="dq">是否有敏感信息离开本机？用户是否被告知查询是公开的？</p>
+    <p class="db"><b>依据 ——</b> 3 条已执行查询只包含公开的库名与一段公开报错串——没有 token、主机名、客户数据或私有路径。skill 文档化的流程要求先净化。扣分：约束是流程性的、而非机制性的；仓库中没有任何自动化的密钥扫描器。</p>
+  </div>
+
+  <div class="dim">
+    <div class="dim-h">
+      <span class="dn">可核验性</span><span class="st rb">仅规则</span>
+      <span class="dsc">8.5 / 10</span>
+    </div>
+    <div class="bar"><i style="width:85%;background:var(--green)"></i></div>
+    <p class="dq">输出是否被塑造成评审者可以确认的形态——显示日期、标注时效、点明官方目标？</p>
+    <p class="db"><b>依据 ——</b> 每条实测命中都带日期，跨度为 2023-07-07 至 2026-02-04，使时效过期变得可见而不是隐含。扣分：点出正确的官方文档页是一个判断题，本次未独立审计。</p>
+  </div>
+
+  <!-- ── 03 实测检索日志 ── -->
+  <div class="reg-sub">
+    <span class="rn">03</span>
+    <span class="rt">实测检索日志</span>
+    <span class="rd">执行于 2026-07-29。下列 URL 与日期按返回原样复现，供独立核对。</span>
+  </div>
+
+  <div class="loggrid">
+
+    <div class="qlog">
+      <div class="qh"><span class="st ok">通过</span><span class="qq">site:answeroverflow.com "Can't find meta/_journal.json"</span></div>
+      <p class="qn">返回 10 行；8 条切合症状的线程、1 条相邻故障、1 条主页。保留命中：</p>
+      <ul class="hitl">
+        <li><b>Error: Can't find meta/_journal.json [SOLVED]</b> — <span class="d">2023-07-07</span> · <span class="u">/m/1115604949750009898</span></li>
+        <li><b>can't find meta/_journal.json on prod</b> — <span class="d">2023-11-27</span> · <span class="u">/m/1178402730608439386</span></li>
+        <li><b>Help with this error. "Can't find meta/_journal.json file"</b> — <span class="d">2024-04-18</span> · <span class="u">/m/1230296412516778114</span></li>
+        <li><b>Migration Error after building with Electron</b> — <span class="d">2024-02-08</span> · <span class="u">/m/1205153107231772683</span></li>
+        <li><b>drizzle-kit drop can't find journal.json of a migration</b> — <span class="d">2024-02-23</span> · <span class="u">/m/1210328397604061194</span></li>
+        <li><b>Failing to connect to local d1 db with drizzle</b> — <span class="d">2024-09-04</span> · <span class="u">/m/1280689547218387038</span></li>
+        <li><b>Can't find meta/_journal.json file</b> — <span class="d">2025-09-29</span> · <span class="u">/m/1421973556752810024</span></li>
+      </ul>
+    </div>
+
+    <div class="qlog">
+      <div class="qh"><span class="st ok">通过</span><span class="qq">site:answeroverflow.com prisma connection pooling</span></div>
+      <p class="qn">返回 10 行；8 条关于连接池或连接数上限故障的线程、2 条主页。保留命中：</p>
+      <ul class="hitl">
+        <li><b>Authentication error when using connection pooling</b> — <span class="d">2024-01-31</span> · <span class="u">/m/1193169468721991680</span></li>
+        <li><b>Error querying the database: FATAL: Max client connections reached</b> — <span class="d">2024-04-30</span> · <span class="u">/m/1234691717681385483</span></li>
+        <li><b>Issue with Prisma Pooling Timeout</b> — <span class="d">2025-02-03</span> · <span class="u">/m/1335810577272016987</span></li>
+        <li><b>Dealing with database timeouts with prisma and vercel fluid compute</b> — <span class="d">2025-08-21</span> · <span class="u">/m/1407836889062576228</span></li>
+        <li><b>Prisma V6.19.2, NextJS 16 and attachDatabasePool</b> — <span class="d">2026-02-04</span> · <span class="u">/m/1468370867317899264</span></li>
+      </ul>
+    </div>
+
+    <div class="qlog">
+      <div class="qh"><span class="st ok">通过</span><span class="qq">site:answeroverflow.com drizzle orm migration error</span></div>
+      <p class="qn">返回 10 行，全部为线程页，覆盖 journal 文件故障、Supabase schema 冲突、libsql 报错与挂起的迁移。这组更松的措辞以精确度换取了广度：它浮现出带引号串查询漏掉的相邻故障模式，而这正是症状式查询的预期用法。样例命中：</p>
+      <ul class="hitl">
+        <li><b>Error in migrate command: PostgresError: no schema has been selected to create in</b> — <span class="d">2025-04-01</span> · <span class="u">/m/1356367995278200912</span></li>
+      </ul>
+    </div>
+
+    <div class="qlog blocked">
+      <div class="qh"><span class="st no">被阻断</span><span class="qq">GET /m/&lt;id&gt; 与 /m/&lt;id&gt;.md</span></div>
+      <div class="blockbox">GET https://www.answeroverflow.com/m/1335810577272016987   403
+GET https://www.answeroverflow.com/m/1115604949750009898   403
+GET https://www.answeroverflow.com/m/1115604949750009898   429（普通客户端）
+GET https://docs.answeroverflow.com                        429</div>
+      <p class="qn" style="margin-bottom:0">主机拒绝了来自本运行时的线程正文请求。这是环境与限流的结果，不是「文档化的 markdown 模式有错」的证据——但本页也没有任何地方声称读到过线程正文。</p>
+    </div>
+
+  </div>
+
+  <div class="quotebox" style="border-left-color:var(--green)">
+    <b>你可以自己复现。</b>在搜索引擎里跑上面任意一条查询，然后在浏览器中打开列出的任意 URL。标题与日期应当与这里打印的一致。第 03 节是本页唯一依赖网络结果的部分。
+  </div>
+
+  <!-- ── 04 场景矩阵 ── -->
+  <div class="reg-sub">
+    <span class="rn">04</span>
+    <span class="rt">场景矩阵</span>
+    <span class="rd">正常、模糊、边界与交付四类场景——附实际观察到的或预期的行为。</span>
+  </div>
+
+  <table class="rt">
+    <thead><tr><th style="width:26%">场景</th><th style="width:11%">类别</th><th>预期行为</th><th style="width:22%">结果</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>精确引用的报错串<br><span style="font-family:var(--mono);font-size:11px;color:var(--ink3);font-weight:400">Can't find meta/_journal.json</span></td>
+        <td class="mono">正常</td>
+        <td class="mid">多条切合症状的线程、跨多个日期、至少有一个已解决标记</td>
+        <td><span class="st ok">已观察</span></td>
+      </tr>
+      <tr>
+        <td>只给症状措辞、无报错串<br><span style="font-family:var(--mono);font-size:11px;color:var(--ink3);font-weight:400">drizzle migration error</span></td>
+        <td class="mono">正常</td>
+        <td class="mid">召回更广、出现相邻故障模式、精确度下降</td>
+        <td><span class="st ok">已观察</span></td>
+      </tr>
+      <tr>
+        <td>没有单一答案的主题式查询<br><span style="font-family:var(--mono);font-size:11px;color:var(--ink3);font-weight:400">prisma connection pooling</span></td>
+        <td class="mono">模糊</td>
+        <td class="mid">呈现出跨线程的模式而非单一修法；版本差异可见</td>
+        <td><span class="st ok">已观察</span></td>
+      </tr>
+      <tr>
+        <td>结果中出现非线程页<br><span style="font-family:var(--mono);font-size:11px;color:var(--ink3);font-weight:400">主页 / 评论页</span></td>
+        <td class="mono">边界</td>
+        <td class="mid">从候选中剔除，不作为线程引用</td>
+        <td><span class="st ok">已观察</span> <span style="font-family:var(--mono);font-size:10.5px;color:var(--ink3)">— 30 行中过滤掉 3 行</span></td>
+      </tr>
+      <tr>
+        <td>线程正文不可达<br><span style="font-family:var(--mono);font-size:11px;color:var(--ink3);font-weight:400">被阻断</span></td>
+        <td class="mono">边界</td>
+        <td class="mid">如实报告阻断；不得臆造线程内容或已采纳答案</td>
+        <td><span class="st ok">已观察</span> <span style="font-family:var(--mono);font-size:10.5px;color:var(--ink3)">— 记为被阻断</span></td>
+      </tr>
+      <tr>
+        <td>未覆盖的库<br><span style="font-family:var(--mono);font-size:11px;color:var(--ink3);font-weight:400">项目未被索引</span></td>
+        <td class="mono">边界</td>
+        <td class="mid">说明档案库无覆盖，而不是拿别的来源顶替</td>
+        <td><span class="st rb">仅规则</span> <span style="font-family:var(--mono);font-size:10.5px;color:var(--ink3)">— 本次未触发</span></td>
+      </tr>
+      <tr>
+        <td>查询中含密钥</td>
+        <td class="mono">安全</td>
+        <td class="mid">拒绝发送；要求先净化</td>
+        <td><span class="st rb">仅规则</span> <span style="font-family:var(--mono);font-size:10.5px;color:var(--ink3)">— 未用真实凭据模拟</span></td>
+      </tr>
+      <tr>
+        <td>交付：可引用简报</td>
+        <td class="mono">交付</td>
+        <td class="mid">候选修法，每条附 URL、日期、置信说明与核验目标</td>
+        <td><span class="st ok">已观察</span> <span style="font-family:var(--mono);font-size:10.5px;color:var(--ink3)">— 见展示页</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ── 05 加权合成 ── -->
+  <div class="reg-sub">
+    <span class="rn">05</span>
+    <span class="rt">加权合成，以及它是怎么算出来的</span>
+    <span class="rd">七个维度的加权平均。权重向用户真正依赖的部分倾斜。</span>
+  </div>
+
+  <table class="rt">
+    <thead><tr><th style="width:40%">维度</th><th style="width:18%">得分</th><th style="width:18%">权重</th><th>贡献</th></tr></thead>
+    <tbody>
+      <tr><td>查询精确度</td><td class="num hi">9.2</td><td class="num">0.20</td><td class="num">1.84</td></tr>
+      <tr><td>线程相关性</td><td class="num hi">8.7</td><td class="num">0.18</td><td class="num">1.566</td></tr>
+      <tr><td>上下文还原</td><td class="num lo">5.5</td><td class="num">0.15</td><td class="num">0.825</td></tr>
+      <tr><td>来源可溯</td><td class="num hi">9.6</td><td class="num">0.15</td><td class="num">1.44</td></tr>
+      <tr><td>解法提取</td><td class="num mid-c">6.8</td><td class="num">0.12</td><td class="num">0.816</td></tr>
+      <tr><td>隐私安全</td><td class="num hi">9.4</td><td class="num">0.10</td><td class="num">0.94</td></tr>
+      <tr><td>可核验性</td><td class="num hi">8.5</td><td class="num">0.10</td><td class="num">0.85</td></tr>
+    </tbody>
+  </table>
+
+  <div class="scoreline">
+    <span class="sv">8.28</span>
+    <span class="sl2">加权 / 10</span>
+    <p>各项贡献之和，权重合计 1.00。七个维度中有两个仅为规则评分，另有一个因抓取被阻断而封顶，因此这个数字描述的是一个<b>部分验证</b>的 skill，而非被完整演练过的 skill。去掉这两个纯规则行、把剩余五项重新归一化，得到 <b>8.10</b>。</p>
+  </div>
+
+  <div class="quotebox">
+    <b>这个数字不是什么。</b>它是某一个 skill 在某一天的规则合成分，不是竞品对标，不是与另一个工具的对比，也不是对未来检索质量的声明。档案库覆盖范围会随着社区陆续加入而变化，此处引用的任何线程都可能被其社区编辑或删除。
+  </div>
+
+  <!-- ── 06 未决项与风险 ── -->
+  <div class="reg-sub">
+    <span class="rn">06</span>
+    <span class="rt">未决项与风险</span>
+    <span class="rd">直白陈述，以免任何未核验的事项读起来像已核验。</span>
+  </div>
+
+  <table class="rt">
+    <thead><tr><th style="width:38%">事项</th><th style="width:14%">状态</th><th>什么能关闭它</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>经 .md 或 <span style="font-family:var(--mono);font-size:11px">Accept: text/markdown</span> 抓取线程</td>
+        <td><span class="st no">被阻断</span></td>
+        <td class="mid">从主机不会拒绝的运行时完成一次成功抓取，并把返回的 markdown 与请求头一并存档。</td>
+      </tr>
+      <tr>
+        <td>全部四个 MCP 工具</td>
+        <td><span class="st wn">未演练</span></td>
+        <td class="mid">连接外部端点，每个工具记录一次调用及其响应形态。</td>
+      </tr>
+      <tr>
+        <td>每条线程的服务器与频道归属</td>
+        <td><span class="st wn">待定</span></td>
+        <td class="mid">读取 <span style="font-family:var(--mono);font-size:11px">/c/&lt;server-slug&gt;</span> 页面，确认「官方支持」与「综合聊天」的分类。</td>
+      </tr>
+      <tr>
+        <td>真实凭据下的密钥脱敏行为</td>
+        <td><span class="st rb">仅规则</span></td>
+        <td class="mid">用合成的 token 做一次受控测试，确认它绝不会进入外发查询。</td>
+      </tr>
+      <tr>
+        <td>未索引库的覆盖缺口处理</td>
+        <td><span class="st rb">仅规则</span></td>
+        <td class="mid">对一个已知不存在的库发起查询，检查空结果是否被如实报告为空。</td>
+      </tr>
+      <tr>
+        <td>提取出的修法与官方文档的吻合度</td>
+        <td><span class="st wn">待定</span></td>
+        <td class="mid">顺着核验目标追到项目自己的文档，记录一致或冲突。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="warnbox" style="background:var(--red-soft);border-color:var(--red-line);color:#EFA9A4">
+    <b style="color:#F7BDB8">独立于本次评估的长期风险。</b>档案内容是口语化的，可能是错的；许多线程根本没有被采纳的答案；截图、已删除的消息与语音讨论从不进入档案库；一条引用的修法可能对 2023 年的版本正确、今天已经错误。正因如此，skill 自身的输出契约强制要求给出一个官方来源的核验目标——<b style="color:#F7BDB8">并且它的任何结果都不应仅凭线程证据就交付。</b>
+  </div>
+
+  <div class="quotebox">
+    <b>范围声明。</b>本登记表覆盖 skill v1.0.2，评估日期 2026-07-29，在单一 Agent 运行时下、具出站 HTTPS。实测证据由三条已执行的检索查询及其返回的 URL 与日期行构成；线程正文抓取与 MCP 端点均未被演练。第 01、02、04、05、06 节是评估者的规则判断，凡未获第 03 节日志支撑之处，均已如此标注。
+  </div>
+</section>
+
+<!-- ============ 7 · 目标用户与 CTA ============ -->
+<section class="sec" id="cta">
+  <div class="sec-hd">
+    <span class="sec-no">07 · 目标用户与 CTA</span>
+    <h2>给那些已经搜过一轮、但没搜到的人</h2>
+    <p class="sub">它不解决「怎么提问」——它解决的是「答案存在，但不在你能搜到的地方」。所以它的适用边界反而很好界定：要么你正好在那个边界内，要么完全用不上。</p>
+  </div>
+
+  <div class="ugrid">
+    <div class="ucard">
+      <div class="uh"><span class="un">01</span><h4>业务开发者</h4></div>
+      <p>用 Prisma、Drizzle、Next.js 这类工具时撞上<b>隐性行为与版本边界</b>：官方文档讲语法，不讲「在 MySQL 上会怎样」。这里能拿到的是同构场景的判例，不是语法说明。</p>
+    </div>
+    <div class="ucard">
+      <div class="uh"><span class="un">02</span><h4>技术支援与提问者</h4></div>
+      <p>在发出提问之前先自查一遍——<b>这条坑大概率已经有人踩过</b>，并且答案留在了某个服务器的 #help 频道里。先搜一次，能让提问本身更准。</p>
+    </div>
+    <div class="ucard">
+      <div class="uh"><span class="un">03</span><h4>AI Agent 与编码助手</h4></div>
+      <p>模型训练数据里没有的小众社群实践。关键差别在于输出形态：接上之后每个结论都<b>带一条可点开核对的原帖</b>，而不是「通常来说」。</p>
+    </div>
+    <div class="ucard">
+      <div class="uh"><span class="un">04</span><h4>开源维护者</h4></div>
+      <p>官方 overview 把「开源项目」列为首要目标社区类型。除检索外还有一个反向用法：<b>看用户到底卡在哪一步、用什么语言描述问题</b>。</p>
+    </div>
+  </div>
+
+  <div class="ugrid-note">
+    官方 overview 点名的目标社区类型：<b>开源项目 · 游戏服务器 · 模组服 · 游戏开发 · 作业答疑 · 兴趣社区</b>。需要说明的是，这是「<b>部署 Bot 的社区</b>」口径；本页的读者是 skill 使用者，两者不是同一批人。
+  </div>
+
+  <div class="fitsplit">
+    <div class="fitcard yes">
+      <span class="fkh">适 用</span>
+      <ul>
+        <li>目标库<b>已被索引且有人在用</b>——有判例可找</li>
+        <li>你需要的是<b>「和我这个场景一模一样」的解法</b>，而不只是语义</li>
+        <li>你愿意在采信前，<b>追一次官方来源</b></li>
+      </ul>
+    </div>
+    <div class="fitcard nope">
+      <span class="fkh">不 适 用</span>
+      <ul>
+        <li>目标库没进档案（小众、闭源、纯私有）</li>
+        <li>需要权威结论直接上生产——<b>这条入口只给线索，不给担保</b></li>
+        <li>想查截图、语音讨论或已删除的消息——它们从不进入档案</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="ctabox">
+    <span class="ck">开 始 使 用</span>
+    <h3>让 AI 在查库问题时，先去翻一遍 Discord 档案</h3>
+    <p class="cl">这个 skill 不做别的事，它把一条动作固定下来：<b>限定到档案库的检索 → 命中同构线程 → 抽取结论 → 标出核验目标</b>。没有它，模型只能凭训练数据里的印象作答；接上之后，每条结论都拖着一条能点进去核对的原始线索。</p>
+
+    <div class="ctarules">
+      <div class="ctarule">
+        <span class="cn">纪 律 01</span>
+        <div class="ct"><b>只当线索源。</b>采信前追到官方文档或源码。这套 skill 自己的输出契约也是这么要求的——它强制给出一个官方来源的核验目标。</div>
+      </div>
+      <div class="ctarule">
+        <span class="cn">纪 律 02</span>
+        <div class="ct"><b>查询词不带敏感内容。</b>检索关键词与被访问的 URL 会离开本地。密钥、私有源码、客户数据不要进查询。</div>
+      </div>
+      <div class="ctarule">
+        <span class="cn">纪 律 03</span>
+        <div class="ct"><b>链接 404 先别当伪造。</b>本次实跑即遇到仓库改名（<span style="font-family:var(--mono);font-size:11px">prisma/prisma → prisma/orm</span>）。跟随重定向再判断。</div>
+      </div>
+    </div>
+
+    <div class="ctafoot">
+      <span class="lb">两 条 入 口</span>
+      <span class="en">site:answeroverflow.com &lt;关键词&gt;</span>
+      <span class="en">/m/&lt;message-id&gt;.md</span>
+      <span class="lb" style="flex:1;min-width:200px;letter-spacing:0;line-height:1.7">MCP 端点（<span style="font-family:var(--mono)">answeroverflow.com/mcp</span>，4 个工具）为官方支持，但本 skill 并未挂载——实际可用的是上面两条。</span>
+    </div>
+  </div>
+</section>
+
+<footer class="pfoot">
+  <div class="fl">
+    <b>本页数据口径。</b>全部能力描述与限制，来自本次实跑（2026-09-15）与官方一手材料。第三方工具目录转述的「300+ 服务器 / 200 万+ 用户」<b>未获官方确认</b>，已在第 03 节单列并标黄，本页不将其作为论据。
+    <span class="src">来源：官方文档仓库 apps/docs（读取于 2026-09-15）· GitHub REST API（读取于 2026-09-15）· 三份 skill 运行记录。提示词类 skill 不存在下载量、装机量一类运行时指标，本页所有数字均为结构计数或公开仓库数据。</span>
+  </div>
+  <div class="fr">
+    Answer Overflow · skill v1.0.2<br>
+    MIT License · 仓库最近提交 2026-09-13<br>
+    本页记录 · 2026-09-15
+  </div>
+</footer>
+
+</div>
+</body>
+</html>

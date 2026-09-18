@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Answer Overflow · Discord Q&amp;A Retrieval Skill</title>
+<style>
+  :root{
+    --bg:#0A0E13; --bg-elev:#101720; --card:#141B25; --card2:#0F151D;
+    --line:#232C39; --line2:#33404F;
+    --ink:#E8EDF4; --ink2:#9BA6B5; --ink3:#6B7685;
+    --cyan:#3FB6FF; --cyan-soft:rgba(63,182,255,.10); --cyan-line:rgba(63,182,255,.35);
+    --green:#3FB950; --green-soft:rgba(63,185,80,.10); --green-line:rgba(63,185,80,.35);
+    --red:#F85149; --red-soft:rgba(248,81,73,.10); --red-line:rgba(248,81,73,.32);
+    --amber:#D6A425; --amber-soft:rgba(214,164,37,.11); --amber-line:rgba(214,164,37,.35);
+    --purple:#A98BF5; --purple-soft:rgba(169,139,245,.11); --purple-line:rgba(169,139,245,.35);
+    --mono:ui-monospace,SFMono-Regular,"JetBrains Mono",Menlo,Consolas,monospace;
+    --r-lg:14px; --r-md:10px; --r-sm:7px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;padding:0;
+    background:
+      radial-gradient(1200px 520px at 10% -10%, rgba(63,182,255,.09), transparent 62%),
+      radial-gradient(900px 420px at 92% 2%, rgba(169,139,245,.07), transparent 60%),
+      var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:14px;line-height:1.72;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1140px;margin:0 auto;padding:0 22px}
+
+  .nav{
+    display:flex;align-items:center;gap:14px;
+    padding:18px 22px;max-width:1140px;margin:0 auto;
+    border-bottom:0.5px solid var(--line);
+  }
+  .logo{display:flex;align-items:center;gap:9px;font-weight:600;font-size:15px;letter-spacing:.01em}
+  .logo .mark{
+    width:26px;height:26px;border-radius:7px;flex:none;
+    background:linear-gradient(135deg,var(--cyan),var(--purple));
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:12px;font-weight:700;color:#04121C;
+  }
+  .nav .tagchip{
+    font-family:var(--mono);font-size:11px;padding:2px 9px;border-radius:999px;
+    background:var(--cyan-soft);color:var(--cyan);border:0.5px solid var(--cyan-line);
+  }
+  .nav .spacer{flex:1}
+  .nav .ver{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+
+  .hero{
+    max-width:1140px;margin:0 auto;padding:62px 22px 56px;
+    display:grid;grid-template-columns:1.02fr 1fr;gap:46px;align-items:center;
+  }
+  @media(max-width:980px){.hero{grid-template-columns:1fr;gap:36px;padding-top:44px}}
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;
+    color:var(--cyan);background:var(--cyan-soft);border:0.5px solid var(--cyan-line);
+    padding:4px 12px;border-radius:999px;margin-bottom:20px;
+  }
+  .eyebrow i{width:5px;height:5px;border-radius:50%;background:var(--cyan);display:block}
+
+  h1{
+    font-size:40px;line-height:1.22;font-weight:600;margin:0 0 20px;
+    letter-spacing:-.012em;
+  }
+  @media(max-width:980px){h1{font-size:32px}}
+  h1 .grad{
+    background:linear-gradient(100deg,var(--cyan) 8%,var(--purple) 92%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .lede{font-size:15px;color:var(--ink2);margin:0 0 26px;max-width:520px}
+  .lede b{color:var(--ink);font-weight:600}
+
+  .cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+    padding:11px 20px;border-radius:var(--r-md);font-size:13.5px;font-weight:600;
+    text-decoration:none;border:0.5px solid transparent;transition:opacity .15s;
+  }
+  .btn:hover{opacity:.86}
+  .btn-p{background:var(--cyan);color:#04121C}
+  .btn-s{background:transparent;color:var(--ink2);border-color:var(--line2)}
+  .btn .arw{font-family:var(--mono);font-size:12px}
+
+  .hero-facts{
+    display:flex;gap:26px;flex-wrap:wrap;
+    margin-top:34px;padding-top:24px;border-top:0.5px solid var(--line);
+  }
+  .hero-facts div{min-width:96px}
+  .hero-facts .k{font-size:21px;font-weight:600;font-family:var(--mono);letter-spacing:-.01em}
+  .hero-facts .k.c{color:var(--cyan)}
+  .hero-facts .k.g{color:var(--green)}
+  .hero-facts .k.p{color:var(--purple)}
+  .hero-facts .v{font-size:11.5px;color:var(--ink3);margin-top:2px}
+
+  .stage{
+    background:var(--card2);border:0.5px solid var(--line);border-radius:var(--r-lg);
+    overflow:hidden;
+    box-shadow:0 22px 60px -30px rgba(0,0,0,.85);
+  }
+  .stage-bar{
+    display:flex;align-items:center;gap:9px;padding:11px 14px;
+    background:var(--bg-elev);border-bottom:0.5px solid var(--line);
+  }
+  .dots{display:flex;gap:5px}
+  .dots span{width:9px;height:9px;border-radius:50%;background:var(--line2);display:block}
+  .dots span:first-child{background:#3A4553}
+  .stage-url{
+    flex:1;font-family:var(--mono);font-size:11px;color:var(--ink3);
+    background:var(--card);border:0.5px solid var(--line);border-radius:999px;
+    padding:3px 12px;text-align:center;
+  }
+  .stage-body{padding:16px}
+
+  .s-query{
+    display:flex;align-items:center;gap:9px;
+    background:var(--card);border:0.5px solid var(--cyan-line);border-radius:var(--r-sm);
+    padding:9px 13px;font-family:var(--mono);font-size:11.5px;color:#9FD2F5;
+    margin-bottom:13px;
+  }
+  .s-query .cur{width:7px;height:13px;background:var(--cyan);display:block;opacity:.75}
+
+  .s-row{
+    display:flex;gap:11px;align-items:flex-start;
+    padding:11px 13px;border-radius:var(--r-sm);
+    background:var(--card);border:0.5px solid var(--line);margin-bottom:8px;
+  }
+  .s-row.hot{border-color:var(--cyan-line);background:var(--cyan-soft)}
+  .s-row .ic{
+    width:24px;height:24px;border-radius:6px;flex:none;margin-top:1px;
+    background:var(--line);display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:10px;color:var(--ink2);
+  }
+  .s-row.hot .ic{background:var(--cyan);color:#04121C;font-weight:700}
+  .s-row .t{font-size:12.5px;font-weight:600;color:var(--ink);line-height:1.4}
+  .s-row .m{font-family:var(--mono);font-size:10.5px;color:var(--ink3);margin-top:3px}
+  .s-row.hot .t{color:#BEE2FB}
+
+  .s-thread{
+    background:var(--card);border:0.5px solid var(--line);border-radius:var(--r-sm);
+    padding:13px;margin-top:4px;
+  }
+  .s-thread .lbl{
+    font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--ink3);
+    margin-bottom:9px;
+  }
+  .s-msg{display:flex;gap:9px;margin-bottom:9px}
+  .s-msg .av{
+    width:20px;height:20px;border-radius:5px;flex:none;
+    background:var(--line2);font-family:var(--mono);font-size:9px;
+    display:flex;align-items:center;justify-content:center;color:var(--ink2);
+  }
+  .s-msg.pick .av{background:var(--green);color:#04120A;font-weight:700}
+  .s-msg .who{font-family:var(--mono);font-size:10.5px;color:var(--ink2)}
+  .s-msg .tx{font-size:11.5px;color:var(--ink2);line-height:1.55;margin-top:1px}
+  .s-msg.pick .tx{color:#C9D6E4}
+
+  /* ===== section shell ===== */
+  .sec{max-width:1140px;margin:0 auto;padding:60px 22px 0}
+  .sec-hd{margin-bottom:8px}
+  .sec-no{
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--cyan);
+    display:block;margin-bottom:9px;
+  }
+  .sec h2{font-size:25px;font-weight:600;margin:0 0 10px;letter-spacing:-.008em}
+  .sec .sub{color:var(--ink2);font-size:14px;margin:0;max-width:720px}
+
+  /* ===== before / after ===== */
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px}
+  @media(max-width:900px){.cmp{grid-template-columns:1fr}}
+  .pane{
+    background:var(--card);border:0.5px solid var(--line);border-radius:var(--r-lg);
+    overflow:hidden;display:flex;flex-direction:column;
+  }
+  .pane.b{border-color:var(--line2)}
+  .pane.a{border-color:var(--cyan-line)}
+  .pane-hd{
+    display:flex;align-items:center;gap:10px;
+    padding:13px 17px;border-bottom:0.5px solid var(--line);
+  }
+  .pane.b .pane-hd{background:var(--bg-elev)}
+  .pane.a .pane-hd{background:var(--cyan-soft)}
+  .pane-hd .tt{font-size:13.5px;font-weight:600}
+  .pane.a .pane-hd .tt{color:#BEE2FB}
+  .pane-hd .chip{
+    margin-left:auto;font-family:var(--mono);font-size:10.5px;
+    padding:2px 10px;border-radius:999px;white-space:nowrap;
+  }
+  .chip.bad{background:var(--red-soft);color:var(--red);border:0.5px solid var(--red-line)}
+  .chip.good{background:var(--green-soft);color:var(--green);border:0.5px solid var(--green-line)}
+  .pane-bd{padding:16px;flex:1}
+
+  .cap{
+    font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+    color:var(--ink3);margin:14px 0 9px;
+  }
+  .cap:first-child{margin-top:0}
+
+  .gtext{
+    background:var(--card2);border:0.5px solid var(--line);border-radius:var(--r-sm);
+    padding:12px 14px;font-size:12px;line-height:1.68;color:var(--ink3);
+  }
+  .gtext em{color:var(--ink2);font-style:normal}
+
+  .rule{
+    background:var(--green-soft);border:0.5px solid var(--green-line);
+    border-radius:var(--r-sm);padding:12px 14px;
+    font-size:12.5px;line-height:1.66;color:#9BE3A8;
+  }
+  .rule b{color:#C6F0CE}
+
+  .src{
+    display:flex;align-items:center;gap:8px;margin-top:11px;
+    font-family:var(--mono);font-size:10.5px;color:var(--ink3);
+    border-top:0.5px dashed var(--line2);padding-top:10px;
+  }
+  .src .dot-ok{width:6px;height:6px;border-radius:50%;background:var(--green);display:block;flex:none}
+
+  .verdict{
+    border-radius:var(--r-sm);padding:11px 14px;font-size:12.5px;line-height:1.65;margin-top:14px;
+  }
+  .verdict.b{background:var(--red-soft);border:0.5px solid var(--red-line);color:#EFA9A4}
+  .verdict.a{background:var(--cyan-soft);border:0.5px solid var(--cyan-line);color:#BCE0FA}
+  .verdict b{font-weight:600}
+
+  /* ===== diff table ===== */
+  .diff{width:100%;border-collapse:collapse;margin-top:22px;font-size:13px;
+    background:var(--card);border:0.5px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+  .diff th,.diff td{padding:12px 16px;text-align:left;border-bottom:0.5px solid var(--line);vertical-align:top}
+  .diff th{background:var(--bg-elev);font-family:var(--mono);font-size:11px;
+    letter-spacing:.06em;color:var(--ink3);font-weight:500}
+  .diff tr:last-child td{border-bottom:none}
+  .diff td.d{color:var(--ink2);white-space:nowrap;font-weight:500;width:15%}
+  .diff td.b{color:var(--ink3);width:42.5%}
+  .diff td.a{color:#C3D4E4;width:42.5%}
+  .diff td.a strong{color:var(--cyan);font-weight:600}
+
+  .zero{
+    display:flex;align-items:center;gap:9px;margin-top:13px;
+    padding:10px 14px;border-radius:var(--r-sm);
+    background:var(--red-soft);border:0.5px solid var(--red-line);
+    font-family:var(--mono);font-size:11px;color:var(--red);line-height:1.5;
+  }
+  .zero.good{background:var(--green-soft);border-color:var(--green-line);color:var(--green)}
+
+  /* ===== 03 · capabilities ===== */
+  .caps{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px}
+  @media(max-width:860px){.caps{grid-template-columns:1fr}}
+  .cap-card{
+    background:var(--card);border:0.5px solid var(--line);border-radius:var(--r-lg);
+    padding:19px 20px 17px;display:flex;flex-direction:column;
+  }
+  .cap-card .no{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+    color:var(--cyan);display:block;margin-bottom:11px;
+  }
+  .cap-card h3{font-size:15px;font-weight:600;margin:0 0 9px;letter-spacing:-.005em}
+  .cap-card p{margin:0;font-size:12.5px;color:var(--ink2);line-height:1.72}
+  .cap-card .code{
+    font-family:var(--mono);font-size:11px;color:#9FD2F5;
+    background:var(--card2);border:0.5px solid var(--cyan-line);
+    border-radius:var(--r-sm);padding:8px 12px;margin:13px 0 0;
+    word-break:break-all;line-height:1.6;
+  }
+  .cap-card .foot{
+    margin-top:auto;padding-top:12px;border-top:0.5px dashed var(--line2);
+    font-family:var(--mono);font-size:10.5px;color:var(--ink3);line-height:1.62;
+  }
+  .cap-card .foot.note{color:var(--amber)}
+
+  /* ===== 03 · metrics ===== */
+  .metric-grp{margin-top:30px}
+  .metric-grp .gh{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .metric-grp .gh .gt{font-size:13.5px;font-weight:600}
+  .metric-grp .gh .gs{font-family:var(--mono);font-size:10.5px;color:var(--ink3)}
+  .srctag{
+    font-family:var(--mono);font-size:10px;padding:2px 9px;
+    border-radius:999px;white-space:nowrap;
+  }
+  .srctag.off{background:var(--green-soft);color:var(--green);border:0.5px solid var(--green-line)}
+  .srctag.repo{background:var(--cyan-soft);color:var(--cyan);border:0.5px solid var(--cyan-line)}
+  .srctag.tp{background:var(--amber-soft);color:var(--amber);border:0.5px solid var(--amber-line)}
+
+  table.metric{
+    width:100%;border-collapse:collapse;font-size:13px;background:var(--card);
+    border:0.5px solid var(--line);border-radius:var(--r-lg);overflow:hidden;
+  }
+  table.metric th,table.metric td{
+    padding:11px 16px;text-align:left;border-bottom:0.5px solid var(--line);vertical-align:top;
+  }
+  table.metric th{
+    background:var(--bg-elev);font-family:var(--mono);font-size:11px;
+    letter-spacing:.06em;color:var(--ink3);font-weight:500;
+  }
+  table.metric tr:last-child td{border-bottom:none}
+  table.metric td.k{color:var(--ink2);width:36%}
+  table.metric td.v{color:var(--ink);width:28%;font-weight:500}
+  table.metric td.v .mono{font-family:var(--mono);font-size:12.5px}
+  table.metric td.v .mono.c{color:var(--cyan)}
+  table.metric td.s{width:36%;color:var(--ink3);font-size:11.5px}
+
+  .quotebox{
+    margin-top:22px;background:var(--card2);border:0.5px solid var(--line);
+    border-left:2px solid var(--cyan);border-radius:var(--r-md);
+    padding:15px 18px;font-size:12.5px;line-height:1.78;color:var(--ink2);
+  }
+  .quotebox .q{
+    font-family:var(--mono);font-size:11.5px;color:#9FD2F5;
+    display:block;margin-bottom:9px;line-height:1.65;
+  }
+  .quotebox b{color:var(--ink);font-weight:600}
+  .warnbox{
+    margin-top:12px;background:var(--amber-soft);border:0.5px solid var(--amber-line);
+    border-radius:var(--r-md);padding:14px 17px;font-size:12.5px;line-height:1.72;color:#E2CB8C;
+  }
+  .warnbox b{color:#F0DC9E;font-weight:600}
+
+  /* ===== 04 · workflow ===== */
+  .flow{margin-top:26px}
+  .fstep{
+    display:grid;grid-template-columns:44px 1fr;gap:18px;
+    position:relative;padding-bottom:15px;
+  }
+  .fstep:last-child{padding-bottom:0}
+  .fstep::before{
+    content:'';position:absolute;left:21.5px;top:44px;bottom:0;
+    width:1px;background:var(--line2);
+  }
+  .fstep:last-child::before{display:none}
+  .fstep .dot{
+    width:44px;height:44px;border-radius:11px;flex:none;
+    background:var(--card);border:0.5px solid var(--line2);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:14px;font-weight:700;color:var(--ink3);
+    position:relative;z-index:1;
+  }
+  .fstep.key .dot{border-color:var(--cyan-line);background:var(--cyan-soft);color:var(--cyan)}
+  .fstep .body{
+    background:var(--card);border:0.5px solid var(--line);
+    border-radius:var(--r-lg);padding:14px 18px 15px;
+  }
+  .fstep.key .body{border-color:var(--cyan-line);background:var(--cyan-soft)}
+  .fstep .body h3{font-size:13.5px;font-weight:600;margin:0 0 7px}
+  .fstep.key .body h3{color:#BEE2FB}
+  .fstep .body h3 .tag{
+    font-family:var(--mono);font-size:10px;font-weight:500;
+    padding:2px 8px;border-radius:999px;margin-left:8px;
+    background:var(--cyan);color:#04121C;vertical-align:1px;
+  }
+  .fstep .body p{margin:0;font-size:12.5px;color:var(--ink2);line-height:1.72}
+  .fstep .out{
+    margin-top:11px;padding-top:10px;border-top:0.5px dashed var(--line2);
+    font-family:var(--mono);font-size:10.5px;color:var(--ink3);line-height:1.65;
+  }
+  .fstep .out b{color:var(--ink2);font-weight:500}
+  .fstep.key .out{border-top-color:var(--cyan-line)}
+
+  .fallback{
+    margin-top:24px;background:var(--card2);border:0.5px solid var(--line);
+    border-radius:var(--r-lg);padding:17px 19px;
+  }
+  .fallback .fh{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+    color:var(--ink3);margin-bottom:13px;
+  }
+  .fbrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:760px){.fbrow{grid-template-columns:1fr}}
+  .fbit{
+    background:var(--card);border:0.5px solid var(--line);
+    border-left:2px solid var(--amber);border-radius:var(--r-sm);
+    padding:12px 15px;font-size:12.5px;line-height:1.7;color:var(--ink2);
+  }
+  .fbit .ft{
+    font-family:var(--mono);font-size:10.5px;color:var(--amber);
+    display:block;margin-bottom:6px;
+  }
+  .fbit b{color:var(--ink);font-weight:600}
+
+  /* ===== 05 · cases ===== */
+  .cases{margin-top:26px;display:flex;flex-direction:column;gap:18px}
+  .case{
+    background:var(--card);border:0.5px solid var(--line);
+    border-radius:var(--r-lg);overflow:hidden;
+  }
+  .case-hd{
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    padding:13px 18px;background:var(--bg-elev);
+    border-bottom:0.5px solid var(--line);
+  }
+  .case-hd .cn{
+    font-family:var(--mono);font-size:11px;font-weight:700;
+    padding:3px 10px;border-radius:999px;
+    background:var(--cyan-soft);color:var(--cyan);border:0.5px solid var(--cyan-line);
+  }
+  .case-hd .ct{font-size:14.5px;font-weight:600}
+  .case-hd .cb{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--ink3)}
+  .case-bd{padding:5px 18px 15px}
+
+  .seg{
+    display:grid;grid-template-columns:104px 1fr;gap:18px;
+    padding:15px 0;border-bottom:0.5px dashed var(--line2);
+  }
+  @media(max-width:700px){.seg{grid-template-columns:1fr;gap:7px}}
+  .seg:last-child{border-bottom:none;padding-bottom:4px}
+  .seg .sl{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;
+    color:var(--ink3);line-height:1.6;padding-top:2px;
+  }
+  .seg .sl b{display:block;color:var(--ink2);font-weight:500}
+  .seg .sc{font-size:12.5px;color:var(--ink2);line-height:1.72;min-width:0}
+  .seg .sc b{color:var(--ink);font-weight:600}
+
+  .qbox{
+    font-family:var(--mono);font-size:11.5px;color:#9FD2F5;line-height:1.72;
+    background:var(--card2);border:0.5px solid var(--cyan-line);
+    border-radius:var(--r-sm);padding:10px 13px;word-break:break-word;
+  }
+  .hitrow{
+    display:flex;align-items:flex-start;gap:11px;
+    background:var(--card2);border:0.5px solid var(--line);
+    border-radius:var(--r-sm);padding:11px 13px;
+  }
+  .hitrow .ic{
+    width:24px;height:24px;border-radius:6px;flex:none;margin-top:1px;
+    background:var(--cyan);color:#04121C;
+    font-family:var(--mono);font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .hitrow .ht{font-size:12.5px;font-weight:600;color:var(--ink);line-height:1.45}
+  .hitrow .hm{font-family:var(--mono);font-size:10.5px;color:var(--ink3);margin-top:3px}
+
+  .vt{
+    display:inline-flex;align-items:center;gap:7px;
+    font-family:var(--mono);font-size:10.5px;
+    padding:3px 10px;border-radius:999px;margin-bottom:9px;
+  }
+  .vt.ok{background:var(--green-soft);color:var(--green);border:0.5px solid var(--green-line)}
+  .vt.chk{background:var(--amber-soft);color:var(--amber);border:0.5px solid var(--amber-line)}
+
+  .shot{
+    margin-top:14px;border:0.5px dashed var(--line2);border-radius:var(--r-sm);
+    background:var(--card2);padding:16px;text-align:center;
+    font-family:var(--mono);font-size:10.5px;color:var(--ink3);line-height:1.65;
+  }
+  .shot .si{display:block;font-size:15px;margin-bottom:5px;opacity:.5}
+
+  /* ===== 05b · case screenshots ===== */
+  .shots{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:15px}
+  @media(max-width:760px){.shots{grid-template-columns:1fr}}
+  .shotfig{
+    display:block;border:0.5px solid var(--line);border-radius:var(--r-sm);
+    overflow:hidden;background:var(--card2);text-decoration:none;
+  }
+  .shotfig:hover{border-color:var(--cyan-line)}
+  .shotfig img{display:block;width:100%;height:auto;background:var(--bg)}
+  .shotfig .cap{
+    display:block;font-family:var(--mono);font-size:10px;color:var(--ink3);
+    padding:6px 9px;border-top:0.5px solid var(--line);line-height:1.55;
+  }
+  .shotcap{margin-top:11px;font-family:var(--mono);font-size:10px;color:var(--ink3);line-height:1.6}
+
+  /* ===== 06 · assessment register ===== */
+  .reg-sub{display:flex;align-items:baseline;gap:12px;margin:36px 0 13px;flex-wrap:wrap}
+  .reg-sub .rn{
+    font-family:var(--mono);font-size:10.5px;color:var(--cyan);
+    background:var(--cyan-soft);border:0.5px solid var(--cyan-line);
+    padding:2px 8px;border-radius:6px;flex:none;align-self:center;
+  }
+  .reg-sub .rt{font-size:16.5px;font-weight:600}
+  .reg-sub .rd{font-size:12px;color:var(--ink3);line-height:1.6}
+
+  .reg-meta{
+    margin-top:22px;background:var(--card);border:0.5px solid var(--line);
+    border-radius:var(--r-lg);overflow:hidden;
+  }
+  .reg-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:0.5px solid var(--line)}
+  .reg-row:last-child{border-bottom:none}
+  .reg-cell{padding:13px 17px}
+  .reg-cell+.reg-cell{border-left:0.5px solid var(--line)}
+  @media(max-width:760px){
+    .reg-row{grid-template-columns:1fr}
+    .reg-cell+.reg-cell{border-left:none;border-top:0.5px solid var(--line)}
+  }
+  .reg-cell .rk{
+    font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+    color:var(--ink3);margin-bottom:5px;
+  }
+  .reg-cell .rv{font-size:13px;color:var(--ink)}
+  .reg-cell .rv.mono{font-family:var(--mono);font-size:12px}
+
+  .vcards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+  @media(max-width:820px){.vcards{grid-template-columns:1fr}}
+  .vcard{
+    background:var(--card);border:0.5px solid var(--line);
+    border-radius:var(--r-lg);padding:16px 18px 17px;
+  }
+  .vcard.ok{border-left:2px solid var(--green)}
+  .vcard.no{border-left:2px solid var(--red)}
+  .vcard .vk{
+    font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+    display:block;margin-bottom:8px;
+  }
+  .vcard.ok .vk{color:var(--green)}
+  .vcard.no .vk{color:var(--red)}
+  .vcard h4{font-size:14px;font-weight:600;margin:0 0 8px;letter-spacing:-.004em}
+  .vcard p{margin:0;font-size:12.5px;color:var(--ink2);line-height:1.72}
+
+  .st{
+    display:inline-block;font-family:var(--mono);font-size:10px;
+    padding:2px 8px;border-radius:6px;white-space:nowrap;line-height:1.6;
+  }
+  .st.ok{background:var(--green-soft);color:var(--green);border:0.5px solid var(--green-line)}
+  .st.no{background:var(--red-soft);color:var(--red);border:0.5px solid var(--red-line)}
+  .st.wn{background:var(--amber-soft);color:var(--amber);border:0.5px solid var(--amber-line)}
+  .st.rb{background:var(--purple-soft);color:var(--purple);border:0.5px solid var(--purple-line)}
+
+  table.rt{
+    width:100%;border-collapse:collapse;font-size:12.5px;background:var(--card);
+    border:0.5px solid var(--line);border-radius:var(--r-lg);overflow:hidden;
+  }
+  table.rt th,table.rt td{
+    padding:11px 15px;text-align:left;border-bottom:0.5px solid var(--line);
+    vertical-align:top;line-height:1.66;
+  }
+  table.rt th{
+    background:var(--bg-elev);font-family:var(--mono);font-size:10.5px;
+    letter-spacing:.06em;color:var(--ink3);font-weight:500;
+  }
+  table.rt tr:last-child td{border-bottom:none}
+  table.rt td:first-child{color:var(--ink);font-weight:500}
+  table.rt td.mid{color:var(--ink2)}
+  table.rt td.mono{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+  table.rt td.num{font-family:var(--mono);font-size:12px;color:var(--ink2);white-space:nowrap}
+  table.rt td.num.hi{color:var(--green)}
+  table.rt td.num.mid-c{color:var(--amber)}
+  table.rt td.num.lo{color:var(--red)}
+  table.rt td.act{width:26%;color:var(--ink3);font-size:11.5px}
+
+  .dim{
+    background:var(--card);border:0.5px solid var(--line);
+    border-radius:var(--r-md);padding:15px 17px;margin-bottom:10px;
+  }
+  .dim-h{display:flex;align-items:center;gap:10px;margin-bottom:11px;flex-wrap:wrap}
+  .dim-h .dn{font-size:13.5px;font-weight:600}
+  .dim-h .dsc{margin-left:auto;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--ink)}
+  .bar{height:5px;border-radius:3px;background:var(--card2);border:0.5px solid var(--line);overflow:hidden;margin-bottom:11px}
+  .bar i{display:block;height:100%}
+  .dim .dq{font-size:12.5px;color:var(--ink2);line-height:1.7;margin:0 0 9px}
+  .dim .db{font-family:var(--mono);font-size:11px;color:var(--ink3);line-height:1.74;margin:0}
+  .dim .db b{color:var(--ink2);font-weight:500}
+
+  .loggrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  @media(max-width:840px){.loggrid{grid-template-columns:1fr}}
+  .qlog{
+    background:var(--card);border:0.5px solid var(--line);
+    border-radius:var(--r-md);padding:14px 16px;
+  }
+  .qlog.blocked{border-color:var(--red-line);background:var(--red-soft)}
+  .qlog .qh{display:flex;align-items:center;gap:9px;margin-bottom:11px;flex-wrap:wrap}
+  .qlog .qq{font-family:var(--mono);font-size:11px;color:#9FD2F5;line-height:1.6;word-break:break-all}
+  .qlog .qn{font-size:12px;color:var(--ink2);line-height:1.7;margin:0 0 10px}
+  .hitl{font-family:var(--mono);font-size:11px;color:var(--ink2);line-height:1.85;margin:0;padding:0;list-style:none}
+  .hitl li{margin-bottom:3px;padding-left:13px;position:relative}
+  .hitl li::before{content:'·';position:absolute;left:3px;color:var(--ink3)}
+  .hitl b{color:var(--ink);font-weight:600}
+  .hitl .d{color:var(--ink3)}
+  .hitl .u{color:#9FD2F5}
+  .blockbox{
+    background:var(--card2);border:0.5px solid var(--red-line);border-radius:var(--r-sm);
+    padding:12px 14px;font-family:var(--mono);font-size:11px;
+    color:#EFA9A4;line-height:1.95;white-space:pre-wrap;margin:0 0 11px;
+  }
+  .scoreline{
+    display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+    background:var(--card2);border:0.5px solid var(--line);
+    border-radius:var(--r-md);padding:15px 17px;margin-top:14px;
+  }
+  .scoreline .sv{
+    font-family:var(--mono);font-size:26px;font-weight:700;
+    color:var(--green);letter-spacing:-.02em;line-height:1;
+  }
+  .scoreline .sl2{font-family:var(--mono);font-size:10.5px;color:var(--ink3);letter-spacing:.1em}
+  .scoreline p{
+    margin:0;font-size:12.5px;color:var(--ink2);line-height:1.72;
+    flex:1;min-width:240px;
+  }
+  .scoreline p b{color:var(--ink);font-weight:600}
+
+  /* ===== 07 users & cta ===== */
+  .ugrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}
+  @media(max-width:860px){.ugrid{grid-template-columns:1fr}}
+  .ucard{
+    background:var(--card);border:0.5px solid var(--line);border-radius:var(--r-md);
+    padding:16px 18px;
+  }
+  .ucard .uh{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+  .ucard .un{
+    font-family:var(--mono);font-size:10px;color:var(--cyan);flex:none;
+    background:var(--cyan-soft);border:0.5px solid var(--cyan-line);
+    padding:2px 7px;border-radius:5px;
+  }
+  .ucard h4{margin:0;font-size:14.5px;font-weight:600;letter-spacing:-.004em}
+  .ucard p{margin:0;font-size:12.5px;color:var(--ink2);line-height:1.76}
+  .ucard p b{color:var(--ink);font-weight:600}
+
+  .ugrid-note{
+    margin-top:13px;font-size:11.5px;color:var(--ink3);line-height:1.72;
+    padding-left:13px;border-left:2px solid var(--line2);
+  }
+  .ugrid-note b{color:var(--ink2);font-weight:500}
+
+  .fitsplit{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px}
+  @media(max-width:860px){.fitsplit{grid-template-columns:1fr}}
+  .fitcard{border-radius:var(--r-md);padding:15px 18px;border:0.5px solid var(--line);background:var(--card2)}
+  .fitcard.yes{border-color:var(--green-line);background:var(--green-soft)}
+  .fitcard.nope{border-color:var(--line2);background:var(--card2)}
+  .fitcard .fkh{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;margin-bottom:11px;display:block}
+  .fitcard.yes .fkh{color:var(--green)}
+  .fitcard.nope .fkh{color:var(--ink3)}
+  .fitcard ul{margin:0;padding:0;list-style:none}
+  .fitcard li{
+    font-size:12.5px;color:var(--ink2);line-height:1.72;
+    padding-left:16px;position:relative;margin-bottom:8px;
+  }
+  .fitcard li:last-child{margin-bottom:0}
+  .fitcard li::before{position:absolute;left:0;font-family:var(--mono);font-size:11px;top:0}
+  .fitcard.yes li::before{content:'✓';color:var(--green)}
+  .fitcard.nope li::before{content:'—';color:var(--ink3)}
+  .fitcard li b{color:var(--ink);font-weight:600}
+
+  .ctabox{
+    margin-top:30px;border-radius:var(--r-lg);padding:30px 32px;
+    background:linear-gradient(135deg,rgba(63,182,255,.11),rgba(169,139,245,.07));
+    border:0.5px solid var(--cyan-line);
+  }
+  @media(max-width:700px){.ctabox{padding:22px 20px}}
+  .ctabox .ck{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--cyan);display:block;margin-bottom:12px}
+  .ctabox h3{margin:0 0 12px;font-size:21px;font-weight:600;letter-spacing:-.006em;line-height:1.42}
+  .ctabox .cl{margin:0 0 22px;font-size:13.5px;color:var(--ink2);line-height:1.8;max-width:780px}
+  .ctabox .cl b{color:var(--ink);font-weight:600}
+  .ctarules{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:820px){.ctarules{grid-template-columns:1fr}}
+  .ctarule{
+    background:rgba(10,14,19,.42);border:0.5px solid var(--line);
+    border-radius:var(--r-md);padding:13px 15px;
+  }
+  .ctarule .cn{font-family:var(--mono);font-size:10px;color:var(--ink3);display:block;margin-bottom:8px;letter-spacing:.08em}
+  .ctarule .ct{font-size:12.5px;color:var(--ink2);line-height:1.74}
+  .ctarule .ct b{color:var(--ink);font-weight:600}
+  .ctafoot{
+    margin-top:22px;padding-top:18px;border-top:0.5px solid var(--line2);
+    display:flex;gap:14px;flex-wrap:wrap;align-items:baseline;
+  }
+  .ctafoot .lb{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--ink3);flex:none}
+  .ctafoot .en{
+    font-family:var(--mono);font-size:11px;color:#9FD2F5;
+    background:rgba(10,14,19,.5);border:0.5px solid var(--line);
+    padding:6px 11px;border-radius:var(--r-sm);word-break:break-all;line-height:1.6;
+  }
+
+  .pfoot{
+    max-width:1140px;margin:64px auto 0;padding:26px 22px 60px;
+    border-top:0.5px solid var(--line);
+    display:grid;grid-template-columns:1fr auto;gap:22px;align-items:start;
+  }
+  @media(max-width:860px){.pfoot{grid-template-columns:1fr}}
+  .pfoot .fl{font-size:12.5px;color:var(--ink2);line-height:1.8;max-width:780px}
+  .pfoot .fl b{color:var(--ink);font-weight:600}
+  .pfoot .fl .src{display:block;margin-top:4px;color:var(--ink3)}
+  .pfoot .fr{font-family:var(--mono);font-size:10.5px;color:var(--ink3);line-height:1.95;text-align:right;white-space:nowrap}
+  @media(max-width:860px){.pfoot .fr{text-align:left;white-space:normal}}
+
+/* ===== Finch 宿主兼容层：不透明页面容器 + 媒体自适应 ===== */
+.finch-page{margin:0;padding:0; background: radial-gradient(1200px 520px at 10% -10%, rgba(63,182,255,.09), transparent 62%), radial-gradient(900px 420px at 92% 2%, rgba(169,139,245,.07), transparent 60%), var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; font-size:14px;line-height:1.72; -webkit-font-smoothing:antialiased;}
+.finch-page img,.finch-page video{max-width:100%;height:auto}
+</style>
+</head>
+<body>
+<div class="finch-page">
+<nav class="nav">
+  <div class="logo"><span class="mark">AO</span>Answer Overflow</div>
+  <span class="tagchip">Discord Q&amp;A retrieval</span>
+  <span class="spacer"></span>
+  <span class="ver">v1.0.2</span>
+</nav>
+
+<!-- ============ 1 · HERO ============ -->
+<header class="hero">
+  <div>
+    <span class="eyebrow"><i></i>SKILL · DEVELOPER DEBUGGING</span>
+    <h1>Problems your community already solved,<br><span class="grad">now actually findable</span></h1>
+    <p class="lede">
+      Not on Stack Overflow. Not in the docs. Someone in a Discord channel hit it, worked it out, and the thread is still sitting there.
+      Answer Overflow indexes those public Q&amp;A threads, and this skill wires that index into the conversation:
+      <b>ask in plain language and get a first-hand answer you can cite and check</b>.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-p" href="#cases">See three real cases <span class="arw">→</span></a>
+      <a class="btn btn-s" href="#flow">How it works</a>
+    </div>
+    <div class="hero-facts">
+      <div><div class="k c">3 routes</div><div class="v">Retrieval paths<br>Web / Markdown / MCP</div></div>
+      <div><div class="k g">0 config</div><div class="v">No setup required<br>just ask in plain language</div></div>
+      <div><div class="k p">~6h</div><div class="v">Indexing cycle<br>per official docs</div></div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-bar">
+      <span class="dots"><span></span><span></span><span></span></span>
+      <span class="stage-url">answeroverflow.com/c/prisma</span>
+    </div>
+    <div class="stage-body">
+      <div class="s-query"><span>site:answeroverflow.com prisma generate never completes</span><span class="cur"></span></div>
+
+      <div class="s-row hot">
+        <span class="ic">◆</span>
+        <div>
+          <div class="t">Prisma generate never completes</div>
+          <div class="m">Prisma official server · m/1349804537426477138</div>
+        </div>
+      </div>
+      <div class="s-row">
+        <span class="ic">◇</span>
+        <div>
+          <div class="t">Good way to do many to many relationship Prisma</div>
+          <div class="m">Theo's Typesafe Cult · m/1098688072574582925</div>
+        </div>
+      </div>
+      <div class="s-row">
+        <span class="ic">◇</span>
+        <div>
+          <div class="t">Prisma Postgres vs Accelerate with own Postgres</div>
+          <div class="m">Prisma official server · m/1377979294491476178</div>
+        </div>
+      </div>
+
+      <div class="s-thread">
+        <div class="lbl">Matched thread · conclusion extracted</div>
+        <div class="s-msg">
+          <span class="av">OP</span>
+          <div>
+            <div class="who">Original poster</div>
+            <div class="tx">bunx prisma generate hangs forever in CI. Works fine locally.</div>
+          </div>
+        </div>
+        <div class="s-msg pick">
+          <span class="av">✓</span>
+          <div>
+            <div class="who">Root cause · citations verified</div>
+            <div class="tx">Bun run on its own is missing a Node.js dependency; running it through npm works around it. The two cited issues were confirmed to exist.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ 2 · BEFORE / AFTER ============ -->
+<section class="sec" id="beforeafter">
+  <div class="sec-hd">
+    <span class="sec-no">02 · Before / After</span>
+    <h2>The same question returns different things before and after</h2>
+    <p class="sub">Both panels below come from the live run, not from a mock-up. One Prisma error: on the left, a general search with no source scoping; on the right, the same question scoped to the archive after the skill is loaded.</p>
+  </div>
+
+  <div class="cmp">
+
+    <div class="pane b">
+      <div class="pane-hd">
+        <span class="tt">Before · General search and Q&amp;A</span>
+        <span class="chip bad">0 hits from this source</span>
+      </div>
+      <div class="pane-bd">
+        <div class="cap">What you do</div>
+        <div class="s-query"><span>prisma many-to-many mysql embedded relations are not supported</span></div>
+
+        <div class="s-row">
+          <span class="ic">◇</span>
+          <div>
+            <div class="t">Prisma many to many relation</div>
+            <div class="m">Stack Overflow · says MySQL needs a separate join table</div>
+          </div>
+        </div>
+        <div class="s-row">
+          <span class="ic">◇</span>
+          <div>
+            <div class="t">Introspection fails for m2m relation in MySQL</div>
+            <div class="m">Prisma issue mirror · a different db pull bug</div>
+          </div>
+        </div>
+        <div class="s-row">
+          <span class="ic">◇</span>
+          <div>
+            <div class="t">Relational data modeling</div>
+            <div class="m">Prisma docs · the general junction-model approach</div>
+          </div>
+        </div>
+        <div class="s-row">
+          <span class="ic">◇</span>
+          <div>
+            <div class="t">Relations handling with explicit many to many relation</div>
+            <div class="m">Stack Overflow · explicit join tables complicate the Client API</div>
+          </div>
+        </div>
+        <div class="s-row">
+          <span class="ic">◇</span>
+          <div>
+            <div class="t">Schema incompatibilities in MySQL</div>
+            <div class="m">Prisma docs (zh) · Prisma 1 upgrade guide</div>
+          </div>
+        </div>
+
+        <div class="zero">
+          <span>Measured this run: 5 results returned, and 0 of them came from Answer Overflow.</span>
+        </div>
+
+        <div class="cap">What comes back</div>
+        <div class="gtext">
+          Any many-to-many relation needs a separate join table whose composite primary key is built from both sides. That is correct, and it is the officially recommended approach — but it answers the general question of how many-to-many is modelled in Prisma.
+        </div>
+
+        <div class="verdict b">
+          <b>Where it stalls:</b> how your particular schema should change and how to get around this MySQL error is still something you have to work out yourself. Meanwhile the thread that solved exactly this schema structure, with a verified fix, <b>is not among those 5 results</b>.
+        </div>
+      </div>
+    </div>
+
+    <div class="pane a">
+      <div class="pane-hd">
+        <span class="tt">After · answeroverflow skill</span>
+        <span class="chip good">Actionable</span>
+      </div>
+      <div class="pane-bd">
+        <div class="cap">What you do</div>
+        <div class="s-query"><span>site:answeroverflow.com prisma many-to-many</span><span class="cur"></span></div>
+
+        <div class="s-row hot">
+          <span class="ic">◆</span>
+          <div>
+            <div class="t">Good way to do many to many relationship Prisma</div>
+            <div class="m">Theo's Typesafe Cult · m/1098688072574582925</div>
+          </div>
+        </div>
+
+        <div class="zero good">
+          <span>Same query, scoped: 2 Answer Overflow threads matched, the first one structurally identical.</span>
+        </div>
+
+        <div class="cap">What gets extracted</div>
+        <div class="rule">
+          Both sides are declared as <b>Xyz[]</b> / <b>Kva[]</b>, and the join table is generated by Prisma — no hand-written midpoint table.<br>
+          MySQL raises this error because <b>implicit many-to-many embedding is not supported</b>; switching to the relation-table syntax clears it.
+        </div>
+
+        <div class="src">
+          <span class="dot-ok"></span>Source: Theo's Typesafe Cult · the thread is indexed and can be checked line by line
+        </div>
+
+        <div class="verdict a">
+          <b>What is different:</b> the matched thread is structurally identical to your error and your schema — it is a record of the same hole being hit and filled, so the fix can be lifted directly.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <table class="diff">
+    <thead>
+      <tr><th>Dimension</th><th>Before</th><th>After</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="d">Search action</td>
+        <td class="b">Error text into a general search engine, with no <code style="font-family:var(--mono);font-size:11.5px;color:var(--ink3)">site:</code> scoping</td>
+        <td class="a">Same keywords prefixed with <code style="font-family:var(--mono);font-size:11.5px;color:var(--cyan)">site:answeroverflow.com</code></td>
+      </tr>
+      <tr>
+        <td class="d">What matched</td>
+        <td class="b">All 5 results from Stack Overflow, official docs and issue mirrors; <b>0</b> from Answer Overflow</td>
+        <td class="a"><strong>2 Answer Overflow threads</strong>, the first one structurally identical</td>
+      </tr>
+      <tr>
+        <td class="d">What it answers</td>
+        <td class="b">The general question of how many-to-many is modelled in Prisma</td>
+        <td class="a">The specific question of how your schema should change</td>
+      </tr>
+      <tr>
+        <td class="d">Provenance</td>
+        <td class="b">Docs and issues — the principle is clear, but none of it is your case</td>
+        <td class="a">A concrete thread URL you can reopen for context</td>
+      </tr>
+      <tr>
+        <td class="d">The gap that matters</td>
+        <td class="b">The Discord discussion that solved and verified this is not in the results</td>
+        <td class="a"><strong>It is in the results, and it is first</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ 3 · CAPABILITIES AND METRICS ============ -->
+<section class="sec" id="caps">
+  <div class="sec-hd">
+    <span class="sec-no">03 · Capabilities and metrics</span>
+    <h2>What it does — and which numbers survive checking</h2>
+    <p class="sub">The four cards are the paths this skill actually uses. Every metric below is labelled with where it came from: official documentation, repository data, or explicitly flagged as a third-party claim. Anything without a primary source is left out.</p>
+  </div>
+
+  <div class="caps">
+
+    <div class="cap-card">
+      <span class="no">01 · Scoped search</span>
+      <h3>Turns a question into a targeted query</h3>
+      <p>Ask in plain language as usual; the skill converts it into a query with a source restriction and lands it on already-indexed Discord threads. This is the least effort of the four, and the path every case on this page used.</p>
+      <div class="code">site:answeroverflow.com &lt;keywords&gt;</div>
+      <div class="foot">No API key · no configuration · matched on every live run</div>
+    </div>
+
+    <div class="cap-card">
+      <span class="no">02 · Direct thread fetch</span>
+      <h3>Retrieve a single thread by message ID</h3>
+      <p>When you already know which discussion it is, fetch it by message ID. What comes back is structured Markdown body text rather than a page wrapped in navigation and ads. The two forms are equivalent — pick either.</p>
+      <div class="code">/m/&lt;message-id&gt;.md　·　Accept: text/markdown</div>
+      <div class="foot note">Most reliable when the thread is known — but the live attempt from this environment was rate-limited; see case 02</div>
+    </div>
+
+    <div class="cap-card">
+      <span class="no">03 · Conversation recovery</span>
+      <h3>Keeps how the answer converged</h3>
+      <p>What comes back is the whole round trip: the question, the back-and-forth, the final fix. Threads marked resolved are easier to read because you can jump straight to the message that actually settled it.</p>
+      <div class="code">question → back-and-forth → marked solution</div>
+      <div class="foot">You get a traceable precedent, not just an answer</div>
+    </div>
+
+    <div class="cap-card">
+      <span class="no">04 · MCP access</span>
+      <h3>Callable directly by an AI agent</h3>
+      <p>The official README states that MCP access is supported so an agent can query the archive itself. The skill's documentation lists four tools: search communities, filter by server or channel, fetch a whole thread, find similar threads.</p>
+      <div class="code">answeroverflow.com/mcp</div>
+      <div class="foot note">Note: this skill does not currently mount that MCP — runs go through route 01</div>
+    </div>
+
+  </div>
+
+  <!-- metrics · official docs -->
+  <div class="metric-grp">
+    <div class="gh">
+      <span class="gt">Indexing and content lifecycle</span>
+      <span class="srctag off">Official docs</span>
+      <span class="gs">apps/docs/channel-settings/indexing.mdx</span>
+    </div>
+    <table class="metric">
+      <thead><tr><th>Metric</th><th>Value</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="k">Channel indexing pass</td>
+          <td class="v"><span class="mono" style="color:var(--cyan)">~every 6 hours</span></td>
+          <td class="s">Fluctuates with the number of servers onboarded</td>
+        </tr>
+        <tr>
+          <td class="k">Refresh once fully indexed</td>
+          <td class="v"><span class="mono">every 24 hours</span></td>
+          <td class="s">A different stage from the row above — do not merge them</td>
+        </tr>
+        <tr>
+          <td class="k">First full index duration</td>
+          <td class="v"><span class="mono">can take days</span></td>
+          <td class="s">Works forward from the channel's earliest message</td>
+        </tr>
+        <tr>
+          <td class="k">Retention after disabling</td>
+          <td class="v"><span class="mono">up to 7 days</span></td>
+          <td class="s">Refers to retention on Answer Overflow itself</td>
+        </tr>
+        <tr>
+          <td class="k">Retention in Google after disabling</td>
+          <td class="v"><span class="mono">duration unknown</span></td>
+          <td class="s">Decided by Google's own crawl, not under Answer Overflow's control</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- metrics · repository -->
+  <div class="metric-grp">
+    <div class="gh">
+      <span class="gt">Project activity</span>
+      <span class="srctag repo">Repository data</span>
+      <span class="gs">GitHub API, read live · 2026-09-15</span>
+    </div>
+    <table class="metric">
+      <thead><tr><th>Metric</th><th>Value</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="k">License</td>
+          <td class="v"><span class="mono">MIT</span></td>
+          <td class="s">Self-hostable and auditable</td>
+        </tr>
+        <tr>
+          <td class="k">Stars / forks</td>
+          <td class="v"><span class="mono">2,013 / 103</span></td>
+          <td class="s">Live values at read time</td>
+        </tr>
+        <tr>
+          <td class="k">Latest commit</td>
+          <td class="v"><span class="mono" style="color:var(--green)">2026-09-13</span></td>
+          <td class="s">Two days before the read — still actively maintained</td>
+        </tr>
+        <tr>
+          <td class="k">First commit</td>
+          <td class="v"><span class="mono">2022-09-06</span></td>
+          <td class="s">Four years of history</td>
+        </tr>
+        <tr>
+          <td class="k">Primary language</td>
+          <td class="v"><span class="mono">TypeScript</span></td>
+          <td class="s">Stack: Bun / Convex / Next.js 16 / discord.js</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- metrics · third party -->
+  <div class="metric-grp">
+    <div class="gh">
+      <span class="gt">Coverage scale</span>
+      <span class="srctag tp">Third-party claim · not confirmed</span>
+      <span class="gs">Source: a third-party tool directory</span>
+    </div>
+    <table class="metric">
+      <thead><tr><th>Metric</th><th>Value</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="k">Servers onboarded</td>
+          <td class="v"><span class="mono" style="color:var(--amber)">300+</span></td>
+          <td class="s">Directory claim; not found in any primary source checked</td>
+        </tr>
+        <tr>
+          <td class="k">Users reached</td>
+          <td class="v"><span class="mono" style="color:var(--amber)">2M+</span></td>
+          <td class="s">Same as above; if reused, cite the source and the read date</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="quotebox">
+    <span class="q">"Indexing occurs roughly every 6 hours, although this may fluctuate depending on the number of servers Answer Overflow is in."<br>— Warning on the same page: "once it is fully indexed it will be updated every 24 hours."</span>
+    These are <span style="color:var(--ink)">two different stages inside one official document</span>: the first is the frequency of indexing passes, the second the refresh rate once the index is complete. The usual transcription error merges them into a single figure — <b>quote only 6 hours and you lose "the first pass can take days"; quote only 24 hours and you understate the pass frequency</b>.
+  </div>
+
+  <div class="warnbox">
+    <b>A wording change worth knowing about:</b> an earlier revision of the same document said "roughly every 24 hours"; the current revision says "roughly every 6 hours". Operational numbers like these get revised as scale changes — <b>always carry the read date</b>, or a figure written correctly today becomes wrong data next year. Every metric on this page is labelled with its source and date.
+  </div>
+</section>
+
+<!-- ============ 4 · HOW IT WORKS ============ -->
+<section class="sec" id="flow">
+  <div class="sec-hd">
+    <span class="sec-no">04 · How it works</span>
+    <h2>From one sentence to a finding you can act on, in five steps</h2>
+    <p class="sub">Steps one to four are what the skill does for you. Step five is the one it cannot do for you — but can help you get right. The whole chain below was run live for this page.</p>
+  </div>
+
+  <div class="flow">
+
+    <div class="fstep">
+      <div class="dot">01</div>
+      <div class="body">
+        <h3>Drop the raw material in</h3>
+        <p>You do not have to work out the right keywords first. Paste the error text, the symptom, or a one-line goal as it is — the closer it stays to the verbatim error, the more likely it matches a structurally identical thread.</p>
+        <div class="out"><b>Input</b>　bunx prisma generate hangs forever in CI. Works fine locally.</div>
+      </div>
+    </div>
+
+    <div class="fstep">
+      <div class="dot">02</div>
+      <div class="body">
+        <h3>Turn it into a scoped query</h3>
+        <p>The skill converts that sentence into a source-restricted search. This is the skill's core move — it still goes through ordinary web search; what changes is that the scope is pinned to that one indexed source.</p>
+        <div class="out"><b>Generated</b>　site:answeroverflow.com prisma generate never completes</div>
+      </div>
+    </div>
+
+    <div class="fstep">
+      <div class="dot">03</div>
+      <div class="body">
+        <h3>Pick the structurally identical thread</h3>
+        <p>What comes back is a list of indexed Discord threads. The test is not whether the title looks similar, but whether the error text, dependency versions and runtime match yours — only a structurally identical thread is worth reusing.</p>
+        <div class="out"><b>Matched</b>　m/1349804537426477138 · Prisma official server · Prisma generate never completes</div>
+      </div>
+    </div>
+
+    <div class="fstep">
+      <div class="dot">04</div>
+      <div class="body">
+        <h3>Extract the conclusion from the conversation</h3>
+        <p>A thread is a fragmented back-and-forth. The skill locates the message that actually took effect, instead of stopping at "someone discussed this".</p>
+        <div class="out"><b>Extracted</b>　root cause = Bun alone lacks a Node.js dependency; workaround = run it through npm</div>
+      </div>
+    </div>
+
+    <div class="fstep key">
+      <div class="dot">05</div>
+      <div class="body">
+        <h3>Decide whether the finding is safe to use<span class="tag">Easily skipped</span></h3>
+        <p>Getting a fix is not the same as being able to trust it. Two things have to be checked: <b>whether the citation chain still holds</b>, and <b>whether the author is a person or a bot</b>. Both went wrong in this run — and this is the sharpest difference from "just asking an AI": the answer arrives with a checkable address.</p>
+        <div class="out"><b>Verified</b>　both cited issues 404'd on the first check → confirmed after following the redirect; author = the community bot Prisma AI Help</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="fallback">
+    <div class="fh">Two fallback paths, measured live · what to do when the chain breaks</div>
+    <div class="fbrow">
+      <div class="fbit">
+        <span class="ft">Break ① · Direct thread fetch rate-limited</span>
+        A direct request carrying <b>Accept: text/markdown</b> returned <b>HTTP 429</b>, and the web path hit a bot check.<br>
+        <b>Fallback:</b> fall back to scoped search — the search snapshot itself carried large parts of the thread body, so the chain does not have to break.
+      </div>
+      <div class="fbit">
+        <span class="ft">Break ② · A citation link 404s</span>
+        The GitHub issues cited in the thread all 404'd on the first check.<br>
+        <b>Fallback:</b> suspect a <b>repository rename or migration</b> first, then follow the redirect — here it was caused by <b>prisma/prisma → prisma/orm</b>, and should not be treated as fabrication.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5 · THREE REAL CASES ============ -->
+<section class="sec" id="cases">
+  <div class="sec-hd">
+    <span class="sec-no">05 · Three real cases</span>
+    <h2>Three cases, three levels of difficulty</h2>
+    <p class="sub">All three cases were run live. This page carries the <b>English run</b> — its own prompt, its own output and its own screenshots. The same three scenarios were run separately in Chinese for the Chinese page, and the two sets are deliberately <b>not</b> translations of one another.</p>
+  </div>
+
+  <div class="cases">
+
+    <!-- case 01 -->
+    <div class="case">
+      <div class="case-hd">
+        <span class="cn">01</span>
+        <span class="ct">Only the verbatim error, and it lands on a structurally identical thread</span>
+        <span class="cb">Baseline · most common · finished in 19s</span>
+      </div>
+      <div class="case-bd">
+
+        <div class="seg">
+          <div class="sl">Input<br><b>Prompt</b></div>
+          <div class="sc">
+            <div class="qbox">Prisma throws "Embedded many-to-many relations are not supported on MySQL". I'd rather not create a join table — is there another way?</div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">Matched<br><b>thread</b></div>
+          <div class="sc">
+            <div class="hitrow">
+              <span class="ic">◆</span>
+              <div>
+                <div class="ht">Good way to do many to many relationship Prisma</div>
+                <div class="hm">Theo's Typesafe Cult · m/1098688072574582925 · 2023-04-20 · answerer OwO7 — real user, no APP marker<br>query: site:answeroverflow.com prisma many-to-many</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">Extract<br><b>conclusion</b></div>
+          <div class="sc">
+            <b>Why the error fires:</b> the asker wrote <b>references: [id], fields: [subcategoryId]</b> on the list side of the relation. Those two fields belong to the side that actually holds the foreign key — the relation table — not to a many-to-many list. Written on the list side, Prisma reads the relation as <b>embedded</b>, which is the form MySQL does not support.<br>
+            <b>The two options given:</b> ① implicit relation table — write only <b>Xyz[]</b> / <b>Kva[]</b> on both sides, leave out fields / references, and Prisma creates and manages the join table for you; ② explicit relation table — you define the join table yourself, which is what you need when the relation itself must carry custom fields.<br>
+            <b>Answer to "without a join table": not achievable.</b> A many-to-many always has a join table — that is a database-level constraint, not a Prisma limitation. The implicit option only means <b>you don't write it</b>. The real choice is <b>who authors the join table</b>, not whether one exists.
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">Confidence<br><b>verdict</b></div>
+          <div class="sc">
+            <span class="vt ok">Usable as-is</span><br>
+            Answerer OwO7 is a real user, with no bot APP marker in the thread; the error text and the schema shape are <b>structurally identical</b> to the prompt's; both code blocks are complete and internally consistent — the implicit version drops exactly the fields / references that the diagnosis identifies as the cause.
+            <div class="shotcap">△ Stated plainly: the thread does <b>not</b> rank the two options — it only says there are "2 main ways". "Option 1 is less work when the relation needs no custom fields" is the reader's inference, not a quote. Worth knowing: the indexed page also appends a doc link of its own, which is Answer Overflow's injection rather than part of the discussion.</div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">Run<br><b>screenshots</b></div>
+          <div class="sc">
+            <div class="shots">
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-en/shot-a-01.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-en/shot-a-01.png" width="1060" height="976" alt="Case 01 run screenshot 1: prompt and run record">
+                <span class="cap">01 · Prompt + elapsed 19s + retrieval path / query / thread / source</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-en/shot-a-02.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-en/shot-a-02.png" width="1047" height="987" alt="Case 01 run screenshot 2: the original question and schema">
+                <span class="cap">02 · The question — error text + the schema sketch</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-en/shot-a-03.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-en/shot-a-03.png" width="996" height="1011" alt="Case 01 run screenshot 3: OwO7 reply and option 1">
+                <span class="cap">03 · OwO7's reply + Option 1 code block</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-en/shot-a-04.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-en/shot-a-04.png" width="1032" height="1071" alt="Case 01 run screenshot 4: option 2 code block">
+                <span class="cap">04 · Option 2 code block (explicit relation table)</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-en/shot-a-05.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/01-basic-en/shot-a-05.png" width="1104" height="1048" alt="Case 01 run screenshot 5: reading the thread and verdict">
+                <span class="cap">05 · Reading the thread + provenance check + verdict</span>
+              </a>
+            </div>
+            <div class="shotcap">Path probe: thread fetch blocked by Vercel Security Checkpoint; curl and the .md variant both HTTP 429 (size=0); the content was recovered through the <b>site-scoped search snapshot</b>. <b>Known gap, not hidden:</b> this capture shows the reply and the elapsed time but <b>no <code>answeroverflow</code> skill chip</b> — the prompt was sent without the <code>@skill:answeroverflow</code> prefix.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- case 02 -->
+    <div class="case">
+      <div class="case-hd">
+        <span class="cn">02</span>
+        <span class="ct">Hand it one thread URL and get the whole chain back</span>
+        <span class="cb">Core value · finished in 3m1s</span>
+      </div>
+      <div class="case-bd">
+
+        <div class="seg">
+          <div class="sl">Input<br><b>Prompt</b></div>
+          <div class="sc">
+            <div class="qbox">https://www.answeroverflow.com/m/1072404497596432446<br>Pull out the final conclusion about connect vs create from this thread.</div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">Matched<br><b>thread</b></div>
+          <div class="sc">
+            <div class="hitrow">
+              <span class="ic">◆</span>
+              <div>
+                <div class="ht">Noob Question Many-to-Many in prisma after nextAuth</div>
+                <div class="hm">Theo's Typesafe Cult · m/1072404497596432446 · 2023-02-07 · answerer Brendonovich — real user, no APP marker<br>query: site:answeroverflow.com prisma many-to-many after nextAuth connect create</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">Extract<br><b>conclusion</b></div>
+          <div class="sc">
+            <b>The rule: look at whether the relation record already exists.</b> <b>connect</b> — attach a record that <b>already exists</b>, via a unique identifier; the prerequisite is that an ID must exist to look up. <b>create</b> — <b>make</b> the record, for when it does not exist yet.<br>
+            Applied to the asker's case: creating a new team for an existing user, where the relation record (<b>usersInTeams</b>) is also new. That record does not exist yet, so connect has nothing to connect to and it must be created first.<br>
+            <b>One line: connect links what exists; create makes what doesn't.</b> Outer create, inner connect — that is the shape of the rule in practice. Applied to the schema: <b>users: { create: [ { role: 'OWNER', user: { connect: { id: ownerId } } } ] }</b>.
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">Confidence<br><b>verdict</b></div>
+          <div class="sc">
+            <span class="vt ok">Usable</span><br>
+            The conclusion is not a passing opinion — the asker <b>ran it and reported back the same day</b>, so the loop closes. That is the strongest evidence this source offers: you can see the answer was validated, which is exactly what asking a model directly cannot show you.<br>
+            Verification timeline: 7:34 compiled, but jest is giving trouble → 7:38 first attempt, <b>Foreign key constraint failed on the field: userId</b> → 7:39 second attempt, <b>No 'User' record(s) was found for a nested connect</b> → 7:39 "looks like the right kind of error" → <b>7:43 it worked!</b>
+            <div class="shotcap">△ Known gap, stated honestly: the thread <b>never posts the code that finally worked</b> — only the asker's one-line confirmation. The rule is certain; the snippet must be adapted to your own schema.<br>△ Path probe: handing over a thread URL does <b>not</b> get you the thread — fetch was blocked and the content came back through the <b>site-scoped search snapshot</b>. Also measured: a quoted exact-title search returned <b>0 hits</b>; the unquoted keyword combination is what lands.</div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">Run<br><b>screenshots</b></div>
+          <div class="sc">
+            <div class="shots">
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/02-core-en/shot-a-01.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/02-core-en/shot-a-01.png" width="1060" height="1023" alt="Case 02 run screenshot 1: prompt and run record">
+                <span class="cap">01 · Skill chip + Prompt + elapsed 3m1s + retrieval path / query / thread</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/02-core-en/shot-a-02.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/02-core-en/shot-a-02.png" width="1093" height="1060" alt="Case 02 run screenshot 2: the answer and the rule table">
+                <span class="cap">02 · Brendonovich's quote + the connect / create rule table</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/02-core-en/shot-a-03.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/02-core-en/shot-a-03.png" width="1050" height="1078" alt="Case 02 run screenshot 3: applied schema and verification loop">
+                <span class="cap">03 · Applied schema + verification loop (it worked!)</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/02-core-en/shot-a-04.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/02-core-en/shot-a-04.png" width="1057" height="1048" alt="Case 02 run screenshot 4: provenance check and verdict">
+                <span class="cap">04 · Provenance check + verdict + source line</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- case 03 -->
+    <div class="case">
+      <div class="case-hd">
+        <span class="cn">03</span>
+        <span class="ct">Ask for checkable sourcing, and it turns up a real problem</span>
+        <span class="cb">Hardest · most distinctive · finished in 1m34s</span>
+      </div>
+      <div class="case-bd">
+
+        <div class="seg">
+          <div class="sl">Input<br><b>Prompt</b></div>
+          <div class="sc">
+            <div class="qbox">bunx prisma generate hangs forever in CI but works fine locally. I need verifiable sources, not just a conclusion.</div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">Matched<br><b>thread</b></div>
+          <div class="sc">
+            <div class="hitrow">
+              <span class="ic">◆</span>
+              <div>
+                <div class="ht">Prisma generate never completes</div>
+                <div class="hm">Prisma official server · m/1349804537426477138 · thread started 2025-03-13 · query: site:answeroverflow.com prisma generate never completes<br><b style="color:var(--amber)">answerer Prisma AI Help — a bot (APP marker), not a person</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">Extract<br><b>conclusion</b></div>
+          <div class="sc">
+            <b>Root cause:</b> in a Bun environment, Prisma's generate needs node on PATH — Prisma depends on parts of the Node API that Bun alone does not fully cover, so the process hangs without exiting.<br>
+            <b>Primary fix:</b> install Node.js on the machine that hangs. <b>Alternative:</b> run generate with npm instead. <b>Technical explanation</b> (from aqrln, Prisma team): Prisma does not explicitly start a node process — it uses <b>child_process.fork</b> to run generator-build/index.js from @prisma/client.
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">Confidence<br><b>verdict</b></div>
+          <div class="sc">
+            <span class="vt chk">Usable only after verification</span><br>
+            The answer came from a bot, so verification is where the work actually is. Four things came out of it:<br>
+            <b>① The answerer is a bot</b> — Prisma AI Help, with an APP marker. Answer Overflow's rendering does not separate people from bots, and that changes how the answer must be read: it is an assembly of knowledge sources, not first-hand experience from someone who hit the same wall.<br>
+            <b>② Both cited links are dead — but that is not fabrication.</b> The cause is a repository rename, <b>prisma/prisma → prisma/orm</b>; issue-level redirects were not preserved (measured: 0 redirects, straight 404). A control test on another number (#21241) is also 404 at the old path and 200 at the new one — systematic behaviour, not a one-off. At the new location both titles match exactly: #25730 closed 2025-03-24, #21277 still open.<br>
+            <b>③ All four quotations traced back verbatim</b> to the original comments, with author and date. The content holds up; the links are what rotted.<br>
+            <b>④ The bot misses a cheaper fix.</b> A comment dated 2025-03-12 in #25730 — <b>the day before this thread started</b> — gives <b>bunx prisma generate | cat</b>: dropping the TTY makes it pass. The bot never mentions it. Reason: an AI answer is a snapshot of its sources and cannot see discussion newer than its own generation.<br>
+            <b>Bonus finding, and the reason this case is the most distinctive:</b> "install Node.js" actually means running generate on the <b>node</b> runtime rather than bun — which, as redbmk notes in the original issue, means alpine images need node installed too, and forcing the bun runtime requires <b>--bun</b>.
+            <div class="shotcap">Verdict: the citation chain closes and the <b>content is trustworthy</b>, but the <b>links and the currency must be supplied by the reader</b>. The real risk with this kind of community index is not wrong content — it is that links rot and answers go stale.</div>
+          </div>
+        </div>
+
+        <div class="seg">
+          <div class="sl">Run<br><b>screenshots</b></div>
+          <div class="sc">
+            <div class="shots">
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-en/shot-a-01.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-en/shot-a-01.png" width="1053" height="1036" alt="Case 03 run screenshot 1: prompt and run record">
+                <span class="cap">01 · Skill chip + Prompt + elapsed 1m34s + retrieval path / query / thread</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-en/shot-a-02.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-en/shot-a-02.png" width="1105" height="1038" alt="Case 03 run screenshot 2: bot answer body">
+                <span class="cap">02 · "Written by a bot" + the answer body</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-en/shot-a-03.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-en/shot-a-03.png" width="1101" height="1030" alt="Case 03 run screenshot 3: 404 and rename verification">
+                <span class="cap">03 · 404 chain + rename + control test + quotation table</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-en/shot-a-04.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-en/shot-a-04.png" width="1062" height="1042" alt="Case 03 run screenshot 4: the missed workaround">
+                <span class="cap">04 · The missed | cat workaround + the unclear point</span>
+              </a>
+              <a class="shotfig" href="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-en/shot-a-05.png" target="_blank" rel="noopener">
+                <img src="https://pub-3a81bd32d33047139adc3bb6d51a57bf.r2.dev/answeroverflow/cases/03-complex-en/shot-a-05.png" width="1074" height="892" alt="Case 03 run screenshot 5: provenance check and verdict">
+                <span class="cap">05 · Provenance check + verdict + source line</span>
+              </a>
+            </div>
+            <div class="shotcap">Path probe consistent with the other two cases: thread fetch is not available in this environment (Vercel checkpoint / HTTP 429); the site-scoped search snapshot is the only working path.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 6 · SAFETY AND RELIABILITY ============ -->
+<section class="sec" id="safety">
+  <div class="sec-hd">
+    <span class="sec-no">06 · Safety and reliability</span>
+    <h2>How this skill was checked — and exactly where the check stopped</h2>
+    <p class="sub">Two separate things are recorded on this page and never mixed. <b style="color:var(--ink)">Rubric assessment</b> scores the skill's documented retrieval and safety behaviour against seven dimensions. <b style="color:var(--ink)">Live retrieval</b> records what actually happened when real queries were executed against the public archive on the date below. Where the live path was blocked, it is marked blocked — not passed.</p>
+  </div>
+
+  <div class="reg-meta">
+    <div class="reg-row">
+      <div class="reg-cell"><div class="rk">SUBJECT</div><div class="rv mono">answeroverflow — skill v1.0.2</div></div>
+      <div class="reg-cell"><div class="rk">ASSESSMENT DATE</div><div class="rv mono">2026-07-29</div></div>
+    </div>
+    <div class="reg-row">
+      <div class="reg-cell"><div class="rk">ENVIRONMENT</div><div class="rv mono">macOS 15 · agent runtime · outbound HTTPS</div></div>
+      <div class="reg-cell"><div class="rk">SEARCH PATH</div><div class="rv mono">Web search, site:answeroverflow.com</div></div>
+    </div>
+    <div class="reg-row">
+      <div class="reg-cell"><div class="rk">THREAD FETCH PATH</div><div class="rv mono">Direct HTTPS to /m/&lt;id&gt; — <span class="st no">BLOCKED</span></div></div>
+      <div class="reg-cell"><div class="rk">MCP ENDPOINT</div><div class="rv mono">Not connected — <span class="st wn">NOT EXERCISED</span></div></div>
+    </div>
+  </div>
+
+  <div class="vcards">
+    <div class="vcard ok">
+      <span class="vk">VERIFIED LIVE</span>
+      <h4>Discovery works, with real citations</h4>
+      <p>Three scoped queries were executed and returned on-topic archived threads with resolvable URLs and publication dates spanning 2023 to 2026. Those URLs and dates are reproduced verbatim in section 03.</p>
+    </div>
+    <div class="vcard no">
+      <span class="vk">NOT VERIFIED</span>
+      <h4>Thread-body retrieval was blocked here</h4>
+      <p>Direct requests to a thread page and its .md form returned HTTP 403 from this runtime; a plain client request returned HTTP 429. Context recovery and answer extraction are therefore scored on rubric only, and are recorded as unverified.</p>
+    </div>
+  </div>
+
+  <!-- ── 01 claim-to-check mapping ── -->
+  <div class="reg-sub">
+    <span class="rn">01</span>
+    <span class="rt">Claim-to-check mapping</span>
+    <span class="rd">Every capability claim, and the evidence class that supports it.</span>
+  </div>
+
+  <table class="rt">
+    <thead><tr><th style="width:34%">CAPABILITY CLAIM</th><th>EVIDENCE CLASS</th><th style="width:15%">STATE</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Finds archived threads matching a technical problem</td>
+        <td class="mid">Live search — 3 scoped queries, 30 result rows</td>
+        <td><span class="st ok">VERIFIED</span></td>
+      </tr>
+      <tr>
+        <td>Returns citable URLs with dates</td>
+        <td class="mid">Live search — every retained hit carries <span style="font-family:var(--mono);font-size:11px">/m/&lt;id&gt;</span> and a publication date</td>
+        <td><span class="st ok">VERIFIED</span></td>
+      </tr>
+      <tr>
+        <td>Distinguishes resolved from unresolved threads</td>
+        <td class="mid">Live search — title markers observed, e.g. a thread titled with [SOLVED]</td>
+        <td><span class="st ok">VERIFIED</span></td>
+      </tr>
+      <tr>
+        <td>Opens a thread as markdown for reading</td>
+        <td class="mid">Documented URL pattern; live fetch refused by the host (403 / 429)</td>
+        <td><span class="st no">BLOCKED</span></td>
+      </tr>
+      <tr>
+        <td>Reconstructs the correction chain inside a thread</td>
+        <td class="mid">Rubric only — depends on the blocked fetch path</td>
+        <td><span class="st rb">RUBRIC</span></td>
+      </tr>
+      <tr>
+        <td>Runs MCP tools against the archive</td>
+        <td class="mid">External endpoint, not connected in this environment</td>
+        <td><span class="st wn">NOT EXERCISED</span></td>
+      </tr>
+      <tr>
+        <td>Sanitizes queries before they leave</td>
+        <td class="mid">Rubric — query construction inspected; no identifiers present in the 3 executed queries</td>
+        <td><span class="st rb">RUBRIC</span><span class="st ok">CONSISTENT</span></td>
+      </tr>
+      <tr>
+        <td>Marks findings as candidate, with a verification target</td>
+        <td class="mid">Rubric — output contract reviewed against skill documentation</td>
+        <td><span class="st rb">RUBRIC</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ── 02 seven dimensions ── -->
+  <div class="reg-sub">
+    <span class="rn">02</span>
+    <span class="rt">Seven dimensions</span>
+    <span class="rd">Scored out of 10. Basis is stated per row so a reader can discount any score they do not accept.</span>
+  </div>
+
+  <div class="dim">
+    <div class="dim-h">
+      <span class="dn">Query precision</span><span class="st ok">LIVE</span>
+      <span class="dsc">9.2 / 10</span>
+    </div>
+    <div class="bar"><i style="width:92%;background:var(--green)"></i></div>
+    <p class="dq">Do scoped queries actually land inside the archive rather than the general web, and does a quoted error string outperform a paraphrase?</p>
+    <p class="db"><b>basis —</b> 3 queries executed; all 30 returned rows were answeroverflow.com URLs. The quoted-error query returned 8 thread pages carrying that exact string. Deduction: 2 of 30 rows were user-profile comment pages rather than threads, so a filter step is required.</p>
+  </div>
+
+  <div class="dim">
+    <div class="dim-h">
+      <span class="dn">Thread relevance</span><span class="st ok">LIVE</span>
+      <span class="dsc">8.7 / 10</span>
+    </div>
+    <div class="bar"><i style="width:87%;background:var(--green)"></i></div>
+    <p class="dq">Of the threads returned, how many are genuinely about the submitted symptom rather than a keyword coincidence?</p>
+    <p class="db"><b>basis —</b> for the quoted meta/_journal.json query, 8 of 10 rows were on-symptom threads across 2023–2025; 1 was an adjacent-but-different failure and 1 was a profile page. Ranking favoured recency and title markers correctly.</p>
+  </div>
+
+  <div class="dim">
+    <div class="dim-h">
+      <span class="dn">Context recovery</span><span class="st no">UNVERIFIED</span>
+      <span class="dsc">5.5 / 10</span>
+    </div>
+    <div class="bar"><i style="width:55%;background:var(--red)"></i></div>
+    <p class="dq">Can the full discussion — question, corrections, and the message that resolved it — be read in order?</p>
+    <p class="db"><b>basis —</b> not demonstrated here. Thread and .md requests returned 403 from this runtime. Partial credit only, for the substantive body text that arrived inside search result snippets, including full stack-trace frames and code blocks. <b>Score is capped until a fetch succeeds.</b></p>
+  </div>
+
+  <div class="dim">
+    <div class="dim-h">
+      <span class="dn">Source provenance</span><span class="st ok">LIVE</span>
+      <span class="dsc">9.6 / 10</span>
+    </div>
+    <div class="bar"><i style="width:96%;background:var(--green)"></i></div>
+    <p class="dq">Is every claim traceable to a stable, third-party-checkable address with a date?</p>
+    <p class="db"><b>basis —</b> every retained hit resolved to a canonical /m/&lt;message-id&gt; URL with a publication date; 13 distinct thread URLs are reproduced on this page for independent checking. Deduction: server and channel attribution was not confirmable without the blocked page fetch.</p>
+  </div>
+
+  <div class="dim">
+    <div class="dim-h">
+      <span class="dn">Solution extraction</span><span class="st wn">PARTIAL</span>
+      <span class="dsc">6.8 / 10</span>
+    </div>
+    <div class="bar"><i style="width:68%;background:var(--amber)"></i></div>
+    <p class="dq">Does a usable candidate fix come out, attributed to the thread it came from?</p>
+    <p class="db"><b>basis —</b> partial. Snippets carried real diagnostic content — resolved-title markers, error frames, and one thread's stated cause of a pooling failure — but no accepted answer was read end-to-end. <b>Candidate fixes may be formed from snippets; they must not be presented as confirmed thread outcomes.</b></p>
+  </div>
+
+  <div class="dim">
+    <div class="dim-h">
+      <span class="dn">Privacy safety</span><span class="st rb">RUBRIC</span>
+      <span class="dsc">9.4 / 10</span>
+    </div>
+    <div class="bar"><i style="width:94%;background:var(--green)"></i></div>
+    <p class="dq">Does anything sensitive leave the machine, and is the user warned that queries are public?</p>
+    <p class="db"><b>basis —</b> the 3 executed queries contained only public library names and a public error string — no tokens, hostnames, customer data or private paths. The skill's documented workflow requires sanitizing first. Deduction: enforcement is procedural, not mechanical; there is no automated secret scanner in the repository.</p>
+  </div>
+
+  <div class="dim">
+    <div class="dim-h">
+      <span class="dn">Verification readiness</span><span class="st rb">RUBRIC</span>
+      <span class="dsc">8.5 / 10</span>
+    </div>
+    <div class="bar"><i style="width:85%;background:var(--green)"></i></div>
+    <p class="dq">Is the output shaped so a reviewer can confirm it — dates shown, staleness flagged, official target named?</p>
+    <p class="db"><b>basis —</b> dates were available on every live hit and span 07 Jul 2023 to 04 Feb 2026, which makes staleness visible rather than implied. Deduction: naming the correct official docs page is a judgement step and was not independently audited here.</p>
+  </div>
+
+  <!-- ── 03 live retrieval log ── -->
+  <div class="reg-sub">
+    <span class="rn">03</span>
+    <span class="rt">Live retrieval log</span>
+    <span class="rd">Executed 2026-07-29. URLs and dates below are reproduced as returned, for independent checking.</span>
+  </div>
+
+  <div class="loggrid">
+    <div class="qlog">
+      <div class="qh"><span class="st ok">PASS</span><span class="qq">site:answeroverflow.com "Can't find meta/_journal.json"</span></div>
+      <p class="qn">10 rows returned; 8 on-symptom threads, 1 adjacent failure, 1 profile page. Retained hits:</p>
+      <ul class="hitl">
+        <li><b>Error: Can't find meta/_journal.json file [SOLVED]</b><span class="d">07 Jul 2023</span><span class="u">/m/1115604949750009898</span></li>
+        <li><b>can't find meta/_journal.json file on prod</b><span class="d">27 Nov 2023</span><span class="u">/m/1178402730608439386</span></li>
+        <li><b>Help with this error. "Can't find meta/_journal.json file"</b><span class="d">18 Apr 2024</span><span class="u">/m/1230296412516778114</span></li>
+        <li><b>Migration Error after building with Electron</b><span class="d">08 Feb 2024</span><span class="u">/m/1205153107231772683</span></li>
+        <li><b>drizzle-kit drop can't find journal.json of a migration</b><span class="d">23 Feb 2024</span><span class="u">/m/1210328397604061194</span></li>
+        <li><b>Failing to connect to local d1 db with drizzle</b><span class="d">04 Sep 2024</span><span class="u">/m/1280689547218387038</span></li>
+        <li><b>Can't find meta/_journal.json file</b><span class="d">29 Sep 2025</span><span class="u">/m/1421973556752810024</span></li>
+      </ul>
+    </div>
+
+    <div class="qlog">
+      <div class="qh"><span class="st ok">PASS</span><span class="qq">site:answeroverflow.com prisma connection pooling</span></div>
+      <p class="qn">10 rows returned; 8 threads on pooling or connection-limit failures, 2 profile pages. Retained hits:</p>
+      <ul class="hitl">
+        <li><b>Authentication error when using connection pooling</b><span class="d">31 Jan 2024</span><span class="u">/m/1193169468721991680</span></li>
+        <li><b>Error querying the database: FATAL: Max client connections reached</b><span class="d">30 Apr 2024</span><span class="u">/m/1234691717681385483</span></li>
+        <li><b>Issue with Prisma Pooling Timeout</b><span class="d">03 Feb 2025</span><span class="u">/m/1335810577272016987</span></li>
+        <li><b>Dealing with database timeouts with prisma and vercel fluid compute</b><span class="d">21 Aug 2025</span><span class="u">/m/1407836889062576228</span></li>
+        <li><b>Prisma V6.19.2, NextJS 16 and attachDatabasePool</b><span class="d">04 Feb 2026</span><span class="u">/m/1468370867317899264</span></li>
+      </ul>
+    </div>
+
+    <div class="qlog">
+      <div class="qh"><span class="st ok">PASS</span><span class="qq">site:answeroverflow.com drizzle orm migration error</span></div>
+      <p class="qn">10 rows returned, all thread pages, covering journal-file failures, Supabase schema conflicts, libsql errors and hanging migrations. This looser phrasing traded precision for breadth: it surfaced adjacent failure modes the quoted-string query missed, which is the intended use of a symptom query. Sample hit:</p>
+      <ul class="hitl">
+        <li><b>Error in `migrate` command: PostgresError: no schema has been selected to create in</b><span class="d">01 Apr 2025</span><span class="u">/m/1356367995278200912</span></li>
+      </ul>
+    </div>
+
+    <div class="qlog blocked">
+      <div class="qh"><span class="st no">BLOCKED</span><span class="qq">GET /m/&lt;id&gt; and /m/&lt;id&gt;.md</span></div>
+      <div class="blockbox">GET
+https://www.answeroverflow.com/m/133581057727
+2016987     403
+GET
+https://www.answeroverflow.com/m/111560494975
+0009898.md  403
+GET
+https://www.answeroverflow.com/m/111560494975
+0009898     429  (plain client)
+GET https://docs.answeroverflow.com
+            429</div>
+      <p class="qn" style="margin-bottom:0">The host refused thread-body requests from this runtime. This is an environment and rate-limit result, not evidence that the documented markdown pattern is wrong — but nothing on this page claims a thread body was read.</p>
+    </div>
+  </div>
+
+  <div class="quotebox" style="border-left-color:var(--green)">
+    <b>Reproduce it yourself.</b> Run any of the three queries above in a search engine, then open any listed URL in a browser. The titles and dates should match what is printed here. Section 03 is the only part of this page that depends on network results.
+  </div>
+
+  <!-- ── 04 scenario matrix ── -->
+  <div class="reg-sub">
+    <span class="rn">04</span>
+    <span class="rt">Scenario matrix</span>
+    <span class="rd">Normal, ambiguous, boundary and delivery cases — with the observed or expected behaviour.</span>
+  </div>
+
+  <table class="rt">
+    <thead><tr><th style="width:26%">CASE</th><th style="width:11%">CLASS</th><th>EXPECTED BEHAVIOUR</th><th style="width:22%">RESULT</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Exact quoted error string<br><span style="font-family:var(--mono);font-size:11px;color:var(--ink3);font-weight:400">Can't find meta/_journal.json</span></td>
+        <td class="mono">Normal</td>
+        <td class="mid">Multiple on-symptom threads, spread across dates, at least one resolution marker</td>
+        <td><span class="st ok">OBSERVED</span></td>
+      </tr>
+      <tr>
+        <td>Symptom phrasing, no error string<br><span style="font-family:var(--mono);font-size:11px;color:var(--ink3);font-weight:400">drizzle migration error</span></td>
+        <td class="mono">Normal</td>
+        <td class="mid">Broader recall, adjacent failure modes, lower precision</td>
+        <td><span class="st ok">OBSERVED</span></td>
+      </tr>
+      <tr>
+        <td>Topic query with no single answer<br><span style="font-family:var(--mono);font-size:11px;color:var(--ink3);font-weight:400">prisma connection pooling</span></td>
+        <td class="mono">Ambiguous</td>
+        <td class="mid">A pattern across threads rather than one fix; version differences visible</td>
+        <td><span class="st ok">OBSERVED</span></td>
+      </tr>
+      <tr>
+        <td>Non-thread pages in results<br><span style="font-family:var(--mono);font-size:11px;color:var(--ink3);font-weight:400">profile / comment pages</span></td>
+        <td class="mono">Boundary</td>
+        <td class="mid">Excluded from candidates, not cited as threads</td>
+        <td><span class="st ok">OBSERVED</span><span style="font-family:var(--mono);font-size:10.5px;color:var(--ink3)"> — 3 of 30 rows filtered</span></td>
+      </tr>
+      <tr>
+        <td>Thread body unreachable<br><span style="font-family:var(--mono);font-size:11px;color:var(--ink3);font-weight:400">403 / 429 from the host</span></td>
+        <td class="mono">Boundary</td>
+        <td class="mid">Report the block; do not invent thread contents or an accepted answer</td>
+        <td><span class="st ok">OBSERVED</span><span style="font-family:var(--mono);font-size:10.5px;color:var(--ink3)"> — recorded as blocked</span></td>
+      </tr>
+      <tr>
+        <td>Uncovered library<br><span style="font-family:var(--mono);font-size:11px;color:var(--ink3);font-weight:400">project not indexed</span></td>
+        <td class="mono">Boundary</td>
+        <td class="mid">State that archive coverage is absent instead of substituting another source</td>
+        <td><span class="st rb">RUBRIC</span><span style="font-family:var(--mono);font-size:10.5px;color:var(--ink3)"> — not triggered in this run</span></td>
+      </tr>
+      <tr>
+        <td>Query containing a secret</td>
+        <td class="mono">Safety</td>
+        <td class="mid">Refuse to send; require sanitizing first</td>
+        <td><span class="st rb">RUBRIC</span><span style="font-family:var(--mono);font-size:10.5px;color:var(--ink3)"> — not simulated with real credentials</span></td>
+      </tr>
+      <tr>
+        <td>Delivery: citable brief</td>
+        <td class="mono">Delivery</td>
+        <td class="mid">Candidate fixes, each with URL, date, confidence note and verification target</td>
+        <td><span class="st ok">OBSERVED</span><span style="font-family:var(--mono);font-size:10.5px;color:var(--ink3)"> — see showcase page</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ── 05 composite ── -->
+  <div class="reg-sub">
+    <span class="rn">05</span>
+    <span class="rt">Composite, and how it is computed</span>
+    <span class="rd">Weighted mean of the seven dimensions. Weights favour the parts a user relies on.</span>
+  </div>
+
+  <table class="rt">
+    <thead><tr><th style="width:40%">DIMENSION</th><th style="width:18%">SCORE</th><th style="width:18%">WEIGHT</th><th>CONTRIBUTION</th></tr></thead>
+    <tbody>
+      <tr><td>Query precision</td><td class="num hi">9.2</td><td class="num">0.20</td><td class="num">1.84</td></tr>
+      <tr><td>Thread relevance</td><td class="num hi">8.7</td><td class="num">0.18</td><td class="num">1.566</td></tr>
+      <tr><td>Context recovery</td><td class="num lo">5.5</td><td class="num">0.15</td><td class="num">0.825</td></tr>
+      <tr><td>Source provenance</td><td class="num hi">9.6</td><td class="num">0.15</td><td class="num">1.44</td></tr>
+      <tr><td>Solution extraction</td><td class="num mid-c">6.8</td><td class="num">0.12</td><td class="num">0.816</td></tr>
+      <tr><td>Privacy safety</td><td class="num hi">9.4</td><td class="num">0.10</td><td class="num">0.94</td></tr>
+      <tr><td>Verification readiness</td><td class="num hi">8.5</td><td class="num">0.10</td><td class="num">0.85</td></tr>
+    </tbody>
+  </table>
+
+  <div class="scoreline">
+    <span class="sv">8.28</span><span class="sl2">WEIGHTED / 10</span>
+    <p>Sum of contributions across weights totalling 1.00. Two of the seven dimensions are rubric-only and one is capped by a blocked fetch, so this figure describes a <b>partially verified</b> skill — not a fully exercised one. Removing the two rubric-only rows and renormalising the remaining five gives <b>8.10</b>.</p>
+  </div>
+
+  <div class="quotebox">
+    <b>What this number is not.</b> It is a rubric composite for one skill on one date, not a competitive benchmark, not a comparison against another tool, and not a claim about future retrieval quality. Archive coverage changes as communities opt in, and any thread cited here may be edited or removed by its community.
+  </div>
+
+  <!-- ── 06 open items and risk ── -->
+  <div class="reg-sub">
+    <span class="rn">06</span>
+    <span class="rt">Open items and risk</span>
+    <span class="rd">Stated plainly, so nothing unverified reads as verified.</span>
+  </div>
+
+  <table class="rt">
+    <thead><tr><th style="width:38%">ITEM</th><th style="width:14%">STATE</th><th>WHAT WOULD CLOSE IT</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Markdown thread fetch via <span style="font-family:var(--mono);font-size:11px">.md</span> or <span style="font-family:var(--mono);font-size:11px">Accept: text/markdown</span></td>
+        <td><span class="st no">BLOCKED</span></td>
+        <td class="mid">One successful fetch from a runtime the host does not refuse, with the returned markdown archived alongside the request headers.</td>
+      </tr>
+      <tr>
+        <td>All four MCP tools</td>
+        <td><span class="st wn">NOT EXERCISED</span></td>
+        <td class="mid">Connecting the external endpoint and recording one call per tool with its response shape.</td>
+      </tr>
+      <tr>
+        <td>Server and channel attribution per thread</td>
+        <td><span class="st wn">PENDING</span></td>
+        <td class="mid">Reading <span style="font-family:var(--mono);font-size:11px">/c/&lt;server-slug&gt;</span> pages to confirm official-support versus general-chat classification.</td>
+      </tr>
+      <tr>
+        <td>Secret-redaction behaviour under a real credential</td>
+        <td><span class="st rb">RUBRIC</span></td>
+        <td class="mid">A controlled test with a synthetic token, confirming it never reaches an outbound query.</td>
+      </tr>
+      <tr>
+        <td>Coverage-gap handling for an unindexed library</td>
+        <td><span class="st rb">RUBRIC</span></td>
+        <td class="mid">A query against a library known to be absent, checking that the empty result is reported as empty.</td>
+      </tr>
+      <tr>
+        <td>Accuracy of extracted fixes against official docs</td>
+        <td><span class="st wn">PENDING</span></td>
+        <td class="mid">Following the verification targets through to the project's own documentation and recording agreement or conflict.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="warnbox" style="background:var(--red-soft);border-color:var(--red-line);color:#EFA9A4">
+    <b style="color:#F7BDB8">Standing risks, independent of this assessment.</b> Archive content is informal and may be wrong; many threads carry no accepted answer; screenshots, deleted messages and voice discussion never enter the archive; a cited fix may be correct for a 2023 release and wrong today. The skill's own output contract requires an official-source verification target for exactly this reason — <b style="color:#F7BDB8">and no result from it should be shipped on thread evidence alone.</b>
+  </div>
+
+  <div class="quotebox">
+    <b>Scope statement.</b> This register covers skill v1.0.2 as assessed on 2026-07-29 in one agent runtime with outbound HTTPS. Live evidence consists of three executed search queries and the URL and date rows they returned; thread-body retrieval and the MCP endpoint were not exercised. Sections 01, 02, 04, 05 and 06 are rubric judgements by the assessor and are labelled as such wherever they are not backed by the section 03 log.
+  </div>
+</section>
+
+<!-- ============ 7 · AUDIENCE AND CALL TO ACTION ============ -->
+<section class="sec" id="cta">
+  <div class="sec-hd">
+    <span class="sec-no">07 · Audience and call to action</span>
+    <h2>Built for people who have already searched once and found nothing</h2>
+    <p class="sub">It does not solve "how do I ask a better question". It solves "the answer exists, but not where you can reach it". Which makes its boundaries unusually easy to state: either you are inside them, or it is not for you at all.</p>
+  </div>
+
+  <div class="ugrid">
+    <div class="ucard">
+      <div class="uh"><span class="un">01</span><h4>Professional developers</h4></div>
+      <p>You hit <b>hidden behaviour and version boundaries</b> in Prisma, Drizzle or Next.js — the docs cover the syntax, not what happens on MySQL. What you get here is a precedent from a structurally identical case, not a syntax explanation.</p>
+    </div>
+    <div class="ucard">
+      <div class="uh"><span class="un">02</span><h4>Support engineers and askers</h4></div>
+      <p>Check before you post. The odds are somebody <b>already hit this and left the answer</b> in some server's help channel. Searching once makes the question itself sharper when you do ask it.</p>
+    </div>
+    <div class="ucard">
+      <div class="uh"><span class="un">03</span><h4>AI agents and coding assistants</h4></div>
+      <p>Community practice that never made it into training data. The real difference is the shape of the output: with this wired in, every conclusion <b>carries a link you can open and check</b>, rather than "generally speaking".</p>
+    </div>
+    <div class="ucard">
+      <div class="uh"><span class="un">04</span><h4>Open-source maintainers</h4></div>
+      <p>The official overview lists "open source projects" as a primary target community. Beyond retrieval there is a reverse use: <b>see exactly where users get stuck and how they phrase it</b>.</p>
+    </div>
+  </div>
+
+  <div class="ugrid-note">
+    Community types named in the official overview: <b>open-source projects · game servers · modded servers · game development · homework help · hobby communities</b>. Note that this is the "<b>communities that deploy the bot</b>" framing; the reader of this page is a skill user, and those are not the same group.
+  </div>
+
+  <div class="fitsplit">
+    <div class="fitcard yes">
+      <span class="fkh">A G O O D  F I T</span>
+      <ul>
+        <li>The library is <b>already indexed and in use</b> — there is a precedent to find</li>
+        <li>You need <b>the fix for a case identical to yours</b>, not just the general principle</li>
+        <li>You are willing to <b>follow one official source</b> before relying on it</li>
+      </ul>
+    </div>
+    <div class="fitcard nope">
+      <span class="fkh">N O T  A  F I T</span>
+      <ul>
+        <li>The library is not in the archive (niche, closed-source, entirely private)</li>
+        <li>You need an authoritative answer straight into production — <b>this route gives leads, not guarantees</b></li>
+        <li>You want screenshots, voice discussion or deleted messages — they never enter the archive</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="ctabox">
+    <span class="ck">G E T T I N G  S T A R T E D</span>
+    <h3>Have your agent check the Discord archive before it answers a library question</h3>
+    <p class="cl">This skill does one thing: it fixes a sequence — <b>scope the search to the archive → match a structurally identical thread → extract the conclusion → name a verification target</b>. Without it, a model answers from general impressions in its training data. With it wired in, every conclusion drags along a first-hand lead you can open and check.</p>
+
+    <div class="ctarules">
+      <div class="ctarule">
+        <span class="cn">R U L E  0 1</span>
+        <div class="ct"><b>Treat it as a lead source only.</b> Follow it through to official docs or source before relying on it. The skill's own output contract demands this — it forces an official-source verification target.</div>
+      </div>
+      <div class="ctarule">
+        <span class="cn">R U L E  0 2</span>
+        <div class="ct"><b>Keep sensitive content out of the query.</b> Search terms and the URLs visited leave your machine. Keys, private source and customer data do not belong in a query.</div>
+      </div>
+      <div class="ctarule">
+        <span class="cn">R U L E  0 3</span>
+        <div class="ct"><b>A 404 is not proof of fabrication.</b> This run hit a repository rename (<span style="font-family:var(--mono);font-size:11px">prisma/prisma → prisma/orm</span>). Follow the redirect before judging it.</div>
+      </div>
+    </div>
+
+    <div class="ctafoot">
+      <span class="lb">T W O  E N T R Y  P O I N T S</span>
+      <span class="en">site:answeroverflow.com &lt;keywords&gt;</span>
+      <span class="en">/m/&lt;message-id&gt;.md</span>
+      <span class="lb" style="flex:1;min-width:200px;letter-spacing:0;line-height:1.7">The MCP endpoint (<span style="font-family:var(--mono)">answeroverflow.com/mcp</span>, 4 tools) is officially supported but is not mounted by this skill — the two paths above are what actually works.</span>
+    </div>
+  </div>
+</section>
+
+<footer class="pfoot">
+  <div class="fl">
+    <b>How the numbers on this page were sourced.</b> Every capability statement and limitation comes from the live run on 2026-09-15 or from primary material. The "300+ servers / 2M+ users" figure circulating in third-party tool directories is <b>not officially confirmed</b> — it is listed separately and flagged in section 03, and is not used as an argument anywhere on this page.
+    <span class="src">Sources: the official docs repository apps/docs (read 2026-09-15) · GitHub REST API (read 2026-09-15) · three skill run records. Prompt-based skills carry no download, install or usage telemetry, so every figure here is a structural count or public repository data.</span>
+  </div>
+  <div class="fr">
+    Answer Overflow · skill v1.0.2<br>
+    MIT License · latest commit 2026-09-13<br>
+    This page recorded 2026-09-15
+  </div>
+</footer>
+</div>
+</body>
+</html>
